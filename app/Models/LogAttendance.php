@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class LogAttendance extends Model
 {
-    //
+    protected $guarded = [];
 }

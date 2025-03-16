@@ -7,14 +7,14 @@ use App\Models\UserRole;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
-class AppInit extends Command
+class InitUserCmd extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:init';
+    protected $signature = 'init:user';
 
     /**
      * The console command description.

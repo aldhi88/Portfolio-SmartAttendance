@@ -4,6 +4,7 @@ use App\Models\MasterFunction;
 use App\Models\MasterLocation;
 use App\Models\MasterOrganization;
 use App\Models\MasterPosition;
+use App\Models\UserLogin;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +18,7 @@ return new class extends Migration
     {
         Schema::create('data_employees', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(UserLogin::class)->constrained();
             $table->foreignIdFor(MasterOrganization::class)->constrained();
             $table->foreignIdFor(MasterPosition::class)->constrained();
             $table->foreignIdFor(MasterLocation::class)->constrained();

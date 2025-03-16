@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class MasterOrganization extends Model
 {
-    //
+    protected $guarded = [];
 }

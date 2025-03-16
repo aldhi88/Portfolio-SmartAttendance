@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\DataEmployee;
-use App\Models\DataMachine;
+use App\Models\MasterMachine;
 use App\Models\MasterMinor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,12 +17,12 @@ return new class extends Migration
         Schema::create('log_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(DataEmployee::class)->constrained();
-            $table->foreignIdFor(DataMachine::class)->constrained();
+            $table->foreignIdFor(MasterMachine::class)->constrained();
             $table->foreignIdFor(MasterMinor::class)->constrained();
             $table->dateTime('time');
             $table->timestamps();
 
-            $table->unique(['data_machine_id', 'time']);
+            $table->unique(['master_machine_id', 'time']);
         });
     }
 

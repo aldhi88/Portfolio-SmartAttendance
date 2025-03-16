@@ -1,19 +1,36 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\UserRoleController;
+use App\Http\Controllers\Api\LogAttendanceController;
+use App\Http\Controllers\Api\LogGpsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/user-roles', [UserRoleController::class, 'index']);
+
+    Route::prefix('auth')->group(function () {
+        Route::controller(AuthController::class)->group(function () {
+            Route::get('/logout', 'logout');
+        });
+    });
+
+    Route::prefix('log/attendance')->group(function () {
+        Route::controller(LogAttendanceController::class)->group(function () {
+            Route::post('/store', 'store');
+        });
+    });
+
+    Route::prefix('log/gps')->group(function () {
+        Route::controller(LogGpsController::class)->group(function () {
+            Route::post('/store', 'store');
+        });
+    });
+    
 });
 
-// Route::get('/user-roles', [UserRoleController::class, 'index']);
-Route::post('/auth/login', [AuthController::class, 'login']);
+Route::prefix('auth')->group(function () {
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('/login', 'login');
+    });
+});
 
