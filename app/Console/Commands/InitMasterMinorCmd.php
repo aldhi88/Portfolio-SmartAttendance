@@ -27,13 +27,12 @@ class InitMasterMinorCmd extends Command
     public function handle()
     {
         $data = [
-            ['type' => "Card"],
-            ['type' => "Fingerprint"],
-            ['type' => "Face"],
+            ['id'=>1, 'type' => "Card"],
+            ['id'=>38, 'type' => "Fingerprint"],
+            ['id'=>75, 'type' => "Face"],
         ];
 
         foreach ($data as $key => $value) {
-            $value['id'] = $key+1;
             MasterMinor::updateOrCreate($value);
         }
     }

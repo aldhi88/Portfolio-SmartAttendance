@@ -6,17 +6,18 @@ use App\Http\Controllers\Api\LogGpsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+Route::prefix('auth')->group(function () {
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('/login', 'login');
+    });
+});
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('auth')->group(function () {
         Route::controller(AuthController::class)->group(function () {
             Route::get('/logout', 'logout');
-        });
-    });
-
-    Route::prefix('log/attendance')->group(function () {
-        Route::controller(LogAttendanceController::class)->group(function () {
-            Route::post('/store', 'store');
         });
     });
 
@@ -28,9 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
 });
 
-Route::prefix('auth')->group(function () {
-    Route::controller(AuthController::class)->group(function () {
-        Route::get('/login', 'login');
+
+
+Route::prefix('log/attendance')->group(function () {
+    Route::controller(LogAttendanceController::class)->group(function () {
+        Route::post('store', 'store');
+        Route::get('get-lastest-time/{param}', 'getLastTimeByMachine');
     });
 });
-

@@ -28,6 +28,9 @@ class InitMasterMachineCmd extends Command
     {
         $data = [
             ['name' => "Mesin 1"],
+            ['name' => "Mesin 2"],
+            ['name' => "Mesin 3"],
+            ['name' => "Mesin 4"],
         ];
 
         foreach ($data as $key => $value) {

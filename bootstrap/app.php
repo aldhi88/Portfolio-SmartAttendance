@@ -2,8 +2,11 @@
 
 use App\Http\Middleware\BlockApiBrowserRequest;
 use App\Http\Middleware\BlockHttpApiRequest;
+use App\Http\Middleware\CheckKeyApiRequest;
+use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleInterface;
+use App\Repositories\LogAttendanceRepository;
 use App\Repositories\UserLoginRepository;
 use App\Repositories\UserRoleRepository;
 use Illuminate\Foundation\Application;
@@ -22,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             BlockApiBrowserRequest::class,
             BlockHttpApiRequest::class,
+            CheckKeyApiRequest::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -30,5 +34,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withBindings([
         UserLoginInterface::class => UserLoginRepository::class,
         UserRoleInterface::class => UserRoleRepository::class,
+        LogAttendanceInterface::class => LogAttendanceRepository::class,
     ])
     ->create();
