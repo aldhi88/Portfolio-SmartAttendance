@@ -6,8 +6,8 @@
         <meta charset="utf-8" />
         <title>{{ $data['tab_title'] }}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="{{ config('app.dsc') }}" name="description" />
-        <meta content="{{ config('app.author') }}" name="author" />
+        <meta content="{{ config('app.app_desc') }}" name="description" />
+        <meta content="{{ config('app.app_author') }}" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico')}}">
 
