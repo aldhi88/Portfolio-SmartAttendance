@@ -124,5 +124,7 @@ return [
     ],
 
     'api_secret_key' => env('API_SECRET_KEY', 'default-secret-key'),
+    'app_author' => env('APP_AUTHOR', 'Aldhi Albadri'),
+    'app_desc' => env('APP_DESC', 'Smart System Support IT Dumai Management'),
 
 ];

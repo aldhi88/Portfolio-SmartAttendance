@@ -8,9 +8,9 @@ class AuthController extends Controller
 {
     public function formLogin()
     {
-        $data['tab_title'] = "SIADM";
-        $data['page_title'] = "Dasbor";
-        $data['page_desc'] = "Ringkasan data saat ini";
+        $data['tab_title'] = "Login | ".config('app.name');
+        $data['page_title'] = "Login";
+        $data['page_desc'] = "Form Login";
         $data['lw'] = "auth.form-login";
 
         return view('auth.index', compact('data'));
