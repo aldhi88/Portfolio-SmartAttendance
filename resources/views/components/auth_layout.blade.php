@@ -17,13 +17,14 @@
         <link href="{{ asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
         <!-- App Css-->
         <link href="{{ asset('assets/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('mine/style.css') }}" rel="stylesheet" type="text/css" />
+
 
     </head>
 
     <body class="auth-body-bg">
-        <div class="home-btn d-none d-sm-block">
-            <a href="index.html"><i class="mdi mdi-home-variant h2 text-white"></i></a>
-        </div>
+        <div class="loading"><div class="loader"></div></div>
+
         <div>
             <div class="container-fluid p-0">
                 <div class="row no-gutters">
@@ -39,7 +40,7 @@
                                                 </div>
 
                                                 <h4 class="font-size-18 mt-4">{{ config('app.name') }}</h4>
-                                                <p class="text-muted">Sign in to continue to application.</p>
+                                                <p class="text-muted">{{ $data['page_desc'] }}</p>
                                             </div>
 
                                             <div class="p-2 mt-5">
@@ -76,6 +77,8 @@
         <script src="{{ asset('assets/libs/node-waves/waves.min.js')}}"></script>
 
         <script src="{{ asset('assets/js/app.js')}}"></script>
+        <script src="{{ asset('mine/script.js') }}"></script>
+
 
     </body>
 </html>

@@ -10,7 +10,7 @@ class AuthController extends Controller
     {
         $data['tab_title'] = "Login | ".config('app.name');
         $data['page_title'] = "Login";
-        $data['page_desc'] = "Form Login";
+        $data['page_desc'] = "Sign in to continue to application.";
         $data['lw'] = "auth.form-login";
 
         return view('auth.index', compact('data'));
