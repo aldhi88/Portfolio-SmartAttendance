@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\MasterLocation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('master_machines', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(MasterLocation::class)->constrained();
             $table->string('name')->unique();
             $table->string('desc')->nullable();
             $table->timestamps();

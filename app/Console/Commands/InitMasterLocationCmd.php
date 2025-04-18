@@ -27,13 +27,12 @@ class InitMasterLocationCmd extends Command
     public function handle()
     {
         $data = [
-            ['name' => "Integrated Terminal Dumai"],
-            ['name' => "Fuel IT Dumai"],
-            ['name' => "New LPG - IT Dumai"],
+            ['id' => 101, 'name' => "Integrated Terminal Dumai"],
+            ['id' => 102, 'name' => "Fuel IT Dumai"],
+            ['id' => 201, 'name' => "New LPG - IT Dumai"],
         ];
 
         foreach ($data as $key => $value) {
-            $value['id'] = $key+1;
             MasterLocation::updateOrCreate($value);
         }
     }

@@ -27,14 +27,11 @@ class InitMasterMachineCmd extends Command
     public function handle()
     {
         $data = [
-            ['name' => "AC-BBM-1"],
-            ['name' => "AC-LPG-1"],
-            ['name' => "Mesin 3"],
-            ['name' => "Mesin 4"],
+            ['id' => 101, 'master_location_id' => 101 ,'name' => "AC-BBM-1"],
+            ['id' => 201, 'master_location_id' => 201 ,'name' => "AC-LPG-1"],
         ];
 
         foreach ($data as $key => $value) {
-            $value['id'] = $key+1;
             MasterMachine::updateOrCreate($value);
         }
     }
