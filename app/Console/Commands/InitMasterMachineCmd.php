@@ -27,8 +27,8 @@ class InitMasterMachineCmd extends Command
     public function handle()
     {
         $data = [
-            ['name' => "Mesin 1"],
-            ['name' => "Mesin 2"],
+            ['name' => "AC-BBM-1"],
+            ['name' => "AC-LPG-1"],
             ['name' => "Mesin 3"],
             ['name' => "Mesin 4"],
         ];

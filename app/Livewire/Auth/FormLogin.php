@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Auth;
 
-use App\Repositories\Interfaces\UserLoginInterface;
+use App\Repositories\Interfaces\AuthInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -11,22 +11,29 @@ class FormLogin extends Component
 {
     public $dt = [];
 
-    protected $userLoginRepository;
-    public function hydrate(UserLoginInterface $userLoginRepository)
+    protected $authRepository;
+    public function hydrate(AuthInterface $authRepository)
     {
-        $this->userLoginRepository = $userLoginRepository;
+        $this->authRepository = $authRepository;
     }
 
     public function formSubmit()
     {
         $this->validate();
-        $user = $this->userLoginRepository->getByUsername($this->dt['username']);
-        if ($user && Hash::check($this->dt['password'], $user->password)) {
-            Auth::loginUsingId($user->id);
+
+        if ($this->authRepository->login($validated['dt'])) {
             return redirect()->route('anchor');
         }else{
-            session()->flash('message', 'ID Login anda tidak ditemukan');
+            session()->flash('message', 'Data login tidak ditemukan');
         }
+
+        // $user = $this->userLoginRepository->getByUsername($this->dt['username']);
+        // if ($user && Hash::check($this->dt['password'], $user->password)) {
+        //     Auth::loginUsingId($user->id);
+        //     return redirect()->route('anchor');
+        // }else{
+        //     session()->flash('message', 'ID Login anda tidak ditemukan');
+        // }
 
     }
 

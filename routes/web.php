@@ -34,5 +34,13 @@ Route::middleware('auth:web')->group(function(){
         });
     });
 
+    Route::prefix('auth')->group(function () {
+        Route::name('auth.')->group(function () {
+            Route::controller(AuthController::class)->group(function () {
+                Route::get('logout', 'logout')->name('logout');
+            });
+        });
+    });
+
 
 });

@@ -8,6 +8,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return "index";
+        $data['tab_title'] = "Dashboard | ".config('app.name');
+        $data['page_title'] = "Dashboard";
+        $data['page_desc'] = "Quick summary data.";
+        $data['lw'] = "dashboard.insight";
+
+        return view('dashboard.index', compact('data'));
     }
 }

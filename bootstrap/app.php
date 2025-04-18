@@ -3,6 +3,8 @@
 use App\Http\Middleware\BlockApiBrowserRequest;
 use App\Http\Middleware\BlockHttpApiRequest;
 use App\Http\Middleware\CheckKeyApiRequest;
+use App\Repositories\AuthRepository;
+use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleInterface;
@@ -38,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withBindings([
         UserLoginInterface::class => UserLoginRepository::class,
+        AuthInterface::class => AuthRepository::class,
         UserRoleInterface::class => UserRoleRepository::class,
         LogAttendanceInterface::class => LogAttendanceRepository::class,
     ])
