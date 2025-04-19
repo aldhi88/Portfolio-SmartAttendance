@@ -2,6 +2,16 @@ $( document ).ready(function() {
     $('.loading').fadeOut(500);
 });
 
+function initSearchCol(table,headerId,inputClass){
+    $(headerId).on('keyup', '.'+inputClass,function () {
+        table.column( $(this).parent().index() ).search( this.value ).draw(false);
+    });
+
+    $(headerId).on('change', '.'+inputClass,function () {
+        table.column( $(this).parent().index() ).search( this.value ).draw();
+    });
+}
+
 function clearValidation(id) {
     document.getElementById(id).classList.remove("is-invalid");
 }

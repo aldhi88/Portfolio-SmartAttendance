@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -30,6 +31,15 @@ Route::middleware('auth:web')->group(function(){
         Route::name('dashboard.')->group(function () {
             Route::controller(DashboardController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
+            });
+        });
+    });
+
+    Route::prefix('laporan')->group(function () {
+        Route::name('laporan.')->group(function () {
+            Route::controller(LaporanController::class)->group(function () {
+                Route::get('log-absen', 'indexLogAbsen')->name('indexLogAbsen');
+                Route::get('log-absen/dt', 'indexLogAbsenDt')->name('indexLogAbsenDt');
             });
         });
     });

@@ -55,7 +55,7 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li><a href="ecommerce-product-detail.html">Rekapitulasi</a></li>
-                            <li><a href="ecommerce-products.html">Log Absensi</a></li>
+                            <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
                             <li><a href="ecommerce-product-detail.html">Log Lokasi</a></li>
                         </ul>
                     </li>
