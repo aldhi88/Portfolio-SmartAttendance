@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreignIdFor(MasterMinor::class)->constrained();
             $table->string('name');
             $table->dateTime('time');
+            $table->unsignedBigInteger('edited_by')->nullable();
+            $table->enum('source_by', ['sync', 'edit'])->default('sync');
             $table->timestamps();
         });
     }

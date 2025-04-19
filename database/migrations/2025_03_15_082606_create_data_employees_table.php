@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignIdFor(MasterLocation::class)->constrained();
             $table->foreignIdFor(MasterFunction::class)->constrained();
             $table->string('name');
-            $table->string('number')->nullable();
+            $table->string('number')->default('-');
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
             $table->softDeletes();
