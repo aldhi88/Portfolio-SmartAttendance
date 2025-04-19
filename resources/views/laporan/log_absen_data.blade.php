@@ -10,7 +10,7 @@
                             <thead>
                             <tr>
                                 <th class="text-center" width="10"></th>
-                                <th class="text-center">ID Karyawan</th>
+                                <th class="text-center">ID User</th>
                                 <th class="text-center">Nama Karyawan</th>
                                 <th class="text-center">Mesin Absen</th>
                                 <th class="text-center">Lokasi Absen</th>
