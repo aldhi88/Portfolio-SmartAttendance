@@ -19,7 +19,7 @@ class FormLogin extends Component
 
     public function formSubmit()
     {
-        $this->validate();
+        $validated = $this->validate();
 
         if ($this->authRepository->login($validated['dt'])) {
             return redirect()->route('anchor');
