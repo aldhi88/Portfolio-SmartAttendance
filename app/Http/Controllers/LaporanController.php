@@ -20,6 +20,9 @@ class LaporanController extends Controller
     public function indexLogAbsenDt()
     {
         $data = LogAttendance::query()
+            ->select(
+                "log_attendances.*",
+            )
             ->with([
                 'master_machines',
                 'master_machines.master_locations',
