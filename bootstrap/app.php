@@ -6,9 +6,13 @@ use App\Http\Middleware\CheckKeyApiRequest;
 use App\Repositories\AuthRepository;
 use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\LogAttendanceInterface;
+use App\Repositories\Interfaces\MasterLocationFace;
+use App\Repositories\Interfaces\MasterMinorFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleInterface;
 use App\Repositories\LogAttendanceRepository;
+use App\Repositories\MasterLocationRepo;
+use App\Repositories\MasterMinorRepo;
 use App\Repositories\UserLoginRepository;
 use App\Repositories\UserRoleRepository;
 use Illuminate\Foundation\Application;
@@ -43,5 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         AuthInterface::class => AuthRepository::class,
         UserRoleInterface::class => UserRoleRepository::class,
         LogAttendanceInterface::class => LogAttendanceRepository::class,
+        MasterLocationFace::class => MasterLocationRepo::class,
+        MasterMinorFace::class => MasterMinorRepo::class,
     ])
     ->create();

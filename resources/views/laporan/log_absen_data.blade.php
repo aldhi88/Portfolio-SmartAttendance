@@ -24,10 +24,27 @@
                                     <th class="text-center"></th>
                                     <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
                                     <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
-                                    <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
-                                    <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
-                                    <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
                                     <th class="text-center"></th>
+                                    <th class="text-center">
+                                        <select name="" class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($pass['master_locations'] as $item)
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th class="text-center">
+                                        <select name="" class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($pass['master_minors'] as $item)
+                                                <option value="{{ $item->id }}">{{ $item->type }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+
+                                    <th class="text-center">
+                                        <input type="date" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
 
                                 </tr>
                             </thead>

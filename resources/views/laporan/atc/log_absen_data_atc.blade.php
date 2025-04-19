@@ -24,8 +24,8 @@
             { data: 'data_employee_id', name: 'data_employee_id', orderable: true, searchable:true },
             { data: 'name', name: 'name', orderable: true, searchable:true },
             { data: 'master_machines.name', name: 'master_machines.name', orderable: true, searchable:true },
-            { data: 'master_machines.master_locations.name', name: 'master_machines.master_locations.name', orderable: true, searchable:true },
-            { data: 'master_minors.type', name: 'master_minors.type', orderable: true, searchable:true },
+            { data: 'master_machines.master_locations.name', name: 'master_machines.master_locations.id', orderable: true, searchable:true },
+            { data: 'master_minors.type', name: 'master_minors.id', orderable: true, searchable:true },
             { data: 'time', name: 'time', orderable: true, searchable:true },
         ],
         initComplete: function(settings){
