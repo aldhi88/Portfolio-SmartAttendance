@@ -17,8 +17,8 @@ return new class extends Migration
         Schema::create('log_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(DataEmployee::class);
-            $table->foreignIdFor(MasterMachine::class)->constrained();
-            $table->foreignIdFor(MasterMinor::class)->constrained();
+            $table->foreignIdFor(MasterMachine::class);
+            $table->foreignIdFor(MasterMinor::class);
             $table->string('name');
             $table->dateTime('time');
             $table->unsignedBigInteger('edited_by')->nullable();

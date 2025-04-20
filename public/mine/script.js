@@ -1,14 +1,34 @@
-$( document ).ready(function() {
+$(document).ready(function () {
     $('.loading').fadeOut(500);
+
+    const path = window.location.pathname;
+
+    // Cek apakah path mengandung '/perusahaan'
+    if (path.includes('/perusahaan')) {
+        // Tambahkan class ke parent dan child menu
+        $('.parent.perusahaan').addClass('mm-active');
+        $('.parent.perusahaan > a').addClass('mm-active');
+        $('.parent.perusahaan > ul.sub-menu').addClass('mm-collapse mm-show');
+
+        // Cek apakah sedang di halaman create
+        if (path.includes('/perusahaan/create')) {
+            $('.parent.perusahaan .child.create').addClass('mm-active');
+            $('.parent.perusahaan .child.create a').addClass('active');
+        } else {
+            // Asumsikan ini halaman index
+            $('.parent.perusahaan .child.create').addClass('mm-active');
+            $('.parent.perusahaan .child.create a').addClass('active');
+        }
+    }
 });
 
-function initSearchCol(table,headerId,inputClass){
-    $(headerId).on('keyup', '.'+inputClass,function () {
-        table.column( $(this).parent().index() ).search( this.value ).draw(false);
+function initSearchCol(table, headerId, inputClass) {
+    $(headerId).on('keyup', '.' + inputClass, function () {
+        table.column($(this).parent().index()).search(this.value).draw(false);
     });
 
-    $(headerId).on('change', '.'+inputClass,function () {
-        table.column( $(this).parent().index() ).search( this.value ).draw();
+    $(headerId).on('change', '.' + inputClass, function () {
+        table.column($(this).parent().index()).search(this.value).draw();
     });
 }
 
@@ -38,24 +58,24 @@ window.addEventListener('alert', event => {
 
 
 
-$(".modal").on("shown.bs.modal", function(e) {
-    $('#'+e.target.id+' input.modalOnFocus').focus();
+$(".modal").on("shown.bs.modal", function (e) {
+    $('#' + e.target.id + ' input.modalOnFocus').focus();
 });
 
-$(".modal").on("show.bs.modal", function(e) {
+$(".modal").on("show.bs.modal", function (e) {
     var emit = $(e.relatedTarget).data('emit');
-    if( emit !== undefined){
+    if (emit !== undefined) {
         var json = $(e.relatedTarget).data('json');
-        Livewire.dispatch(emit, {data:json});
+        Livewire.dispatch(emit, { data: json });
     }
 });
 
 window.addEventListener('closeModal', param => {
-    $('#'+param.detail.id).modal('hide');
+    $('#' + param.detail.id).modal('hide');
 });
 
 window.addEventListener('showModal', param => {
-    $('#'+param.detail.id).modal('show');
+    $('#' + param.detail.id).modal('show');
 });
 
 window.addEventListener('reloadDT', param => {

@@ -31,33 +31,35 @@ class InitUserCmd extends Command
         $data = [
             [
                 'id' => 100,
-                'name' => 'Super Hero',
+                'name' => 'Super User',
                 'user_logins' => [
                     [
                         'id' => 101,
                         'user_role_id' => 100,
-                        'username' => 'superhero',
-                        'password' => Hash::make('superhero'),
+                        'nickname' => 'Superuser',
+                        'username' => 'superuser',
+                        'password' => Hash::make('superuser'),
                     ],
                 ]
             ],
-            [
-                'id' => 200,
-                'name' => 'Administrator',
-                'user_logins' => [
-                    [
-                        'id' => 201,
-                        'user_role_id' => 200,
-                        'username' => 'admin',
-                        'password' => Hash::make('admin'),
-                    ],
-                ]
-            ],
-            [
-                'id' => 300,
-                'name' => 'General User',
-                'user_logins' => []
-            ],
+            // [
+            //     'id' => 200,
+            //     'name' => 'Administrator',
+            //     'user_logins' => [
+            //         [
+            //             'id' => 201,
+            //             'user_role_id' => 200,
+            //             'nickname' => 'admin',
+            //             'username' => 'admin',
+            //             'password' => Hash::make('admin'),
+            //         ],
+            //     ]
+            // ],
+            // [
+            //     'id' => 300,
+            //     'name' => 'General User',
+            //     'user_logins' => []
+            // ],
         ];
 
 
@@ -74,6 +76,7 @@ class InitUserCmd extends Command
                         ['id' => $userData['id']],
                         [
                             'user_role_id' => $role->id,
+                            'nickname' => $userData['nickname'],
                             'username' => $userData['username'],
                             'password' => $userData['password'],
                         ]

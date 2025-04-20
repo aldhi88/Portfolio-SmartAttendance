@@ -26,6 +26,7 @@
 </head>
 
 <body data-sidebar="dark">
+    <div class="loading"><div class="loader"></div></div>
 
     <!-- Begin page -->
     <div id="layout-wrapper">
@@ -60,7 +61,7 @@
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="rounded-circle header-profile-user" src="{{ asset('mine/avatar.png') }}"
                                 alt="Header Avatar">
-                            <span class="d-none d-xl-inline-block ml-1">{{ Auth::user()->username }}</span>
+                            <span class="d-none d-xl-inline-block ml-1">{{ Auth::user()->nickname }}</span>
                             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -93,20 +94,20 @@
                 <div class="container-fluid">
 
                     <!-- start page title -->
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-12">
-                            <div class="page-title-box d-flex align-items-center justify-content-between">
-                                <h4 class="mb-0">{{ $data['page_title'] }}</h4>
-
-                                <div class="page-title-right">
-                                    <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item active">{{ $data['page_desc'] }}</li>
-                                    </ol>
+                            <div class="page-title-box d-flex align-items-center justify-content-between row">
+                                <div class="col">
+                                    <h4 class="mb-0">{{ $data['page_title'] }}</h4>
+                                    <span>{{ $data['page_desc'] }}</span>
                                 </div>
 
+                                <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
+                                    <button class="btn btn-primary">Add New Data</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <!-- end page title -->
 
                     @yield('content')

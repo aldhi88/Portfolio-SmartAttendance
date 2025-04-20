@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('user_logins', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(UserRole::class)->constrained();
+            $table->string('nickname', 64);
             $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();

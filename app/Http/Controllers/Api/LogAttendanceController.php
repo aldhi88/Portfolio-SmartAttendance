@@ -14,7 +14,7 @@ class LogAttendanceController extends Controller
     {
         $this->logAttendanceRepository = $logAttendanceRepository;
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
