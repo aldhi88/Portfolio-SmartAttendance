@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Organization;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class OrganizationData extends Component
 {
-
     public $pass = [];
 
     public function mount($data)

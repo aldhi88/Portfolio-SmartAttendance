@@ -6,11 +6,9 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\UserController;
 use App\Livewire\Jabatan\JabatanDT;
 use App\Livewire\Location\LocationDT;
-use App\Livewire\Organization\OrganizationDT;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -72,7 +70,7 @@ Route::middleware('auth:web')->group(function(){
         Route::name('perusahaan.')->group(function () {
             Route::controller(OrganizationController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
-                Route::get('index/dt', OrganizationDT::class)->name('indexDT');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
                 Route::get('create', 'create')->name('create');
                 Route::get('edit', 'edit')->name('edit');
             });

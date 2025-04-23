@@ -8,30 +8,28 @@
 
 @push('push-script')
 <script>
-    window.addEventListener('reloadDt', param => {
-        dtTable.ajax.reload();
-    });
-
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 25,sDom: 'lrtip',
-        order: [[1, 'asc']],
+        processing: true,serverSide: true,pageLength: 10,sDom: 'lrtip',
+        order: [[0, 'asc']],
         columnDefs: [
-            { className: 'text-left', targets: [2] },
+            { className: 'text-left', targets: [1] },
+            { className: 'text-center text-muted', targets: [2] },
             { className: 'text-center', targets: ['_all'] },
         ],
         ajax: '{{ route("perusahaan.indexDT") }}',
         columns: [
-            { data: 'action', name: 'action', orderable: false, searchable:false },
-            { data: 'id', name: 'id', orderable: true, searchable:false },
+            { data: 'action', name: 'created_at', orderable: false, searchable:false },
             { data: 'name', name: 'name', orderable: true, searchable:true },
+            { data: 'id', name: 'id', orderable: false, searchable:false },
         ],
         initComplete: function(settings){
             table = settings.oInstance.api();
             initSearchCol(table,'#header-filter','search-col-dt');
+        },
+        drawCallback: function () {
+            // Bind ulang setiap kali table selesai render
+
         }
     });
-
-
-
 </script>
 @endpush

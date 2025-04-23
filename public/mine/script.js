@@ -62,13 +62,13 @@ $(".modal").on("shown.bs.modal", function (e) {
     $('#' + e.target.id + ' input.modalOnFocus').focus();
 });
 
-$(".modal").on("show.bs.modal", function (e) {
-    var emit = $(e.relatedTarget).data('emit');
-    if (emit !== undefined) {
-        var json = $(e.relatedTarget).data('json');
-        Livewire.dispatch(emit, { data: json });
-    }
-});
+// $(".modal").on("show.bs.modal", function (e) {
+//     var emit = $(e.relatedTarget).data('emit');
+//     if (emit !== undefined) {
+//         var json = $(e.relatedTarget).data('json');
+//         Livewire.dispatch(emit, { data: json });
+//     }
+// });
 
 window.addEventListener('closeModal', param => {
     $('#' + param.detail.id).modal('hide');
@@ -79,7 +79,18 @@ window.addEventListener('showModal', param => {
 });
 
 window.addEventListener('reloadDT', param => {
-    eval(param.detail.data).ajax.reload();
+    // eval(param.detail.data).ajax.reload();
+    window[param.detail.data].ajax.reload();
 });
+// window.addEventListener('show-modal', () => {
+//     const modal = new bootstrap.Modal(document.getElementById('the-modal'));
+//     modal.show();
+// });
+
+// window.addEventListener('hide-modal', () => {
+//     const modalEl = document.getElementById('the-modal');
+//     const modal = bootstrap.Modal.getInstance(modalEl);
+//     modal.hide();
+// });
 
 

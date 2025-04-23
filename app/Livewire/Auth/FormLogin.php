@@ -12,7 +12,7 @@ class FormLogin extends Component
     public $dt = [];
 
     protected $authRepository;
-    public function hydrate(AuthInterface $authRepository)
+    public function boot(AuthInterface $authRepository)
     {
         $this->authRepository = $authRepository;
     }

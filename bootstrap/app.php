@@ -4,15 +4,19 @@ use App\Http\Middleware\BlockApiBrowserRequest;
 use App\Http\Middleware\BlockHttpApiRequest;
 use App\Http\Middleware\CheckKeyApiRequest;
 use App\Repositories\AuthRepository;
+use App\Repositories\DataEmployeeRepo;
 use App\Repositories\Interfaces\AuthInterface;
+use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\MasterLocationFace;
 use App\Repositories\Interfaces\MasterMinorFace;
+use App\Repositories\Interfaces\MasterOrganizationFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleInterface;
 use App\Repositories\LogAttendanceRepository;
 use App\Repositories\MasterLocationRepo;
 use App\Repositories\MasterMinorRepo;
+use App\Repositories\MasterOrganizationRepo;
 use App\Repositories\UserLoginRepository;
 use App\Repositories\UserRoleRepository;
 use Illuminate\Foundation\Application;
@@ -49,5 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
         LogAttendanceInterface::class => LogAttendanceRepository::class,
         MasterLocationFace::class => MasterLocationRepo::class,
         MasterMinorFace::class => MasterMinorRepo::class,
+        MasterOrganizationFace::class => MasterOrganizationRepo::class,
+        DataEmployeeFace::class => DataEmployeeRepo::class,
     ])
     ->create();

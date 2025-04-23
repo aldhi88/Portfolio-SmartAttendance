@@ -1,41 +1,32 @@
 <div>
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between row">
-                @include('components.app_layout_title')
-                <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <a href="{{ route('perusahaan.index') }}" class="btn btn-info">
-                        Kembali <i class="fas fa-arrow-right fa-fw"></i>
-                    </a>
+    <div wire:ignore.self class="modal fade" id="modal-create" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0">Form Data Perusahaan Baru</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col col-md-4">
-            <form wire:submit="submit">
-
-                {{-- <div class="form-group">
-                    <label>ID Pengguna</label>
-                    <input autofocus="" type="text" readonly="" disabled="" wire:model="username" class="bg-light form-control ">
-                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
-                </div>
-                <div class="form-group">
-                    <label>Ubah Sandi Login</label>
-                    <input type="text" wire:model.lazy="password" placeholder="Biarkan kosong jika tidak ingin merubah" class="form-control ">
-                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
-                </div>
-
-                <hr>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-info">Simpan Perubahan</button>
-                </div> --}}
-
-            </form>
-
-        </div>
-    </div>
-    {{-- @include('organization.atc.organization_data_atc') --}}
-
+                <form wire:submit.prevent="submit">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>Nama Perusahaan</label>
+                                    <input type="text" wire:model="dt.name" class="modalOnFocus form-control @error('dt.name') is-invalid @enderror">
+                                    @error('dt.name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light waves-effect" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light">Tambahkan Data</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </form>
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>

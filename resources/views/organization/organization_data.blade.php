@@ -1,12 +1,13 @@
 <div>
+    <div class="loading-50" wire:loading><div class="loader"></div></div>
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between row">
                 @include('components.app_layout_title')
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <a href="{{ route('perusahaan.create') }}" class="btn btn-info">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modal-create">
                         <i class="fas fa-plus fa-fw"></i> Tambah Data Baru
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -23,16 +24,16 @@
                             <thead>
                             <tr>
                                 <th class="text-center" width="10"></th>
-                                <th class="text-center" style="min-width: 10px">#ID</th>
                                 <th class="text-center">Nama Perusahaan</th>
+                                <th class="text-center" style="min-width: 10px">#ID</th>
                             </tr>
                             </thead>
 
                             <thead id="header-filter">
                                 <tr>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
                                     <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
+                                    <th class="text-center"></th>
 
                                 </tr>
                             </thead>
@@ -48,5 +49,7 @@
         </div>
     </div>
     @include('organization.atc.organization_data_atc')
-
+    {{-- @livewire('organization.organization-create') --}}
+    {{-- @livewire('organization.organization-delete') --}}
+    {{-- @livewire('organization.organization-edit') --}}
 </div>

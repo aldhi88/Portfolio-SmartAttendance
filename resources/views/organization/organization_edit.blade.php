@@ -1,39 +1,44 @@
 <div>
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between row">
-                @include('components.app_layout_title')
-                <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <button class="btn btn-primary">Add New Data</button>
+    <div wire:ignore.self class="modal fade" id="modal-edit" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0">Form Edit Data Perusahaan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-        </div>
+                <form wire:submit.prevent="submit">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>Nama Perusahaan</label>
+                                    <input autofocus type="text" wire:model="dt.name"
+                                        class="form-control @error('dt.name') is-invalid @enderror">
+                                    @error('dt.name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer px-0">
+                            <button type="button" class="btn btn-light waves-effect"
+                                data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light">Simpan Perubahan</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </form>
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        @push('push-script')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    $("#modal-edit").on("show.bs.modal", function(e) {
+                        const id = $(e.relatedTarget).data('id');
+                        Livewire.dispatch('organizationEdit-editPrepare', {id: id});
+                    });
+                });
+            </script>
+        @endpush
     </div>
-
-    <div class="row">
-        <div class="col col-md-4">
-            <form wire:submit="submit">
-
-                <div class="form-group">
-                    <label>ID Pengguna</label>
-                    <input autofocus="" type="text" readonly="" disabled="" wire:model="username" class="bg-light form-control ">
-                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
-                </div>
-                <div class="form-group">
-                    <label>Ubah Sandi Login</label>
-                    <input type="text" wire:model.lazy="password" placeholder="Biarkan kosong jika tidak ingin merubah" class="form-control ">
-                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
-                </div>
-
-                <hr>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-    {{-- @include('organization.atc.organization_data_atc') --}}
-
-</div>
