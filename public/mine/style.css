@@ -1,3 +1,12 @@
+/* toast */
+.toast-top-center {
+    top: 75px !important;
+    left: 120px !important;
+}
+#toast-container {
+    z-index: 1040 !important;
+}
+
 .loading {
     width: 100%;
     height: 100%;
@@ -53,7 +62,7 @@
     }
 }
 
-.small {
+/* .small {
     line-height: 14px !important;
     font-size: 85% !important;
 }
@@ -64,15 +73,15 @@
 
 .td-middle td {
     vertical-align: middle !important;
-}
+} */
 
 /* =========== Select2 */
-span.select2-results li {
+/* span.select2-results li {
     font-size: 11px !important;
-}
+} */
 
 /* vertical */
-.verticalTableHeader {
+/* .verticalTableHeader {
     white-space:nowrap;
     transform-origin: 50% 50%;
     transform: rotate(-90deg);
@@ -86,4 +95,4 @@ span.select2-results li {
 
 .middle-text td, .middle-text th{
     vertical-align: middle;
-}
+} */

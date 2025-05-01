@@ -53,9 +53,9 @@
 
         </div>
     </div>
-    @include('organization.atc.organization_data_atc')
+    @include('function.atc.function_data_atc')
     @include('components.modal.modal_confirm_delete')
     @include('components.modal.modal_confirm_delete_multiple')
-    @include('organization.organization_create')
-    @include('organization.organization_edit')
+    @include('function.function_create')
+    @include('function.function_edit')
 </div>

@@ -24,8 +24,8 @@
                         <ul class="sub-menu" aria-expanded="false">
                             <li class="child create"><a href="{{ route('perusahaan.index') }}">Perusahaan</a></li>
                             <li><a href="{{ route('jabatan.index') }}">Jabatan</a></li>
-                            <li><a href="{{ route('location.index') }}">Lokasi</a></li>
-                            <li><a href="ecommerce-product-detail.html">Fungsi</a></li>
+                            <li><a href="{{ route('lokasi.index') }}">Lokasi</a></li>
+                            <li><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
                             <li><a href="ecommerce-product-detail.html">Jam Kerja</a></li>
                             <li><a href="ecommerce-product-detail.html">Karyawan</a></li>
                         </ul>

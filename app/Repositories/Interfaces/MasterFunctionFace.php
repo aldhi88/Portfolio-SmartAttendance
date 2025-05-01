@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Interfaces;
 
-interface MasterOrganizationFace
+interface MasterFunctionFace
 {
     public function getDT($data);
     public function getByKey($id);

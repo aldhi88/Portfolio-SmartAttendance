@@ -2,13 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\MasterFunctionController;
+use App\Http\Controllers\MasterLocationController;
+use App\Http\Controllers\MasterOrganizationController;
+use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\UserController;
-use App\Livewire\Jabatan\JabatanDT;
-use App\Livewire\Location\LocationDT;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -68,29 +67,35 @@ Route::middleware('auth:web')->group(function(){
 
     Route::prefix('perusahaan')->group(function () {
         Route::name('perusahaan.')->group(function () {
-            Route::controller(OrganizationController::class)->group(function () {
+            Route::controller(MasterOrganizationController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
-                Route::get('create', 'create')->name('create');
-                Route::get('edit', 'edit')->name('edit');
             });
         });
     });
 
     Route::prefix('jabatan')->group(function () {
         Route::name('jabatan.')->group(function () {
-            Route::controller(JabatanController::class)->group(function () {
+            Route::controller(MasterPositionController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
-                Route::get('index/dt', JabatanDT::class)->name('indexDT');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
             });
         });
     });
 
-    Route::prefix('location')->group(function () {
-        Route::name('location.')->group(function () {
-            Route::controller(LocationController::class)->group(function () {
+    Route::prefix('lokasi')->group(function () {
+        Route::name('lokasi.')->group(function () {
+            Route::controller(MasterLocationController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
-                Route::get('index/dt', LocationDT::class)->name('indexDT');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
+            });
+        });
+    });
+    Route::prefix('fungsi')->group(function () {
+        Route::name('fungsi.')->group(function () {
+            Route::controller(MasterFunctionController::class)->group(function () {
+                Route::get('index', 'index')->name('index');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
             });
         });
     });

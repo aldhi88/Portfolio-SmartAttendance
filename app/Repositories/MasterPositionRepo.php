@@ -2,12 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Models\MasterOrganization;
+use App\Models\MasterPosition;
 use App\Repositories\Interfaces\DataEmployeeFace;
-use App\Repositories\Interfaces\MasterOrganizationFace;
+use App\Repositories\Interfaces\MasterPositionFace;
 use Illuminate\Support\Facades\Log;
 
-class MasterOrganizationRepo implements MasterOrganizationFace
+class MasterPositionRepo implements MasterPositionFace
 {
     protected $dataEmployee;
 
@@ -18,39 +18,39 @@ class MasterOrganizationRepo implements MasterOrganizationFace
 
     public function getByKey($id)
     {
-        return MasterOrganization::find($id);
+        return MasterPosition::find($id);
     }
 
     public function create($data)
     {
         try {
-            if(MasterOrganization::withTrashed()->where('name', $data['name'])->exists()){
-                MasterOrganization::where('name', $data['name'])->restore();
+            if(MasterPosition::withTrashed()->where('name', $data['name'])->exists()){
+                MasterPosition::where('name', $data['name'])->restore();
             }else{
-                MasterOrganization::create($data);
+                MasterPosition::create($data);
             }
             return true;
         } catch (\Exception $e) {
-            Log::error("Insert master_organizations failed", ['error' => $e->getMessage()]);
+            Log::error("Insert master_positions failed", ['error' => $e->getMessage()]);
             return false;
         }
     }
 
     public function getDT($data)
     {
-        return MasterOrganization::query()
+        return MasterPosition::query()
             ->with(['data_employees'])
         ;
     }
 
     public function delete($id)
     {
-        if(!$this->dataEmployee->isExistByCol('master_organization_id', $id)){
+        if(!$this->dataEmployee->isExistByCol('master_position_id', $id)){
             try {
-                MasterOrganization::find($id)->delete();
+                MasterPosition::find($id)->delete();
                 return true;
             } catch (\Exception $e) {
-                Log::error("Delete master_organizations failed", ['error' => $e->getMessage()]);
+                Log::error("Delete master_positions failed", ['error' => $e->getMessage()]);
                 return false;
             }
         }
@@ -63,16 +63,16 @@ class MasterOrganizationRepo implements MasterOrganizationFace
         try {
             $allowDeleteId = [];
             foreach ($ids as $id) {
-                if (!$this->dataEmployee->isExistByCol('master_organization_id', $id)) {
+                if (!$this->dataEmployee->isExistByCol('master_position_id', $id)) {
                     $allowDeleteId[] = $id;
                 }
             }
             if (!empty($allowDeleteId)) {
-                MasterOrganization::whereIn('id', $allowDeleteId)->delete();
+                MasterPosition::whereIn('id', $allowDeleteId)->delete();
             }
             return true;
         } catch (\Exception $e) {
-            Log::error("Delete multiple master_organizations failed", ['error' => $e->getMessage()]);
+            Log::error("Delete multiple master_positions failed", ['error' => $e->getMessage()]);
             return false;
         }
     }
@@ -80,10 +80,10 @@ class MasterOrganizationRepo implements MasterOrganizationFace
     public function update($id,$data)
     {
         try {
-            MasterOrganization::find($id)->update($data);
+            MasterPosition::find($id)->update($data);
             return true;
         } catch (\Exception $e) {
-            Log::error("Update master_organizations failed", ['error' => $e->getMessage()]);
+            Log::error("Update master_positions failed", ['error' => $e->getMessage()]);
             return false;
         }
     }

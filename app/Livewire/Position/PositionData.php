@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Livewire\Organization;
+namespace App\Livewire\Position;
 
-use App\Repositories\Interfaces\MasterOrganizationFace;
+use App\Repositories\Interfaces\MasterPositionFace;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class OrganizationData extends Component
+class PositionData extends Component
 {
-    protected $masterOrganizationRepo;
-    public function boot(MasterOrganizationFace $masterOrganizationRepo)
+    protected $masterPositionRepo;
+    public function boot(MasterPositionFace $masterPositionRepo)
     {
-        $this->masterOrganizationRepo = $masterOrganizationRepo;
+        $this->masterPositionRepo = $masterPositionRepo;
     }
 
     // edit section
@@ -21,20 +21,20 @@ class OrganizationData extends Component
     public function setEditData($id)
     {
         $this->updateId = $id;
-        $this->update = $this->masterOrganizationRepo->getByKey($id)
+        $this->update = $this->masterPositionRepo->getByKey($id)
             ->makeHidden(['id', 'created_at', 'updated_at', 'deleted_at'])
             ->toArray();
     }
     public function editRules()
     {
         return [
-            "update.name" => "required|unique:master_organizations,name,{$this->updateId},id,deleted_at,NULL",
+            "update.name" => "required|unique:master_positions,name,{$this->updateId},id,deleted_at,NULL",
         ];
     }
     public function wireUpdate()
     {
         $form = $this->validate($this->editRules());
-        if($this->masterOrganizationRepo->update($this->updateId, $form['update'])){
+        if($this->masterPositionRepo->update($this->updateId, $form['update'])){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Perubahan Data berhasil disimpan.']);
             $this->dispatch('reloadDT',data:'dtTable');
             $this->dispatch('closeModal',id:'modalEdit');
@@ -51,13 +51,13 @@ class OrganizationData extends Component
     public function createRules()
     {
         return [
-            "store.name" => "required|unique:master_organizations,name,NULL,id,deleted_at,NULL",
+            "store.name" => "required|unique:master_positions,name,NULL,id,deleted_at,NULL",
         ];
     }
     public function wireStore()
     {
         $form = $this->validate($this->createRules());
-        if($this->masterOrganizationRepo->create($form['store'])){
+        if($this->masterPositionRepo->create($form['store'])){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->dispatch('reloadDT',data:'dtTable');
             $this->dispatch('closeModal',id:'modalCreate');
@@ -78,7 +78,7 @@ class OrganizationData extends Component
     }
     public function wireDelete()
     {
-        if($this->masterOrganizationRepo->delete($this->deleteId)){
+        if($this->masterPositionRepo->delete($this->deleteId)){
             $this->dispatch('reloadDT',data:'dtTable');
             $this->dispatch('closeModal',id:'modalConfirmDelete');
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
@@ -96,7 +96,7 @@ class OrganizationData extends Component
     }
     public function deleteMultiple()
     {
-        if($this->masterOrganizationRepo->deleteMultiple($this->deleteMultipleId)){
+        if($this->masterPositionRepo->deleteMultiple($this->deleteMultipleId)){
             $this->dispatch('reloadDT',data:'dtTable');
             $this->dispatch('closeModal',id:'modalConfirmDeleteMultiple');
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Semua data yang dipilih berhasil dihapus.']);
@@ -107,13 +107,13 @@ class OrganizationData extends Component
     // end delete section
 
     public $validationAttributes = [
-        "store.name" => "Nama Perusahaan",
-        "update.name" => "Nama Perusahaan",
+        "store.name" => "Nama Jabatan",
+        "update.name" => "Nama Jabatan",
     ];
 
     public $pass;
     public function render()
     {
-        return view('organization.organization_data');
+        return view('position.position_data');
     }
 }

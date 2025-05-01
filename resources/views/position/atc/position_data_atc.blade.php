@@ -17,7 +17,7 @@
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
-        ajax: '{{ route("lokasi.indexDT") }}',
+        ajax: '{{ route("jabatan.indexDT") }}',
         columns: [
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
