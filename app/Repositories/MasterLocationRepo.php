@@ -16,6 +16,11 @@ class MasterLocationRepo implements MasterLocationFace
         $this->dataEmployee = $dataEmployee;
     }
 
+    public function getAll()
+    {
+        return MasterLocation::all();
+    }
+
     public function getByKey($id)
     {
         return MasterLocation::find($id);
