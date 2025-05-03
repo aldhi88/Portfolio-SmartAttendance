@@ -7,6 +7,7 @@ use App\Http\Controllers\MasterFunctionController;
 use App\Http\Controllers\MasterLocationController;
 use App\Http\Controllers\MasterOrganizationController;
 use App\Http\Controllers\MasterPositionController;
+use App\Http\Controllers\MasterScheduleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +96,15 @@ Route::middleware('auth:web')->group(function(){
         Route::name('fungsi.')->group(function () {
             Route::controller(MasterFunctionController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
+            });
+        });
+    });
+    Route::prefix('jadwal-kerja')->group(function () {
+        Route::name('jadwal-kerja.')->group(function () {
+            Route::controller(MasterScheduleController::class)->group(function () {
+                Route::get('index', 'index')->name('index');
+                Route::get('create/{type}', 'create')->name('create');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
             });
         });

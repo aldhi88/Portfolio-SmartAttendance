@@ -17,7 +17,7 @@
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
-        ajax: '{{ route("fungsi.indexDT") }}',
+        ajax: '{{ route("jadwal-kerja.indexDT") }}',
         columns: [
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
@@ -69,14 +69,13 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            { data: 'name', name: 'name', orderable: true, searchable:true },
-            {
-                data: null, name: 'id', orderable: false, searchable:false,
-                render: function(data, type, row) {
-                    return '<small>#'+data.id+'</small>';
-
-                }
-            },
+            { data: 'name', name: 'name', orderable: false, searchable:true },
+            { data: 'name', name: 'name', orderable: false, searchable:true },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
         ],
         initComplete: function(settings){
             table = settings.oInstance.api();
@@ -99,7 +98,6 @@
         $('#btnDeleteSelected').prop('disabled', checked === 0);
     });
 
-    // 3. Reset "select all" saat pindah halaman
     dtTable.on('draw.dt', function () {
         $('.check-data-all').prop('checked', false);
     });
@@ -124,8 +122,3 @@
     });
 </script>
 @endpush
-
-
-
-
-

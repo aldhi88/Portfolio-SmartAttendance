@@ -61,12 +61,8 @@ class MasterPositionRepo implements MasterPositionFace
     public function deleteMultiple($ids)
     {
         try {
-            $allowDeleteId = [];
-            foreach ($ids as $id) {
-                if (!$this->dataEmployee->isExistByCol('master_position_id', $id)) {
-                    $allowDeleteId[] = $id;
-                }
-            }
+            $usedIds = $this->dataEmployee->getMultiByCol('master_position_id', $ids);
+            $allowDeleteId = array_diff($ids, $usedIds);
             if (!empty($allowDeleteId)) {
                 MasterPosition::whereIn('id', $allowDeleteId)->delete();
             }

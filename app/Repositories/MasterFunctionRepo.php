@@ -61,12 +61,8 @@ class MasterFunctionRepo implements MasterFunctionFace
     public function deleteMultiple($ids)
     {
         try {
-            $allowDeleteId = [];
-            foreach ($ids as $id) {
-                if (!$this->dataEmployee->isExistByCol('master_function_id', $id)) {
-                    $allowDeleteId[] = $id;
-                }
-            }
+            $usedIds = $this->dataEmployee->getMultiByCol('master_function_id', $ids);
+            $allowDeleteId = array_diff($ids, $usedIds);
             if (!empty($allowDeleteId)) {
                 MasterFunction::whereIn('id', $allowDeleteId)->delete();
             }

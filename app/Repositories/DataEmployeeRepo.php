@@ -14,5 +14,12 @@ class DataEmployeeRepo implements DataEmployeeFace
         return DataEmployee::where($col, $val)->exists();
     }
 
+    public function getMultiByCol($col, $val)
+    {
+        return DataEmployee::whereIn($col, $val)
+                    ->pluck($col)
+                    ->toArray();
+    }
+
 
 }

@@ -1,25 +1,21 @@
 $(document).ready(function () {
     $('.loading').fadeOut(500);
 
-    const path = window.location.pathname;
+    const path = window.location.pathname;        // ex: "/jadwal-kerja/create/tetap"
+    const firstSegment = path.split('/')[1];      // ambil segmen pertama setelah slash
 
-    // Cek apakah path mengandung '/perusahaan'
-    if (path.includes('/perusahaan')) {
-        // Tambahkan class ke parent dan child menu
-        $('.parent.perusahaan').addClass('mm-active');
-        $('.parent.perusahaan > a').addClass('mm-active');
-        $('.parent.perusahaan > ul.sub-menu').addClass('mm-collapse mm-show');
+    // Cari menu parent dan child berdasarkan segmen
+    const parentSelector = `.parent.${firstSegment}`;
+    const childSelector = `.child.${firstSegment}`;
 
-        // Cek apakah sedang di halaman create
-        if (path.includes('/perusahaan/create')) {
-            $('.parent.perusahaan .child.create').addClass('mm-active');
-            $('.parent.perusahaan .child.create a').addClass('active');
-        } else {
-            // Asumsikan ini halaman index
-            $('.parent.perusahaan .child.create').addClass('mm-active');
-            $('.parent.perusahaan .child.create a').addClass('active');
-        }
-    }
+    // Aktifkan parent menu
+    $(parentSelector).addClass('mm-active');
+    $(parentSelector + ' > a').addClass('mm-active');
+    $(parentSelector + ' > ul.sub-menu').addClass('mm-collapse mm-show');
+
+    // Aktifkan child menu (kalau ada)
+    $(childSelector).addClass('mm-active');
+    $(childSelector + ' > a').addClass('active');
 });
 
 function initSearchCol(table, headerId, inputClass) {

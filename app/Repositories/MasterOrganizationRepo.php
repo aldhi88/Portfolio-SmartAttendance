@@ -61,15 +61,12 @@ class MasterOrganizationRepo implements MasterOrganizationFace
     public function deleteMultiple($ids)
     {
         try {
-            $allowDeleteId = [];
-            foreach ($ids as $id) {
-                if (!$this->dataEmployee->isExistByCol('master_organization_id', $id)) {
-                    $allowDeleteId[] = $id;
-                }
-            }
+            $usedIds = $this->dataEmployee->getMultiByCol('master_organization_id', $ids);
+            $allowDeleteId = array_diff($ids, $usedIds);
             if (!empty($allowDeleteId)) {
                 MasterOrganization::whereIn('id', $allowDeleteId)->delete();
             }
+
             return true;
         } catch (\Exception $e) {
             Log::error("Delete multiple master_organizations failed", ['error' => $e->getMessage()]);
