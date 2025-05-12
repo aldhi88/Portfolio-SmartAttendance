@@ -26,11 +26,24 @@ class MasterScheduleController extends Controller
 
     public function create($type)
     {
-        $data['tab_title'] = "Jadwal ".Str::ucfirst($type)." Baru | ".config('app.name');
-        $data['page_title'] = "Jadwal ".Str::ucfirst($type)." Baru";
+        $data['type'] = $type;
+        $type = Str::ucfirst($type);
+        $data['tab_title'] = "Jadwal ".$type." Baru | ".config('app.name');
+        $data['page_title'] = "Jadwal ".$type." Baru";
         $data['page_desc'] = "Form menambah data jadwal kerja";
         $data['lw'] = "schedule.schedule-create";
+        return view('index', compact('data'));
+    }
+
+    public function edit($id,$type)
+    {
         $data['type'] = $type;
+        $data['editId'] = $id;
+        $type = Str::ucfirst($type);
+        $data['tab_title'] = "Edit Data Jadwal ".$type." | ".config('app.name');
+        $data['page_title'] = "Edit Data Jadwal ".$type;
+        $data['page_desc'] = "Form edit data jadwal kerja";
+        $data['lw'] = "schedule.schedule-edit";
         return view('index', compact('data'));
     }
 }

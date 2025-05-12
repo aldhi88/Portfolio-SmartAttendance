@@ -24,11 +24,7 @@ class MasterPositionRepo implements MasterPositionFace
     public function create($data)
     {
         try {
-            if(MasterPosition::withTrashed()->where('name', $data['name'])->exists()){
-                MasterPosition::where('name', $data['name'])->restore();
-            }else{
-                MasterPosition::create($data);
-            }
+            MasterPosition::create($data);
             return true;
         } catch (\Exception $e) {
             Log::error("Insert master_positions failed", ['error' => $e->getMessage()]);

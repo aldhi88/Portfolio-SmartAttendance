@@ -106,6 +106,7 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('index', 'index')->name('index');
                 Route::get('create/{type}', 'create')->name('create');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
+                Route::get('edit/{id}/{type}', 'edit')->name('edit');
             });
         });
     });

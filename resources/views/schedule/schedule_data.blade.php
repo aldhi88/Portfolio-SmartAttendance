@@ -34,10 +34,11 @@
                                 </th>
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
                                 <th rowspan="2" class="text-center" width="10">No</th>
+                                <th rowspan="2" class="text-center">Kode Jadwal</th>
                                 <th rowspan="2" class="text-center">Nama Jadwal</th>
-                                <th rowspan="2" class="text-center">Tipe Jadwal</th>
+                                <th rowspan="2" class="text-center" style="max-width: 70px">Tipe Jadwal</th>
                                 <th colspan="4" class="text-center">Ketentuan Waktu Absen</th>
-                                <th rowspan="2" class="text-center">Ketentuan Hari</th>
+                                <th rowspan="2" class="text-center">Ketentuan Hari Kerja</th>
 
                             </tr>
                             <tr>
@@ -55,9 +56,16 @@
                                     </th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
-                                    <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                    <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
+                                    <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
+                                    <th class="text-center">
+                                        <select name="" class="form-control form-control-sm search-col-dt text-center">
+                                            <option value="">Semua</option>
+                                            <option value="Tetap">Tetap</option>
+                                            <option value="Rotasi">Rotasi</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-center" style=""></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
@@ -73,7 +81,7 @@
 
         </div>
     </div>
-    @include('schedule.atc.schedule_data_atc')
+    @include('schedule.atc.schedule_data_js_atc')
     @include('components.modal.modal_confirm_delete')
     @include('components.modal.modal_confirm_delete_multiple')
 </div>

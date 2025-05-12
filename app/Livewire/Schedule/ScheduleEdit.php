@@ -6,23 +6,22 @@ use App\Helpers\PublicHelper;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use Livewire\Component;
 
-class ScheduleCreate extends Component
+class ScheduleEdit extends Component
 {
-
     protected $masterScheduleRepo;
     public function boot(MasterScheduleFace $masterScheduleRepo)
     {
         $this->masterScheduleRepo = $masterScheduleRepo;
     }
 
-    // insert rotasi
+    // edit rotasi
     public function wireSubmitRotasi()
     {
         $this->validate($this->rulesRotasi());
         $this->dtRotasi['type'] = $this->pass['type'];
-        if($this->masterScheduleRepo->create($this->dtRotasi)){
+        if($this->masterScheduleRepo->update($this->pass['editId'], $this->dtRotasi)){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
-            $this->reset('dtRotasi');
+            $this->genDataEditRotasi();
             return;
         }
 
@@ -32,8 +31,8 @@ class ScheduleCreate extends Component
     public function rulesRotasi()
     {
         return [
-            "dtRotasi.kode" => "required|max:16|unique:master_schedules,kode,NULL,id,deleted_at,NULL",
-            "dtRotasi.name" => "required|unique:master_schedules,name,NULL,id,deleted_at,NULL",
+            "dtRotasi.kode" => "required|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
+            "dtRotasi.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
             "dtRotasi.checkin_time" => "required",
             "dtRotasi.work_time" => "required",
             "dtRotasi.checkin_deadline_time" => "required",
@@ -44,17 +43,17 @@ class ScheduleCreate extends Component
             "dtRotasi.day_work.off_day" => "required|numeric|min:1",
         ];
     }
-    // end insert rotasi
+    // end edit rotasi
 
-    // insert tetap
+
+    // edit tetap
     public function wireSubmitTetap()
     {
-        // dd($this->dtTetap);
         $this->validate($this->rulesTetap());
         $this->dtTetap['type'] = $this->pass['type'];
-        if($this->masterScheduleRepo->create($this->dtTetap)){
+        if($this->masterScheduleRepo->update($this->pass['editId'], $this->dtTetap)){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
-            $this->reset('dtTetap');
+            $this->genDataEditTetap();
             return;
         }
 
@@ -65,8 +64,8 @@ class ScheduleCreate extends Component
     public function rulesTetap()
     {
         return [
-            "dtTetap.kode" => "required|unique:master_schedules,kode,NULL,id,deleted_at,NULL",
-            "dtTetap.name" => "required|unique:master_schedules,name,NULL,id,deleted_at,NULL",
+            "dtTetap.kode" => "required|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
+            "dtTetap.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
             "dtTetap.checkin_time" => "required",
             "dtTetap.work_time" => "required",
             "dtTetap.checkin_deadline_time" => "required",
@@ -76,7 +75,8 @@ class ScheduleCreate extends Component
             "dtTetap.day_work.lembur" => "",
         ];
     }
-    // end insert tetap
+    // end edit tetap
+
 
     public $validationAttributes = [
         "dtTetap.kode" => "Kode Jadwal",
@@ -109,15 +109,38 @@ class ScheduleCreate extends Component
     public function mount()
     {
         $this->hariIndo = PublicHelper::getHariIndo();
-        foreach ($this->hariIndo as $key => $value) {
-            $this->dtTetap['day_work']['regular'][$key+1] = $this->dtTetap['day_work']['regular'][$key+1] ?? false;
-            $this->dtTetap['day_work']['lembur'][$key+1] = $this->dtTetap['day_work']['lembur'][$key+1] ?? false;
+        if($this->pass['type'] == "tetap"){
+            $this->genDataEditTetap();
+        }else{
+            $this->genDataEditRotasi();
         }
+    }
+
+    public function genDataEditTetap()
+    {
+        $this->dtTetap = $this->masterScheduleRepo->getByKey($this->pass['editId'])->toArray();
+        unset(
+            $this->dtTetap['id'],
+            $this->dtTetap['created_at'],
+            $this->dtTetap['updated_at'],
+            $this->dtTetap['deleted_at']
+        );
+    }
+
+    public function genDataEditRotasi()
+    {
+        $this->dtRotasi = $this->masterScheduleRepo->getByKey($this->pass['editId'])->toArray();
+        unset(
+            $this->dtRotasi['id'],
+            $this->dtRotasi['created_at'],
+            $this->dtRotasi['updated_at'],
+            $this->dtRotasi['deleted_at']
+        );
     }
 
     public $pass;
     public function render()
     {
-        return view('schedule.schedule_create_'.$this->pass['type']);
+        return view('schedule.schedule_edit_'.$this->pass['type']);
     }
 }

@@ -24,11 +24,7 @@ class MasterFunctionRepo implements MasterFunctionFace
     public function create($data)
     {
         try {
-            if(MasterFunction::withTrashed()->where('name', $data['name'])->exists()){
-                MasterFunction::where('name', $data['name'])->restore();
-            }else{
-                MasterFunction::create($data);
-            }
+            MasterFunction::create($data);
             return true;
         } catch (\Exception $e) {
             Log::error("Insert master_functions failed", ['error' => $e->getMessage()]);

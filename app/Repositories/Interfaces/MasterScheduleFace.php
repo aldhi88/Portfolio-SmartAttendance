@@ -5,7 +5,6 @@ namespace App\Repositories\Interfaces;
 interface MasterScheduleFace
 {
     public function getDT($data);
-    public function getHariIndo();
     public function create($data);
     public function delete($id);
     public function deleteMultiple($id);

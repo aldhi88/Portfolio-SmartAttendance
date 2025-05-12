@@ -29,11 +29,7 @@ class MasterLocationRepo implements MasterLocationFace
     public function create($data)
     {
         try {
-            if(MasterLocation::withTrashed()->where('name', $data['name'])->exists()){
-                MasterLocation::where('name', $data['name'])->restore();
-            }else{
-                MasterLocation::create($data);
-            }
+            MasterLocation::create($data);
             return true;
         } catch (\Exception $e) {
             Log::error("Insert master_locations failed", ['error' => $e->getMessage()]);

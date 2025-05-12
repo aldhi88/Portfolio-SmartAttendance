@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+
 
 class MasterSchedule extends Model
 {
@@ -26,11 +29,41 @@ class MasterSchedule extends Model
         ->withTimestamps();
     }
 
+    protected function kode(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => Str::upper($value),
+        );
+    }
     protected function dayWork(): Attribute
     {
         return Attribute::make(
             get: fn (string $value) => json_decode($value, true),
             set: fn (array $value) => json_encode($value),
+        );
+    }
+    protected function checkinTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+        );
+    }
+    protected function workTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+        );
+    }
+    protected function checkinDeadlineTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+        );
+    }
+    protected function checkoutTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
         );
     }
 }

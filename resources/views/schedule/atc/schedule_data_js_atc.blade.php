@@ -8,12 +8,12 @@
 
 @push('push-script')
 <script>
+
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'asc']],
         columnDefs: [
-            { className: 'text-left', targets: [3] },
-            { className: 'text-center text-muted', targets: [4] },
+            { className: 'text-left', targets: [4,10] },
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -38,7 +38,7 @@
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a data-id="${data.id}" data-toggle="modal" data-target="#modalEdit" class="dropdown-item" href="javascript:void(0);">
+                                <a class="dropdown-item" href="edit/`+data.id+`/`+data.type.toLowerCase()+`">
                                     <i class="fas fa-edit fa-fw"></i> Edit Data
                                 </a>
                     `;
@@ -69,13 +69,52 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
+            { data: 'kode', name: 'kode', orderable: false, searchable:true },
             { data: 'name', name: 'name', orderable: false, searchable:true },
-            { data: 'name', name: 'name', orderable: false, searchable:true },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'type', name: 'type', orderable: false, searchable:true },
+            { data: 'checkin_time', name: 'checkin_time', orderable: false, searchable:false },
+            { data: 'work_time', name: 'work_time', orderable: false, searchable:false },
+            { data: 'checkin_deadline_time', name: 'checkin_deadline_time', orderable: false, searchable:false },
+            { data: 'checkout_time', name: 'checkout_time', orderable: false, searchable:false },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false,
+                render: function (data, type, row, meta) {
+                    const rowStyle = 'display:flex; align-items:flex-start; margin-bottom:2px;';
+                    const labelStyle = 'width:160px; font-weight:bold;';
+                    const valueStyle = 'flex:1;';
+
+                    if (row.type === 'Rotasi') {
+                        const startDate = data.start_date ?? '-';
+                        const workDay = data.work_day ? `${data.work_day} hari kerja` : '-';
+                        const offDay = data.off_day ? `${data.off_day} hari off` : '-';
+
+                        return `
+                            <div style="${rowStyle}"><div style="${labelStyle}">Tanggal Mulai Rotasi:</div><div style="${valueStyle}">${startDate}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}">Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}"></div><div style="${valueStyle}">${offDay}</div></div>
+                        `;
+                    } else if (row.type === 'Tetap') {
+                        const regularDays = data.regular && Object.keys(data.regular).length
+                            ? Object.entries(data.regular)
+                                .filter(([key, val]) => val === true)
+                                .map(([key]) => getHariIndo[parseInt(key)])
+                                .join(', ')
+                            : '-';
+
+                        const lemburDays = data.lembur && Object.keys(data.lembur).length
+                            ? Object.entries(data.lembur)
+                                .filter(([key, val]) => val === true)
+                                .map(([key]) => getHariIndo[parseInt(key)])
+                                .join(', ')
+                            : '-';
+
+                        return `
+                            <div style="${rowStyle}"><div style="${labelStyle}">Hari Kerja:</div><div style="${valueStyle}">${regularDays}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}">Hari Off/Lembur:</div><div style="${valueStyle}">${lemburDays}</div></div>
+                        `;
+                    }
+                }
+
+             },
         ],
         initComplete: function(settings){
             table = settings.oInstance.api();

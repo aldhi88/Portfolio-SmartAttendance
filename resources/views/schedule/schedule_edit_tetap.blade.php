@@ -87,6 +87,7 @@
                 <div class="form-check mb-1">
                     <input wire:model="dtTetap.day_work.regular.{{ $key+1 }}" type="checkbox"
                            class="form-check-input regular"
+                           {{ !($dtTetap['day_work']['regular'][$key+1])? "disabled":null }}
                            value="{{ $key+1 }}"
                            id="regular-{{ $key+1 }}">
                     <label class="form-check-label" for="regular-{{ $key+1 }}" style="padding-top: 2px">
@@ -106,6 +107,7 @@
                 <div class="form-check mb-1">
                     <input wire:model="dtTetap.day_work.lembur.{{ $key+1 }}" type="checkbox"
                            class="form-check-input lembur"
+                           {{ !($dtTetap['day_work']['lembur'][$key+1])? "disabled":null }}
                            value="{{ $key+1 }}"
                            id="lembur-{{ $key+1 }}">
                     <label class="form-check-label" for="lembur-{{ $key+1 }}" style="padding-top: 2px">
@@ -130,5 +132,6 @@
 
     </form>
 
-    @include('schedule.atc.schedule_create_tetap_js_atc');
+    @include('schedule.atc.schedule_edit_tetap_js_atc')
+
 </div>

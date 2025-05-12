@@ -18,11 +18,6 @@ class MasterScheduleRepo implements MasterScheduleFace
         $this->relDataEmployeeMasterSchedule = $relDataEmployeeMasterSchedule;
     }
 
-    public function getHariIndo()
-    {
-        return ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-    }
-
     public function getByKey($id)
     {
         return MasterSchedule::find($id);

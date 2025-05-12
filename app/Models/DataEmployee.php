@@ -12,6 +12,20 @@ class DataEmployee extends Model
     use SoftDeletes;
     protected $guarded = [];
 
+    public function master_schedules(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            MasterSchedule::class,
+            'rel_data_employee_master_schedules',
+            'data_employee_id',
+            'master_schedule_id'
+        )
+        ->using(RelDataEmployeeMasterSchedule::class)
+        ->withPivot(['effective_at', 'expired_at'])
+        ->wherePivotNull('deleted_at')
+        ->withTimestamps();
+    }
+
     public function master_organizations():BelongsTo
     {
         return $this->belongsTo(MasterOrganization::class, 'master_organization_id', 'id');
@@ -28,16 +42,6 @@ class DataEmployee extends Model
     {
         return $this->belongsTo(MasterFunction::class, 'master_function_id', 'id');
     }
-    public function master_schedules(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            MasterSchedule::class,
-            'rel_data_employee_master_schedules',
-            'data_employee_id',
-            'master_schedule_id'
-        )
-        ->withPivot(['effective_at', 'expired_at'])
-        ->withTimestamps();
-    }
+
 
 }

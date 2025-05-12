@@ -24,11 +24,7 @@ class MasterOrganizationRepo implements MasterOrganizationFace
     public function create($data)
     {
         try {
-            if(MasterOrganization::withTrashed()->where('name', $data['name'])->exists()){
-                MasterOrganization::where('name', $data['name'])->restore();
-            }else{
-                MasterOrganization::create($data);
-            }
+            MasterOrganization::create($data);
             return true;
         } catch (\Exception $e) {
             Log::error("Insert master_organizations failed", ['error' => $e->getMessage()]);
