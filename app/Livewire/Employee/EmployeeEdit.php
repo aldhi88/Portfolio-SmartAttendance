@@ -57,7 +57,6 @@ class EmployeeEdit extends Component
             $dtEmployee['master_schedule_id'],
             $dtEmployee['effective_at'],
             $dtEmployee['expired_at'],
-            $dtEmployee['status'],
             $dtEmployee['created_at'],
             $dtEmployee['updated_at'],
             $dtEmployee['deleted_at'],
@@ -89,13 +88,21 @@ class EmployeeEdit extends Component
 
         try {
             DB::transaction(function () use($dtEmployee, $dtRel, $dtLogin) {
-                $this->userLoginRepository->update($this->dtForm['user_login_id'],$dtLogin);
-                $this->dataEmployeeRepo->update($this->dtForm['id'],$dtEmployee);
-                $this->relDataEmployeeMasterScheduleRepo->update($this->dtForm['id'], $dtRel);
+                if(!is_null($this->dtForm['user_login_id'])){
+                    $this->userLoginRepository->update($this->dtForm['user_login_id'],$dtLogin);
+                    $this->dataEmployeeRepo->update($this->dtForm['id'],$dtEmployee);
+                    $this->relDataEmployeeMasterScheduleRepo->update($this->dtForm['id'], $dtRel);
+                }else{
+                    $userId = $this->userLoginRepository->create($dtLogin);
+                    $dtEmployee['user_login_id'] = $userId;
+                    $this->dataEmployeeRepo->update($this->dtForm['id'],$dtEmployee);
+                    $this->relDataEmployeeMasterScheduleRepo->update($this->dtForm['id'], $dtRel);
+                }
             });
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Perubahan data berhasil disimpan.']);
             $this->genDataEdit();
         } catch (\Throwable $e) {
+            dd($e);
             $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
         }
 
@@ -131,6 +138,7 @@ class EmployeeEdit extends Component
             "dtForm.master_location_id" => "required",
             "dtForm.master_function_id" => "required",
             "dtForm.master_schedule_id" => "required",
+            "dtForm.status" => "required",
             "dtForm.effective_at" => "",
             "dtForm.expired_at" => "",
             "dtForm.username" => "required|unique:user_logins,username,{$this->dtForm['user_login_id']},id,deleted_at,NULL",
@@ -149,6 +157,7 @@ class EmployeeEdit extends Component
         "dtForm.master_location_id" => "Lokasi",
         "dtForm.master_function_id" => "Fungsi",
         "dtForm.master_schedule_id" => "Jadwal Kerja",
+        "dtForm.status" => "Status",
         "dtForm.username" => "Username Login",
         "dtForm.password" => "Password Login",
     ];

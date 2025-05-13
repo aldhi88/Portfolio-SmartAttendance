@@ -28,7 +28,7 @@
                             <li class="child fungsi"><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
                             <li class="child jadwal-kerja"><a href="{{ route('jadwal-kerja.index') }}">Jadwal Kerja</a></li>
                             <li class="child "><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
-                            <li class="child "><a href="#">Penjadwalan Karyawan</a></li>
+                            {{-- <li class="child "><a href="#">Penjadwalan Karyawan</a></li> --}}
                         </ul>
                     </li>
 
@@ -38,8 +38,8 @@
                             <span>Laporan</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li><a href="ecommerce-product-detail.html">Rekap A</a></li>
-                            <li><a href="ecommerce-product-detail.html">Rekap B</a></li>
+                            <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
+                            <li><a href="ecommerce-product-detail.html">Rekap Penilaian</a></li>
                             <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
                             <li><a href="ecommerce-product-detail.html">Log Lokasi</a></li>
                         </ul>

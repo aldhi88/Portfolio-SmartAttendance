@@ -9,6 +9,7 @@ use App\Http\Controllers\MasterLocationController;
 use App\Http\Controllers\MasterOrganizationController;
 use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\MasterScheduleController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -119,6 +120,17 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('indexDT', 'indexDT')->name('indexDT');
                 Route::get('create', 'create')->name('create');
                 Route::get('edit/{id}', 'edit')->name('edit');
+            });
+        });
+    });
+
+    Route::prefix('report')->group(function () {
+        Route::name('report.')->group(function () {
+            Route::controller(ReportController::class)->group(function () {
+                Route::get('absen', 'absen')->name('absen');
+                // Route::get('indexDT', 'indexDT')->name('indexDT');
+                // Route::get('create', 'create')->name('create');
+                // Route::get('edit/{id}', 'edit')->name('edit');
             });
         });
     });

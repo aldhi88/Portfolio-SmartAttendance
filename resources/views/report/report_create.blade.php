@@ -58,7 +58,7 @@
                             <select wire:model="dtForm.master_organization_id"
                                 class="form-control @error('dtForm.master_organization_id') is-invalid @enderror">
                                 <option value="">-</option>
-                                @foreach ($dtEdit['organization'] as $item)
+                                @foreach ($dtCreate['organization'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
@@ -73,7 +73,7 @@
                             <select wire:model="dtForm.master_position_id"
                                 class="form-control @error('dtForm.master_position_id') is-invalid @enderror">
                                 <option value="">-</option>
-                                @foreach ($dtEdit['position'] as $item)
+                                @foreach ($dtCreate['position'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
@@ -89,7 +89,7 @@
                             <select wire:model="dtForm.master_location_id"
                                 class="form-control @error('dtForm.master_location_id') is-invalid @enderror">
                                 <option value="">-</option>
-                                @foreach ($dtEdit['location'] as $item)
+                                @foreach ($dtCreate['location'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
@@ -104,7 +104,7 @@
                             <select wire:model="dtForm.master_function_id"
                                 class="form-control @error('dtForm.master_function_id') is-invalid @enderror">
                                 <option value="">-</option>
-                                @foreach ($dtEdit['function'] as $item)
+                                @foreach ($dtCreate['function'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
@@ -133,29 +133,16 @@
                     <div class="col-md">
                         <div class="form-group">
                             <label>Password Login</label>
-                            <input wire:model="dtForm.password" type="text" placeholder="isi jika ingin mengganti password"
+                            <input wire:model="dtForm.password" type="text"
                                 class="form-control @error('dtForm.password') is-invalid @enderror">
                             @error('dtForm.password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select wire:model="dtForm.status"
-                                class="form-control @error('dtForm.status') is-invalid @enderror">
-                                <option value="Aktif">Aktif</option>
-                                <option value="Belum Aktif">Belum Aktif</option>
-                                <option value="Tidak Aktif">Tidak Aktif</option>
-                            </select>
-                            @error('dtForm.status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
             </div>
+
 
             <div class="col">
                 <label>Pilih Jadwal Kerja :</label>
@@ -176,7 +163,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($dtEdit['schedule'] as $item)
+                            @foreach ($dtCreate['schedule'] as $item)
                             <tr>
                                 <td>
                                     <input
