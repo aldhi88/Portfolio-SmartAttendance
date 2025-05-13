@@ -28,7 +28,7 @@ class LogAttendanceRepository implements LogAttendanceInterface
 
         if (!empty($toInsert)) {
             foreach ($toInsert as $key => $value) {
-                $dtEmployee[$key]['id'] = $value['data_employee_idd'];
+                $dtEmployee[$key]['id'] = $value['data_employee_id'];
                 $dtEmployee[$key]['name'] = $value['name'];
                 $dtEmployee[$key]['created_at'] = Carbon::now();
                 $dtEmployee[$key]['updated_at'] = Carbon::now();
