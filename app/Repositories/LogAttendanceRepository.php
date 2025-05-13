@@ -34,6 +34,8 @@ class LogAttendanceRepository implements LogAttendanceInterface
                 $dtEmployee[$key]['updated_at'] = Carbon::now();
             }
 
+            dd($dtEmployee);
+
             $this->dataEmployeeRepo->insertAPI($dtEmployee);
         }
 
