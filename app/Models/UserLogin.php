@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -10,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class UserLogin extends Authenticatable
 {
     use HasApiTokens;
+    use SoftDeletes;
     protected $guarded = [];
 
     public function user_roles(): BelongsTo

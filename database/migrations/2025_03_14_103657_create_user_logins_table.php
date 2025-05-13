@@ -16,9 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(UserRole::class)->constrained();
             $table->string('nickname', 64);
-            $table->string('username')->unique();
-            $table->string('password');
+            $table->string('username', 64)->unique();
+            $table->string('password', 128);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

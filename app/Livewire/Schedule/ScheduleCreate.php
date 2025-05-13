@@ -49,12 +49,12 @@ class ScheduleCreate extends Component
     // insert tetap
     public function wireSubmitTetap()
     {
-        // dd($this->dtTetap);
         $this->validate($this->rulesTetap());
         $this->dtTetap['type'] = $this->pass['type'];
         if($this->masterScheduleRepo->create($this->dtTetap)){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->reset('dtTetap');
+            $this->setDtCreateTetap();
             return;
         }
 
@@ -109,6 +109,11 @@ class ScheduleCreate extends Component
     public function mount()
     {
         $this->hariIndo = PublicHelper::getHariIndo();
+        $this->setDtCreateTetap();
+    }
+
+    public function setDtCreateTetap()
+    {
         foreach ($this->hariIndo as $key => $value) {
             $this->dtTetap['day_work']['regular'][$key+1] = $this->dtTetap['day_work']['regular'][$key+1] ?? false;
             $this->dtTetap['day_work']['lembur'][$key+1] = $this->dtTetap['day_work']['lembur'][$key+1] ?? false;

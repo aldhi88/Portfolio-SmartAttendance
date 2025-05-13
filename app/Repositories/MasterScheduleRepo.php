@@ -3,8 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\MasterSchedule;
-use App\Models\RelDataEmployeeMasterSchedule;
-use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use Illuminate\Support\Facades\Log;
@@ -39,6 +37,11 @@ class MasterScheduleRepo implements MasterScheduleFace
         return MasterSchedule::query()
             ->with(['data_employees'])
         ;
+    }
+
+    public function getAll()
+    {
+        return MasterSchedule::all();
     }
 
     public function delete($id)

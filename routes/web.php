@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataEmployeeController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MasterFunctionController;
 use App\Http\Controllers\MasterLocationController;
@@ -107,6 +108,17 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('create/{type}', 'create')->name('create');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
                 Route::get('edit/{id}/{type}', 'edit')->name('edit');
+            });
+        });
+    });
+
+    Route::prefix('karyawan')->group(function () {
+        Route::name('karyawan.')->group(function () {
+            Route::controller(DataEmployeeController::class)->group(function () {
+                Route::get('index', 'index')->name('index');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
+                Route::get('create', 'create')->name('create');
+                Route::get('edit/{id}', 'edit')->name('edit');
             });
         });
     });

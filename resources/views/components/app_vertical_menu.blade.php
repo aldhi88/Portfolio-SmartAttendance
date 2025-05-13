@@ -27,7 +27,8 @@
                             <li class="child lokasi"><a href="{{ route('lokasi.index') }}">Lokasi</a></li>
                             <li class="child fungsi"><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
                             <li class="child jadwal-kerja"><a href="{{ route('jadwal-kerja.index') }}">Jadwal Kerja</a></li>
-                            <li class="child "><a href="ecommerce-product-detail.html">Karyawan</a></li>
+                            <li class="child "><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
+                            <li class="child "><a href="#">Penjadwalan Karyawan</a></li>
                         </ul>
                     </li>
 

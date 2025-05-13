@@ -4,6 +4,7 @@
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
 @endsection
 
 @push('push-script')
@@ -83,7 +84,9 @@
                     const valueStyle = 'flex:1;';
 
                     if (row.type === 'Rotasi') {
-                        const startDate = data.start_date ?? '-';
+                        const startDate = data.start_date
+                            ? moment(data.start_date).format('DD-MM-YYYY')
+                            : '-';
                         const workDay = data.work_day ? `${data.work_day} hari kerja` : '-';
                         const offDay = data.off_day ? `${data.off_day} hari off` : '-';
 

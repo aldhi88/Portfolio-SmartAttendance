@@ -55,11 +55,11 @@ class InitUserCmd extends Command
             //         ],
             //     ]
             // ],
-            // [
-            //     'id' => 300,
-            //     'name' => 'General User',
-            //     'user_logins' => []
-            // ],
+            [
+                'id' => 300,
+                'name' => 'Employee',
+                'user_logins' => []
+            ],
         ];
 
 

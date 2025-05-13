@@ -23,7 +23,6 @@ class MasterSchedule extends Model
             'master_schedule_id',
             'data_employee_id'
         )
-        ->using(RelDataEmployeeMasterSchedule::class)
         ->withPivot(['effective_at', 'expired_at'])
         ->wherePivotNull('deleted_at')
         ->withTimestamps();

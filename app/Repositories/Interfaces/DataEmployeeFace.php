@@ -4,6 +4,12 @@ namespace App\Repositories\Interfaces;
 
 interface DataEmployeeFace
 {
+    public function createForm($data);
+    public function update($id, $data);
+    public function getByKey($id);
+    public function delete($id);
+    public function insertAPI($data);
+    public function getColValByCol($col, $val, $get);
     public function isExistByCol($col, $val);
     public function getMultiByCol($col, $val);
 }

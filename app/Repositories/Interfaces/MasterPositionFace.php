@@ -5,6 +5,7 @@ namespace App\Repositories\Interfaces;
 interface MasterPositionFace
 {
     public function getDT($data);
+    public function getAll();
     public function getByKey($id);
     public function create($data);
     public function delete($id);

@@ -39,6 +39,11 @@ class MasterPositionRepo implements MasterPositionFace
         ;
     }
 
+    public function getAll()
+    {
+        return MasterPosition::all();
+    }
+
     public function delete($id)
     {
         if(!$this->dataEmployee->isExistByCol('master_position_id', $id)){

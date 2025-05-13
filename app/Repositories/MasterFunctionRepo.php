@@ -32,6 +32,11 @@ class MasterFunctionRepo implements MasterFunctionFace
         }
     }
 
+    public function getAll()
+    {
+        return MasterFunction::all();
+    }
+
     public function getDT($data)
     {
         return MasterFunction::query()

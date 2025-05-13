@@ -32,6 +32,11 @@ class MasterOrganizationRepo implements MasterOrganizationFace
         }
     }
 
+    public function getAll()
+    {
+        return MasterOrganization::all();
+    }
+
     public function getDT($data)
     {
         return MasterOrganization::query()

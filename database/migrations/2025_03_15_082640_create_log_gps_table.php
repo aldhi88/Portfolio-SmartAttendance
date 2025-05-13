@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('log_gps', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(DataEmployee::class)->constrained();
+            $table->foreignIdFor(DataEmployee::class);
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->timestamps();

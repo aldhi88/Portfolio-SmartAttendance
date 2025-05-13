@@ -24,7 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive mt-2">
-                        <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
+                        <table id="myTable" class="table table-bordered table-striped">
                             <thead>
                             <tr>
                                 <th rowspan="2" class="text-center" width="10">
@@ -35,10 +35,10 @@
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
                                 <th rowspan="2" class="text-center" width="10">No</th>
                                 <th rowspan="2" class="text-center">Kode Jadwal</th>
-                                <th rowspan="2" class="text-center">Nama Jadwal</th>
+                                <th rowspan="2" class="text-center" style="min-width: 200px">Nama Jadwal</th>
                                 <th rowspan="2" class="text-center" style="max-width: 70px">Tipe Jadwal</th>
                                 <th colspan="4" class="text-center">Ketentuan Waktu Absen</th>
-                                <th rowspan="2" class="text-center">Ketentuan Hari Kerja</th>
+                                <th rowspan="2" class="text-center" style="min-width: 400px">Ketentuan Hari Kerja</th>
 
                             </tr>
                             <tr>
@@ -81,7 +81,7 @@
 
         </div>
     </div>
-    @include('schedule.atc.schedule_data_js_atc')
+    @include('schedule.atc.schedule_data_atc')
     @include('components.modal.modal_confirm_delete')
     @include('components.modal.modal_confirm_delete_multiple')
 </div>

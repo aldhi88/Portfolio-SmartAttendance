@@ -18,14 +18,14 @@ return new class extends Migration
     {
         Schema::create('data_employees', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(UserLogin::class)->constrained();
-            $table->foreignIdFor(MasterOrganization::class)->constrained();
-            $table->foreignIdFor(MasterPosition::class)->constrained();
-            $table->foreignIdFor(MasterLocation::class)->constrained();
-            $table->foreignIdFor(MasterFunction::class)->constrained();
+            $table->foreignIdFor(UserLogin::class)->nullable()->constrained();
+            $table->foreignIdFor(MasterOrganization::class)->nullable()->constrained();
+            $table->foreignIdFor(MasterPosition::class)->nullable()->constrained();
+            $table->foreignIdFor(MasterLocation::class)->nullable()->constrained();
+            $table->foreignIdFor(MasterFunction::class)->nullable()->constrained();
             $table->string('name');
             $table->string('number')->default('-');
-            $table->unsignedTinyInteger('status')->default(1);
+            $table->enum('status',['Belum Aktif', 'Aktif', 'Tidak Aktif'])->default('Belum Aktif');
             $table->timestamps();
             $table->softDeletes();
         });

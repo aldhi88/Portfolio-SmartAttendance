@@ -3,12 +3,82 @@
 namespace App\Repositories;
 
 use App\Models\DataEmployee;
-use App\Models\MasterOrganization;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use Illuminate\Support\Facades\Log;
 
 class DataEmployeeRepo implements DataEmployeeFace
 {
+
+    public function createForm($data)
+    {
+        // dd($data);
+        try {
+            DataEmployee::create($data);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Insert data_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function insertAPI($data)
+    {
+        DataEmployee::insert($data);
+        return true;
+    }
+
+    public function update($id, $data)
+    {
+        try {
+            DataEmployee::find($id)->update($data);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Update data_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            DataEmployee::find($id)->delete();
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Delete data_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function getByKey($id)
+    {
+        return DataEmployee::where('id',$id)
+            ->with([
+                'master_schedules',
+                'user_logins'
+            ])
+            ->first()
+        ;
+    }
+
+    public function getColValByCol($col, $val, $get)
+    {
+        return DataEmployee::where($col, $val)->value($get);
+    }
+
+    public function getDT($data)
+    {
+        return DataEmployee::query()
+            ->with([
+                'master_organizations',
+                'master_locations',
+                'master_functions',
+                'master_positions',
+                'master_schedules',
+                'log_attendances'
+            ])
+        ;
+    }
+
     public function isExistByCol($col, $val)
     {
         return DataEmployee::where($col, $val)->exists();
