@@ -21,10 +21,13 @@ class LogAttendanceRepository implements LogAttendanceInterface
     {
         $ids = collect($data)->pluck('data_employee_id')->all(); // [1, 2]
         $existingIds = DataEmployee::whereIn('id', $ids)->pluck('id')->all();
-        $toInsert = collect($data)->filter(function ($item) use ($existingIds) {
-            return !in_array($item['data_employee_id'], $existingIds);
-        })->values()->all();
-
+        $toInsert = collect($data)
+            ->unique('data_employee_id') // tambahkan ini
+            ->filter(function ($item) use ($existingIds) {
+                return !in_array($item['data_employee_id'], $existingIds);
+            })
+            ->values()
+            ->all();
 
         if (!empty($toInsert)) {
             foreach ($toInsert as $key => $value) {
@@ -33,8 +36,6 @@ class LogAttendanceRepository implements LogAttendanceInterface
                 $dtEmployee[$key]['created_at'] = Carbon::now();
                 $dtEmployee[$key]['updated_at'] = Carbon::now();
             }
-
-            dd($dtEmployee);
 
             $this->dataEmployeeRepo->insertAPI($dtEmployee);
         }
