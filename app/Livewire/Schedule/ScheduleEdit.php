@@ -33,10 +33,10 @@ class ScheduleEdit extends Component
         return [
             "dtRotasi.kode" => "required|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
             "dtRotasi.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
-            "dtRotasi.checkin_time" => "required",
-            "dtRotasi.work_time" => "required",
-            "dtRotasi.checkin_deadline_time" => "required",
-            "dtRotasi.checkout_time" => "required",
+            "dtRotasi.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtRotasi.type" => "",
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
@@ -66,10 +66,10 @@ class ScheduleEdit extends Component
         return [
             "dtTetap.kode" => "required|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
             "dtTetap.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
-            "dtTetap.checkin_time" => "required",
-            "dtTetap.work_time" => "required",
-            "dtTetap.checkin_deadline_time" => "required",
-            "dtTetap.checkout_time" => "required",
+            "dtTetap.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtTetap.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtTetap.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtTetap.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtTetap.type" => "",
             "dtTetap.day_work.regular" => "required",
             "dtTetap.day_work.lembur" => "",
@@ -103,6 +103,14 @@ class ScheduleEdit extends Component
 
     protected $messages = [
         "dtTetap.day_work.regular.required" => ":attribute wajib dipilih minimal 1 hari.",
+        'dtTetap.checkin_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtTetap.work_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtTetap.checkin_deadline_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtTetap.checkout_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtRotasi.checkin_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtRotasi.work_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtRotasi.checkin_deadline_time.regex' => 'Format tidak valid (ex: 08:00)',
+        'dtRotasi.checkout_time.regex' => 'Format tidak valid (ex: 08:00)',
     ];
 
     public $hariIndo;

@@ -43,7 +43,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Absen Masuk</label>
-                    <input wire:model="dtTetap.checkin_time" type="time" class="form-control @error('dtTetap.checkin_time') is-invalid @enderror">
+                    <input placeholder="HH:MM" wire:model="dtTetap.checkin_time" class="form-control input-mask-time
+                        @error('dtTetap.checkin_time') is-invalid @enderror"
+                        id="checkin_time"
+                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
                     @error('dtTetap.checkin_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -52,7 +55,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Mulai Kerja</label>
-                    <input wire:model="dtTetap.work_time" type="time" class="form-control @error('dtTetap.work_time') is-invalid @enderror">
+                    <input placeholder="HH:MM" wire:model="dtTetap.work_time" class="form-control input-mask-time
+                        @error('dtTetap.work_time') is-invalid @enderror"
+                        id="work_time"
+                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
                     @error('dtTetap.work_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -61,7 +67,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Batas Toleransi</label>
-                    <input wire:model="dtTetap.checkin_deadline_time" type="time" class="form-control @error('dtTetap.checkin_deadline_time') is-invalid @enderror">
+                    <input placeholder="HH:MM" wire:model="dtTetap.checkin_deadline_time" class="form-control input-mask-time
+                        @error('dtTetap.checkin_deadline_time') is-invalid @enderror"
+                        id="checkin_deadline_time"
+                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
                     @error('dtTetap.checkin_deadline_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -70,7 +79,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Pulang</label>
-                    <input wire:model="dtTetap.checkout_time" type="time" class="form-control @error('dtTetap.checkout_time') is-invalid @enderror">
+                    <input placeholder="HH:MM" wire:model="dtTetap.checkout_time" class="form-control input-mask-time
+                        @error('dtTetap.checkout_time') is-invalid @enderror"
+                        id="checkout_time"
+                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
                     @error('dtTetap.checkout_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -130,5 +142,5 @@
 
     </form>
 
-    @include('schedule.atc.schedule_create_tetap_js_atc');
+    @include('schedule.atc.schedule_create_tetap_atc');
 </div>
