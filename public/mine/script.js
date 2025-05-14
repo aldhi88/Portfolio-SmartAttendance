@@ -121,22 +121,33 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         const jam = logMasuk.format('HH:mm');
         const warna = logMasuk.isSameOrBefore(checkinEnd) ? 'text-success' : 'text-danger';
         const label = logMasuk.isSameOrBefore(checkinEnd) ? 'on time' : 'terlambat';
+        return `
+            <span style="display:flex; flex-direction:column; line-height:1">
+                ${jam}
+                <small class="${warna}">(${label})</small>
+            </span>
 
-        return `<span class="${warna}">${jam} <br>(${label})</span>`;
+        `;
     }
 
     if (type === 'out') {
         const logKeluar = logs
-            .filter(time => time.isAfter(checkinEnd) && time.isSameOrBefore(checkoutTime))
+            .filter(time => time.isAfter(checkinEnd))
             .sort((a, b) => b - a)[0];
 
         if (!logKeluar) return '-';
 
         const jam = logKeluar.format('HH:mm');
         const warna = logKeluar.isSameOrAfter(checkoutTime) ? 'text-success' : 'text-danger';
-        const label = logKeluar.isSameOrAfter(checkoutTime) ? 'on time' : 'Pulang Cepat';
+        const label = logKeluar.isSameOrAfter(checkoutTime) ? 'on time' : 'Plg Cepat';
 
-        return `<span class="${warna}">${jam} <br>(${label})</span>`;
+        return `
+            <span style="display:flex; flex-direction:column; line-height:1">
+                ${jam}
+                <small class="${warna}">(${label})</small>
+            </span>
+
+        `;
     }
 
     return '-';

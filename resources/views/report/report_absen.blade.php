@@ -46,7 +46,7 @@
                             </div>
                             <div class="col-md-2">
                                 <label style="visibility: hidden">Tombol</label> <br>
-                                <button type="submit" class="btn btn-primary btn-block">Tampilkan</button>
+                                <button type="submit" class="btn btn-info btn-block">Tampilkan</button>
                             </div>
                             <div class="col-md-2">
                                 <label style="visibility: hidden">Tombol</label> <br>
@@ -62,7 +62,7 @@
 
                             <div class="table-responsive mt-2">
                                 <table id="myTable" class="table table-bordered table-striped">
-                                    <thead>
+                                    <thead class="thead-light">
                                         <tr>
                                             <th rowspan="2" class="text-center" style="min-width: 10px">No</th>
                                             <th rowspan="2" class="text-center">Nama</th>
@@ -70,7 +70,7 @@
                                             <th rowspan="2" class="text-center">Jabatan</th>
                                             @foreach ($dt['tglCol'] as $item)
                                             <th colspan="2" class="text-center text-nowrap
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':null }}
+                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-dark':null }}
                                                 ">
                                                 {{ $item['col_day'] }} <br>
                                                 {{ $item['col_date'] }}
@@ -80,17 +80,13 @@
                                         <tr>
                                             @foreach ($dt['tglCol'] as $item)
                                             <th class="text-center
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':null }}">
-                                                <i class="fas fa-arrow-up text-success"></i>
+                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-dark':null }}">
+                                                <i class="fas fa-arrow-down text-success"></i>
                                             </th>
                                             <th class="text-center
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':null }}">
-                                                <i class="fas fa-arrow-down text-danger"></i>
+                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-dark':null }}">
+                                                <i class="fas fa-arrow-up text-danger"></i>
                                             </th>
-                                            {{-- <th class="text-center
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':null }}">
-                                                <i class="fas fa-user-clock text-dark"></i>
-                                            </th> --}}
                                             @endforeach
                                         </tr>
                                     </thead>
@@ -118,8 +114,8 @@
                                                 </select>
                                             </th>
                                             @foreach ($dt['tglCol'] as $item)
-                                            <th class="text-center text-dark bg-{{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'soft-danger':'soft-dark' }}">in</th>
-                                            <th class="text-center text-dark bg-{{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'soft-danger':'soft-dark' }}">out</th>
+                                            <th class="text-center text-dark bg-{{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'soft-dark':'soft-success' }}">in</th>
+                                            <th class="text-center text-dark bg-{{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'soft-dark':'soft-danger' }}">out</th>
                                             {{-- <th class="text-center text-dark bg-{{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'soft-danger':'soft-dark' }}">status</th> --}}
                                             @endforeach
                                         </tr>

@@ -1,6 +1,15 @@
 @section('style')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        #myTable tbody td:nth-child(n+5):nth-child(even) {
+            background-color: #ffced72b;
+        }
+        #myTable tbody td:nth-child(n+5):nth-child(odd) {
+            background-color: #c6eee227;
+        }
+    </style>
 @endsection
+
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -10,8 +19,6 @@
 @push('push-script')
 <script>
     const tglCol = @json($dt['tglCol']);
-    console.log(tglCol);
-
 
     let pushCols = [
         { data: 'name', name: 'name', orderable: true, searchable: false,
@@ -50,8 +57,6 @@
             }
         );
     });
-    console.log(pushCols);
-
 
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
