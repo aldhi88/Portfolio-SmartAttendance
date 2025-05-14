@@ -86,3 +86,60 @@ const getHariIndo = {
     6: 'Sabtu',
     7: 'Minggu'
 };
+
+
+function getAbsenWaktu(row, tanggalLabel, type = 'in') {
+    const tanggalYMD = moment(tanggalLabel, 'DD-MMM-YYYY').format('YYYY-MM-DD');
+    const hariKe = moment(tanggalYMD).isoWeekday(); // 1 = Senin, ..., 7 = Minggu
+
+    const jadwal = (row.master_schedules || []).find(sch => {
+        const eff = moment(sch.pivot.effective_at).format('YYYY-MM-DD');
+        const exp = sch.pivot.expired_at ? moment(sch.pivot.expired_at).format('YYYY-MM-DD') : null;
+        return tanggalYMD >= eff && (!exp || tanggalYMD <= exp);
+    });
+
+    if (!jadwal) return '-';
+
+    const isHariKerja = jadwal.day_work.regular[hariKe] || jadwal.day_work.lembur[hariKe];
+    if (!isHariKerja) return '-';
+
+    const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
+    const checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
+    const checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
+
+    const logs = (row.log_attendances || [])
+        .filter(log => log.time.startsWith(tanggalYMD))
+        .map(log => moment(log.time));
+
+    if (type === 'in') {
+        const logMasuk = logs
+            .filter(time => time.isBetween(checkinStart, checkinEnd, null, '[]'))
+            .sort((a, b) => a - b)[0];
+
+        if (!logMasuk) return '-';
+
+        const jam = logMasuk.format('HH:mm');
+        const warna = logMasuk.isSameOrBefore(checkinEnd) ? 'text-success' : 'text-danger';
+        const label = logMasuk.isSameOrBefore(checkinEnd) ? 'on time' : 'terlambat';
+
+        return `<span class="${warna}">${jam} <br>(${label})</span>`;
+    }
+
+    if (type === 'out') {
+        const logKeluar = logs
+            .filter(time => time.isAfter(checkinEnd) && time.isSameOrBefore(checkoutTime))
+            .sort((a, b) => b - a)[0];
+
+        if (!logKeluar) return '-';
+
+        const jam = logKeluar.format('HH:mm');
+        const warna = logKeluar.isSameOrAfter(checkoutTime) ? 'text-success' : 'text-danger';
+        const label = logKeluar.isSameOrAfter(checkoutTime) ? 'on time' : 'Pulang Cepat';
+
+        return `<span class="${warna}">${jam} <br>(${label})</span>`;
+    }
+
+    return '-';
+}
+
+

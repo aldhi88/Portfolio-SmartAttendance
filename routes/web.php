@@ -128,7 +128,7 @@ Route::middleware('auth:web')->group(function(){
         Route::name('report.')->group(function () {
             Route::controller(ReportController::class)->group(function () {
                 Route::get('absen', 'absen')->name('absen');
-                // Route::get('indexDT', 'indexDT')->name('indexDT');
+                Route::post('absen-dt', 'absenDT')->name('absenDT');
                 // Route::get('create', 'create')->name('create');
                 // Route::get('edit/{id}', 'edit')->name('edit');
             });

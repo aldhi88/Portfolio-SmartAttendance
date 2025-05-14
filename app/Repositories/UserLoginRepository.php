@@ -31,7 +31,6 @@ class UserLoginRepository implements UserLoginInterface
 
     public function update($id, $data)
     {
-        dd($id, $data);
         try {
             UserLogin::find($id)->update($data);
             return true;

@@ -69,12 +69,24 @@ class DataEmployeeRepo implements DataEmployeeFace
     {
         return DataEmployee::query()
             ->with([
-                'master_organizations',
-                'master_locations',
-                'master_functions',
-                'master_positions',
+                'master_organizations:id,name',
+                'master_locations:id,name',
+                'master_functions:id,name',
+                'master_positions:id,name',
                 'master_schedules',
                 'log_attendances'
+            ])
+        ;
+    }
+
+    public function getReportDT($data)
+    {
+        return DataEmployee::query()
+            ->with([
+                'master_organizations:id,name',
+                'master_locations:id,name',
+                'master_functions:id,name',
+                'master_positions:id,name',
             ])
         ;
     }

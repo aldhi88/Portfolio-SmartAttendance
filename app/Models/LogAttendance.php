@@ -9,6 +9,10 @@ class LogAttendance extends Model
 {
     protected $guarded = [];
 
+    public function data_employee():BelongsTo
+    {
+        return $this->belongsTo(DataEmployee::class, 'data_employee_id', 'id');
+    }
     public function master_machines():BelongsTo
     {
         return $this->belongsTo(MasterMachine::class, 'master_machine_id', 'id');
