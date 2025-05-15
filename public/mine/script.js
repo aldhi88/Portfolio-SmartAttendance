@@ -90,9 +90,9 @@ const getHariIndo = {
 
 function getAbsenWaktu(row, tanggalLabel, type = 'in') {
     const tanggalYMD = moment(tanggalLabel, 'DD-MMM-YYYY').format('YYYY-MM-DD');
-    const hariKe = moment(tanggalYMD).isoWeekday(); // 1 = Senin, ..., 7 = Minggu
+    const hariKe = moment(tanggalYMD).isoWeekday(); // 1 = Senin ... 7 = Minggu
 
-    // Cari jadwal yang aktif pada tanggal ini
+    // Cari jadwal aktif pada tanggal ini
     const jadwal = (row.master_schedules || []).find(sch => {
         const eff = moment(sch.pivot.effective_at).format('YYYY-MM-DD');
         const exp = sch.pivot.expired_at ? moment(sch.pivot.expired_at).format('YYYY-MM-DD') : null;
@@ -101,7 +101,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     if (!jadwal) return '-';
 
-    // Tentukan apakah hari kerja (berdasarkan type)
+    // Tentukan apakah hari kerja
     let isHariKerja = false;
 
     if (jadwal.type === 'Tetap') {
@@ -116,23 +116,33 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         isHariKerja = posisi < parseInt(jadwal.day_work.work_day);
     }
 
-    if (!isHariKerja) return '-';
+    // Jika bukan hari kerja, dan tipe Rotasi, tampilkan "Off"
+    if (!isHariKerja) {
+        if (jadwal.type === 'Rotasi') {
+            return `
+                <span style="display:flex; flex-direction:column; line-height:1">
+                    -
+                    <small class="text-muted">Off</small>
+                </span>
+            `;
+        }
+        return '-';
+    }
 
-    // Buat waktu absensi
+    // Tentukan waktu checkin dan checkout
     const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
 
-    // Perbaiki logic untuk lintas hari
-    const checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
+    let checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
     if (jadwal.checkin_deadline_time < jadwal.checkin_time) {
         checkinEnd.add(1, 'day');
     }
 
-    const checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
+    let checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
     if (jadwal.checkout_time < jadwal.checkin_time) {
         checkoutTime.add(1, 'day');
     }
 
-    // Ambil semua log yang tanggalnya sesuai atau +1 jika lintas hari
+    // Ambil semua log yang sesuai tanggal (atau lintas hari)
     const logs = (row.log_attendances || [])
         .map(log => moment(log.time))
         .filter(time => {
@@ -140,6 +150,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
             return logDate === tanggalYMD || logDate === moment(tanggalYMD).add(1, 'day').format('YYYY-MM-DD');
         });
 
+    // ========== Check-in ==========
     if (type === 'in') {
         const logMasuk = logs
             .filter(time => time.isBetween(checkinStart, checkinEnd, null, '[]'))
@@ -159,6 +170,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         `;
     }
 
+    // ========== Check-out ==========
     if (type === 'out') {
         const logKeluar = logs
             .filter(time => time.isAfter(checkinEnd))

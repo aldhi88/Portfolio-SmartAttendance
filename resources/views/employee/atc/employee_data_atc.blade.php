@@ -81,7 +81,7 @@
                     return el;
                 }
             },
-            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: 'name', name: 'name', orderable: false, searchable:true },
             { data: null, name: 'master_schedule_id',orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
                     if (row.master_schedules && row.master_schedules.length > 0) {
