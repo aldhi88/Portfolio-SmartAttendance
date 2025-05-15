@@ -101,7 +101,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     if (!jadwal) return '-';
 
-    // Tentukan apakah ini hari kerja tergantung jenis jadwal
+    // Tentukan apakah hari kerja (berdasarkan type)
     let isHariKerja = false;
 
     if (jadwal.type === 'Tetap') {
@@ -118,15 +118,27 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     if (!isHariKerja) return '-';
 
-    // Batas waktu dari jadwal
+    // Buat waktu absensi
     const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
-    const checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
-    const checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
 
-    // Ambil log hari ini
+    // Perbaiki logic untuk lintas hari
+    const checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
+    if (jadwal.checkin_deadline_time < jadwal.checkin_time) {
+        checkinEnd.add(1, 'day');
+    }
+
+    const checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
+    if (jadwal.checkout_time < jadwal.checkin_time) {
+        checkoutTime.add(1, 'day');
+    }
+
+    // Ambil semua log yang tanggalnya sesuai atau +1 jika lintas hari
     const logs = (row.log_attendances || [])
-        .filter(log => log.time.startsWith(tanggalYMD))
-        .map(log => moment(log.time));
+        .map(log => moment(log.time))
+        .filter(time => {
+            const logDate = time.format('YYYY-MM-DD');
+            return logDate === tanggalYMD || logDate === moment(tanggalYMD).add(1, 'day').format('YYYY-MM-DD');
+        });
 
     if (type === 'in') {
         const logMasuk = logs
