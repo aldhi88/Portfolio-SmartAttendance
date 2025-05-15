@@ -26,14 +26,15 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </th>
-                                <th class="text-center" style="max-width: 5px"></th>
-                                <th class="text-center" style="min-width: 10px">No</th>
-                                <th class="text-center" style="max-width: 85px">Status</th>
-                                <th class="text-center" style="min-width: 100px">Nama</th>
-                                <th class="text-center" style="min-width: 100px">Perusahaan</th>
-                                <th class="text-center" style="min-width: 100px">Jabatan</th>
-                                <th class="text-center" style="min-width: 100px">Lokasi</th>
-                                <th class="text-center" style="min-width: 60px">Fungsi</th>
+                                <th class="text-center"></th>
+                                <th class="text-center">No</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Nama</th>
+                                <th class="text-center">Jadwal</th>
+                                <th class="text-center">Perusahaan</th>
+                                <th class="text-center">Jabatan</th>
+                                <th class="text-center">Lokasi</th>
+                                <th class="text-center">Fungsi</th>
                             </tr>
                             </thead>
 
@@ -54,6 +55,14 @@
                                     </th>
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
+                                    <th class="text-center">
+                                        {{-- <select name="" class="form-control form-control-sm search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($dt['jadwal'] as $item)
+                                            <option value="{{$item['id']}}">{{$item['name']}}</option>
+                                            @endforeach
+                                        </select> --}}
                                     </th>
                                     <th class="text-center">
                                         <select name="" class="form-control form-control-sm search-col-dt">

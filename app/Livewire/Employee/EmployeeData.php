@@ -7,6 +7,7 @@ use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
 use App\Repositories\Interfaces\MasterPositionFace;
+use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ class EmployeeData extends Component
     protected $relDataEmployeeMasterScheduleRepo;
     protected $dataEmployeeRepo;
     protected $userLoginRepository;
+    protected $masterSchedulesRepo;
 
     public function boot(
         MasterOrganizationFace $masterOrganizationRepo,
@@ -31,6 +33,7 @@ class EmployeeData extends Component
         RelDataEmployeeMasterScheduleFace $relDataEmployeeMasterScheduleRepo,
         DataEmployeeFace $dataEmployeeRepo,
         UserLoginInterface $userLoginRepository,
+        MasterScheduleFace $masterSchedulesRepo,
     ) {
         $this->masterOrganizationRepo = $masterOrganizationRepo;
         $this->masterPositionRepo = $masterPositionRepo;
@@ -39,6 +42,7 @@ class EmployeeData extends Component
         $this->relDataEmployeeMasterScheduleRepo = $relDataEmployeeMasterScheduleRepo;
         $this->dataEmployeeRepo = $dataEmployeeRepo;
         $this->userLoginRepository = $userLoginRepository;
+        $this->masterSchedulesRepo = $masterSchedulesRepo;
     }
 
     // delete section
@@ -96,6 +100,7 @@ class EmployeeData extends Component
         $this->dt['position'] = $this->masterPositionRepo->getAll()->toArray();
         $this->dt['location'] = $this->masterLocationRepo->getAll()->toArray();
         $this->dt['function'] = $this->masterFunctionRepo->getAll()->toArray();
+        $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
     }
 
     public $pass;

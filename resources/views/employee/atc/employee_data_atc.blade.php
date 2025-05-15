@@ -13,9 +13,9 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'asc']],
         columnDefs: [
-            { className: 'text-left', targets: [4] },
-            { className: 'px-0', targets: [1] },
-            { className: 'text-center', targets: ['_all'] },
+            { className: 'text-left text-nowrap', targets: [4,5] },
+            { className: 'px-0 text-nowrap', targets: [1] },
+            { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
         ajax: '{{ route("karyawan.indexDT") }}',
         columns: [
@@ -81,7 +81,19 @@
                     return el;
                 }
             },
-            { data: 'name', name: 'name', orderable: false, searchable:true },
+            { data: 'name', name: 'name', orderable: false, searchable:false },
+            { data: null, name: 'master_schedule_id',orderable: false, searchable: false,
+                render: function (data, type, row, meta) {
+                    if (row.master_schedules && row.master_schedules.length > 0) {
+                        const list = row.master_schedules
+                            .map(schedule => `<li>${schedule.name}</li>`)
+                            .join('');
+                        return `<ul class="mb-0 pl-3">${list}</ul>`;
+                    } else {
+                        return '-';
+                    }
+                }
+            },
             { data: 'master_organizations.name', name: 'master_organization_id', orderable: false, searchable:true,
                 render: function (data, type, row, meta) {
                     return row.master_organizations ? row.master_organizations.name : '-';
