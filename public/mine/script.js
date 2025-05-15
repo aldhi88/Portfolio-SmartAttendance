@@ -92,6 +92,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
     const tanggalYMD = moment(tanggalLabel, 'DD-MMM-YYYY').format('YYYY-MM-DD');
     const hariKe = moment(tanggalYMD).isoWeekday(); // 1 = Senin, ..., 7 = Minggu
 
+    // Cari jadwal yang aktif pada tanggal ini
     const jadwal = (row.master_schedules || []).find(sch => {
         const eff = moment(sch.pivot.effective_at).format('YYYY-MM-DD');
         const exp = sch.pivot.expired_at ? moment(sch.pivot.expired_at).format('YYYY-MM-DD') : null;
@@ -100,13 +101,29 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     if (!jadwal) return '-';
 
-    const isHariKerja = jadwal.day_work.regular[hariKe] || jadwal.day_work.lembur[hariKe];
+    // Tentukan apakah ini hari kerja tergantung jenis jadwal
+    let isHariKerja = false;
+
+    if (jadwal.type === 'Tetap') {
+        isHariKerja = jadwal.day_work.regular[hariKe] || jadwal.day_work.lembur[hariKe];
+    }
+
+    if (jadwal.type === 'Rotasi') {
+        const startDate = moment(jadwal.day_work.start_date, 'YYYY-MM-DD');
+        const selisihHari = moment(tanggalYMD).diff(startDate, 'days');
+        const totalSiklus = parseInt(jadwal.day_work.work_day) + parseInt(jadwal.day_work.off_day);
+        const posisi = selisihHari % totalSiklus;
+        isHariKerja = posisi < parseInt(jadwal.day_work.work_day);
+    }
+
     if (!isHariKerja) return '-';
 
+    // Batas waktu dari jadwal
     const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
     const checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
     const checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
 
+    // Ambil log hari ini
     const logs = (row.log_attendances || [])
         .filter(log => log.time.startsWith(tanggalYMD))
         .map(log => moment(log.time));
@@ -121,12 +138,12 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         const jam = logMasuk.format('HH:mm');
         const warna = logMasuk.isSameOrBefore(checkinEnd) ? 'text-success' : 'text-danger';
         const label = logMasuk.isSameOrBefore(checkinEnd) ? 'on time' : 'terlambat';
+
         return `
             <span style="display:flex; flex-direction:column; line-height:1">
                 ${jam}
                 <small class="${warna}">(${label})</small>
             </span>
-
         `;
     }
 
@@ -146,11 +163,8 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
                 ${jam}
                 <small class="${warna}">(${label})</small>
             </span>
-
         `;
     }
 
     return '-';
 }
-
-

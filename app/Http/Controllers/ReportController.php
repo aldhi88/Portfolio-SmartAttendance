@@ -24,7 +24,7 @@ class ReportController extends Controller
         $data = $dataEmployeeRepo->getReportDT(0);
         $data->where('status', 'Aktif')
             ->with([
-                'master_schedules:id,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('id', 'data_employee_id', 'time')
                     ->whereYear('time', $request->filter_year)
@@ -39,7 +39,7 @@ class ReportController extends Controller
 
         // $dateList = $this->dateInMonth($request->filter_month, $request->filter_year);
         // dd($dateList);
-        // dd($data->get()->toArray());
+        dd($data->get()->toArray());
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
