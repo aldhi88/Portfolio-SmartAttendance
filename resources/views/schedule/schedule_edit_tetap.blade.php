@@ -42,7 +42,7 @@
         <div class="row">
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Boleh Absen Masuk</label>
+                    <label>Jam Boleh Check-In</label>
                     <input placeholder="HH:MM" wire:model="dtTetap.checkin_time" class="form-control input-mask-time
                         @error('dtTetap.checkin_time') is-invalid @enderror"
                         id="checkin_time"
@@ -54,7 +54,7 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Mulai Kerja</label>
+                    <label>Jam Akhir Check-In Ontime</label>
                     <input placeholder="HH:MM" wire:model="dtTetap.work_time" class="form-control input-mask-time
                         @error('dtTetap.work_time') is-invalid @enderror"
                         id="work_time"
@@ -66,7 +66,7 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Batas Toleransi</label>
+                    <label>Jam Akhir Check-In</label>
                     <input placeholder="HH:MM" wire:model="dtTetap.checkin_deadline_time" class="form-control input-mask-time
                         @error('dtTetap.checkin_deadline_time') is-invalid @enderror"
                         id="checkin_deadline_time"

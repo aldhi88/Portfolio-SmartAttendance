@@ -92,7 +92,6 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
     const tanggalYMD = moment(tanggalLabel, 'DD-MMM-YYYY').format('YYYY-MM-DD');
     const hariKe = moment(tanggalYMD).isoWeekday();
 
-    // Ambil semua jadwal aktif pada tanggal ini
     const semuaJadwal = (row.master_schedules || []).filter(sch => {
         const eff = moment(sch.pivot.effective_at).format('YYYY-MM-DD');
         const exp = sch.pivot.expired_at ? moment(sch.pivot.expired_at).format('YYYY-MM-DD') : null;
@@ -101,19 +100,15 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     if (!semuaJadwal.length) return '-';
 
-    // Pakai salah satu jadwal sebagai acuan waktu (misalnya yang pertama)
     const jadwal = semuaJadwal[0];
 
-    // Tentukan apakah hari kerja dari semua jadwal
     let isHariKerja = false;
     let isHariKerjaRegular = false;
     for (const sch of semuaJadwal) {
         if (sch.type === 'Tetap') {
             if (sch.day_work.regular[hariKe]) isHariKerjaRegular = true;
             const aktif = sch.day_work.regular[hariKe] || sch.day_work.lembur[hariKe];
-            if (aktif) {
-                isHariKerja = true;
-            }
+            if (aktif) isHariKerja = true;
         }
         if (sch.type === 'Rotasi') {
             const startDate = moment(sch.day_work.start_date, 'YYYY-MM-DD');
@@ -121,9 +116,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
             const totalSiklus = parseInt(sch.day_work.work_day) + parseInt(sch.day_work.off_day);
             const posisi = selisihHari % totalSiklus;
             const aktif = posisi < parseInt(sch.day_work.work_day);
-            if (aktif) {
-                isHariKerja = true;
-            }
+            if (aktif) isHariKerja = true;
         }
     }
 
@@ -132,6 +125,7 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         if (isRotasi) {
             return `
                 <span style="display:flex; flex-direction:column; line-height:1">
+                    -
                     <small class="text-muted">Off</small>
                 </span>
             `;
@@ -140,15 +134,14 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
     }
 
     const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
+    let workTime = moment(`${tanggalYMD} ${jadwal.work_time}`);
+    if (jadwal.work_time < jadwal.checkin_time) workTime.add(1, 'day');
+
     let checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
-    if (jadwal.checkin_deadline_time < jadwal.checkin_time) {
-        checkinEnd.add(1, 'day');
-    }
+    if (jadwal.checkin_deadline_time < jadwal.checkin_time) checkinEnd.add(1, 'day');
 
     let checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
-    if (jadwal.checkout_time < jadwal.checkin_time) {
-        checkoutTime.add(1, 'day');
-    }
+    if (jadwal.checkout_time < jadwal.checkin_time) checkoutTime.add(1, 'day');
 
     const logs = (row.log_attendances || [])
         .map(log => moment(log.time))
@@ -167,10 +160,10 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     const tidakAdaLog = !logMasuk && !logKeluar;
 
-    // Hanya tampilkan Alpha jika hari kerja reguler dan tidak ada log sama sekali
     if (tidakAdaLog && isHariKerjaRegular) {
         return `
             <span style="display:flex; flex-direction:column; line-height:1">
+                -
                 <small class="text-danger">Alpha</small>
             </span>
         `;
@@ -180,8 +173,13 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         if (!logMasuk) return '-';
 
         const jam = logMasuk.format('HH:mm');
-        const warna = logMasuk.isSameOrBefore(checkinEnd) ? 'text-success' : 'text-danger';
-        const label = logMasuk.isSameOrBefore(checkinEnd) ? 'on time' : 'terlambat';
+        let warna = 'text-success';
+        let label = 'on time';
+
+        if (logMasuk.isAfter(workTime) && logMasuk.isSameOrBefore(checkinEnd)) {
+            warna = 'text-danger';
+            label = 'terlambat';
+        }
 
         return `
             <span style="display:flex; flex-direction:column; line-height:1">
@@ -195,8 +193,13 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         if (!logKeluar) return '-';
 
         const jam = logKeluar.format('HH:mm');
-        const warna = logKeluar.isSameOrAfter(checkoutTime) ? 'text-success' : 'text-danger';
-        const label = logKeluar.isSameOrAfter(checkoutTime) ? 'on time' : 'Plg Cepat';
+        let warna = 'text-danger';
+        let label = 'Plg Cepat';
+
+        if (logKeluar.isSameOrAfter(checkoutTime)) {
+            warna = 'text-success';
+            label = 'on time';
+        }
 
         return `
             <span style="display:flex; flex-direction:column; line-height:1">
@@ -208,6 +211,3 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
 
     return '-';
 }
-
-
-
