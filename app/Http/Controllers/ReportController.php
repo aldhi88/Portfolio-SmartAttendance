@@ -39,7 +39,7 @@ class ReportController extends Controller
 
         // $dateList = $this->dateInMonth($request->filter_month, $request->filter_year);
         // dd($dateList);
-        dd($data->get()->toArray());
+        // dd($data->get()->toArray());
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
