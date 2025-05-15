@@ -132,7 +132,6 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
         if (isRotasi) {
             return `
                 <span style="display:flex; flex-direction:column; line-height:1">
-                    -
                     <small class="text-muted">Off</small>
                 </span>
             `;
@@ -172,7 +171,6 @@ function getAbsenWaktu(row, tanggalLabel, type = 'in') {
     if (tidakAdaLog && isHariKerjaRegular) {
         return `
             <span style="display:flex; flex-direction:column; line-height:1">
-                -
                 <small class="text-danger">Alpha</small>
             </span>
         `;
