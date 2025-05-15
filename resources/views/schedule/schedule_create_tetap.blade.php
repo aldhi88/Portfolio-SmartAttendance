@@ -78,7 +78,7 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Pulang</label>
+                    <label>Jam Boleh Checkout</label>
                     <input placeholder="HH:MM" wire:model="dtTetap.checkout_time" class="form-control input-mask-time
                         @error('dtTetap.checkout_time') is-invalid @enderror"
                         id="checkout_time"

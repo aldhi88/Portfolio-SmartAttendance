@@ -66,7 +66,7 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Akhir Check-In Ontime</label>
+                    <label>Jam Akhir Check-In</label>
                     <input placeholder="HH:MM" wire:model="dtRotasi.checkin_deadline_time" class="form-control input-mask-time
                         @error('dtRotasi.checkin_deadline_time') is-invalid @enderror"
                         id="checkin_deadline_time"
@@ -78,7 +78,7 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Akhir Check-In</label>
+                    <label>Jam Boleh Checkout</label>
                     <input placeholder="HH:MM" wire:model="dtRotasi.checkout_time" class="form-control input-mask-time
                         @error('dtRotasi.checkout_time') is-invalid @enderror"
                         id="checkout_time"
@@ -93,7 +93,7 @@
         <div class="row">
             <div class="col-6 col-md-3">
                 <div class="form-group">
-                    <label>Jam Pulang</label>
+                    <label>Tanggal Mulai Rotasi</label>
                     <input wire:model="dtRotasi.day_work.start_date" type="date" class="form-control @error('dtRotasi.day_work.start_date') is-invalid @enderror">
                     @error('dtRotasi.day_work.start_date')
                         <div class="invalid-feedback">{{ $message }}</div>
