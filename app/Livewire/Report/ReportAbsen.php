@@ -73,10 +73,14 @@ class ReportAbsen extends Component
         $this->month = request()->query('month');
         $this->year = request()->query('year');
 
-        if($this->month && $this->year){
+        if ($this->month && $this->year) {
             $this->start = Carbon::create($this->year, $this->month, 1)->startOfMonth();
-            $this->end = Carbon::create($this->year, $this->month, 1)->endOfMonth();
-        }else{
+            if ($this->month == Carbon::now()->format('m') && $this->year == Carbon::now()->format('Y')) {
+                $this->end = Carbon::now();
+            } else {
+                $this->end = Carbon::create($this->year, $this->month, 1)->endOfMonth();
+            }
+        } else {
             $this->month = date('m');
             $this->year = date('Y');
             $this->start = Carbon::now()->startOfMonth();

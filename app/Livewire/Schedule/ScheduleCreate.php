@@ -42,6 +42,14 @@ class ScheduleCreate extends Component
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
             "dtRotasi.day_work.off_day" => "required|numeric|min:1",
+            "dtRotasi.rotasi.sore.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.sore.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.sore.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.sore.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.malam.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.malam.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.malam.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.rotasi.malam.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
         ];
     }
     // end insert rotasi
@@ -111,6 +119,14 @@ class ScheduleCreate extends Component
         'dtRotasi.work_time.regex' => 'Format tidak valid (ex: 08:00)',
         'dtRotasi.checkin_deadline_time.regex' => 'Format tidak valid (ex: 08:00)',
         'dtRotasi.checkout_time.regex' => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.sore.checkin_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.sore.work_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.sore.checkin_deadline_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.sore.checkout_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.malam.checkin_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.malam.work_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.malam.checkin_deadline_time" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.rotasi.malam.checkout_time" => 'Format tidak valid (ex: 08:00)',
     ];
 
     public $hariIndo;

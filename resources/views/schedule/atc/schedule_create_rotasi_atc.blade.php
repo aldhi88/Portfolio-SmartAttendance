@@ -10,6 +10,11 @@
                 const val = $(this).val();
                 @this.set('dtRotasi.'+$(this).attr('id'), val);
             });
+
+            $('.input-mask-time-sore').on('input', function () {
+                const val = $(this).val();
+                @this.set('dtRotasi.day_work.shift_sore.'+$(this).attr('id'), val);
+            });
         });
     </script>
 @endpush
