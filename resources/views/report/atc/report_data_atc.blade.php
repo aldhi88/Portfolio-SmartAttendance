@@ -10,6 +10,9 @@
             background-color: #dcdde22f;
             line-height: 1;
         }
+        #myTable tbody td:nth-child(n+3) {
+            line-height: 1;
+        }
     </style>
 @endsection
 
