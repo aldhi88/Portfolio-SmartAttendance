@@ -2,10 +2,10 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         #myTable tbody td:nth-child(n+5):nth-child(even) {
-            background-color: #feedca3a;
+            background-color: #ffffff;
         }
         #myTable tbody td:nth-child(n+5):nth-child(odd) {
-            background-color: #c6eee227;
+            background-color: #dcdde22f;
         }
     </style>
 @endsection
@@ -44,9 +44,13 @@
             { data: `absensi.${item.col_date}.in`, name: null, orderable: false, searchable: false,
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
-                    color = 'success';
+
                     if(abs.label_in==='(terlambat)'){
                         color = 'warning';
+                        return `
+                            ${abs.in}<br>
+                            <strong class="text-${color}">${abs.label_in}</strong>
+                        `;
                     }
 
                     if(abs.label_in==='alpha'){
@@ -62,10 +66,15 @@
                         `;
                     }
 
-                    return `
-                        ${abs.in}<br>
-                        <strong class="text-${color}">${abs.label_in}</strong>
-                    `;
+                    if(abs.label_in==='(ontime)'){
+                        color = 'success';
+                        return `
+                            ${abs.in}<br>
+                            <strong class="text-${color}">${abs.label_in}</strong>
+                        `;
+                    }
+
+                    return "";
                 }
             }
         );
@@ -74,26 +83,37 @@
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
                     color = 'success';
-                    if(abs.label_out==='(terlambat)'){
-                        color = 'warning';
-                    }
 
-                    if(abs.label_out==='off'){
-                        color = 'dark';
+                    if(abs.label_out==='(plg cepat)'){
+                        color = 'warning';
                         return `
+                            ${abs.out}<br>
                             <strong class="text-${color}">${abs.label_out}</strong>
                         `;
                     }
+
                     if(abs.label_out==='alpha'){
                         color = 'danger';
                         return `
                             <strong class="text-${color}">${abs.label_out}</strong>
                         `;
                     }
-                    return `
-                        ${abs.out}<br>
-                        <strong class="text-${color}">${abs.label_out}</strong>
-                    `;
+                    if(abs.label_out==='off'){
+                        color = 'dark';
+                        return `
+                            <strong class="text-${color}">${abs.label_out}</strong>
+                        `;
+                    }
+
+                    if(abs.label_out==='(ontime)'){
+                        color = 'success';
+                        return `
+                            ${abs.out}<br>
+                            <strong class="text-${color}">${abs.label_out}</strong>
+                        `;
+                    }
+
+                    return "";
                 }
             }
         );

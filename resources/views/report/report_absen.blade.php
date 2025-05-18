@@ -141,7 +141,7 @@
                                             {{-- kolom dinamis --}}
                                             @foreach ($dt['tglCol'] as $item)
                                             <th colspan="2" class="text-center text-nowrap
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':null }}
+                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':'bg-soft-secondary' }}
                                                 ">
                                                 {{ $item['col_day'] }} <br>
                                                 {{ $item['col_date'] }}
@@ -151,14 +151,12 @@
                                         <tr>
                                             {{-- kolom dinamis baris ke 2 --}}
                                             @foreach ($dt['tglCol'] as $item)
-                                            <th class="text-center
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':'bg-soft-success' }}">
-                                                <i class="fas fa-sign-in-alt text-success"></i>
+                                            <th class="text-center bg-soft-secondary">
+                                                <i class="fas fa-angle-double-down"></i>
 
                                             </th>
-                                            <th class="text-center
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':'bg-soft-warning' }}">
-                                                <i class="fas fa-sign-out-alt text-warning"></i>
+                                            <th class="text-center">
+                                                <i class="fas fa-angle-double-up"></i>
                                             </th>
                                             @endforeach
                                         </tr>
