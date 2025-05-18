@@ -2,11 +2,11 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
     <style>
-        #myTable tbody td:nth-child(n+5):nth-child(even) {
+        #myTable tbody td:nth-child(n+4):nth-child(odd) {
             background-color: #ffffff;
             line-height: 1;
         }
-        #myTable tbody td:nth-child(n+5):nth-child(odd) {
+        #myTable tbody td:nth-child(n+4):nth-child(even) {
             background-color: #dcdde22f;
             line-height: 1;
         }
