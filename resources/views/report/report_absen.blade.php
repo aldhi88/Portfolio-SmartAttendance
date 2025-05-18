@@ -136,8 +136,7 @@
                                         <tr>
                                             <th rowspan="2" class="text-center" style="min-width: 10px">No</th>
                                             <th rowspan="2" class="text-center">Nama</th>
-                                            <th rowspan="2" class="text-center">Perusahaan</th>
-                                            <th rowspan="2" class="text-center">Jabatan</th>
+                                            <th rowspan="2" class="text-center">Perusahaan <br> (Jabatan)</th>
                                             {{-- kolom dinamis --}}
                                             @foreach ($dt['tglCol'] as $item)
                                             <th colspan="2" class="text-center text-nowrap

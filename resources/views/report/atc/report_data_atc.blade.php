@@ -33,14 +33,10 @@
         { data: 'name', name: 'name', orderable: true, searchable:false },
         { data: 'master_organizations.name', name: 'master_organization_id', orderable: false, searchable:true,
             render: function (data, type, row, meta) {
-                return row.master_organizations ? row.master_organizations.name : '-';
-            }
-        },
-        { data: 'master_positions.name', name: 'master_position_id', orderable: false, searchable:false,
-            render: function (data, type, row, meta) {
-                return row.master_positions ? row.master_positions.name : '-';
+                return row.master_organizations.name+'<br>('+row.master_positions.name+')';
             }
         }
+
     ];
 
     tglCol.forEach(function(item) {
