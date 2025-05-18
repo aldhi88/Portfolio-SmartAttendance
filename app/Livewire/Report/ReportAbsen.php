@@ -11,7 +11,6 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use Carbon\Carbon;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ReportAbsen extends Component
@@ -80,6 +79,9 @@ class ReportAbsen extends Component
         $this->filter['master_organization_id'] = request()->query('master_organization_id', null);
         $this->filter['master_position_id'] = request()->query('master_position_id', null);
         $this->filter['name'] = request()->query('name', null);
+        $this->filter['org_label'] = collect($this->dt['organization'])->firstWhere('id', $this->filter['master_organization_id'])['name'] ?? null;
+        $this->filter['pos_label'] = collect($this->dt['position'])->firstWhere('id', $this->filter['master_position_id'])['name'] ?? null;
+
 
         $this->getTglCol();
         // dd($this->all());

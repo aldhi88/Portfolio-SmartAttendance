@@ -117,13 +117,13 @@
                         <div class="col">
                             <div class="form-group m-0">
                                 <label class="m-0">Perusahaan :</label>
-                                <h5 class="m-0" id="filter-organization">-</h5>
+                                <h5 class="m-0" id="filter-organization">{{ $filter['org_label']??'Semua' }}</h5>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group m-0">
                                 <label class="m-0">Jabatan :</label>
-                                <h5 class="m-0" id="filter-position">-</h5>
+                                <h5 class="m-0" id="filter-position">{{ $filter['pos_label']??'Semua' }}</h5>
                             </div>
                         </div>
                     </div>
