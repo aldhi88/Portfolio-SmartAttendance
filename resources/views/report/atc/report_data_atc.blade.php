@@ -49,7 +49,7 @@
                     const abs = row.absensi?.[item.col_date];
 
                     const colorMap = {
-                        '(on time)': 'success',
+                        '(dtg ontime)': 'success',
                         '(terlambat)': 'warning',
                         'alpha': 'danger',
                         '(off)': 'secondary',
@@ -70,7 +70,7 @@
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
                     const colorMap = {
-                        '(on time)': 'success',
+                        '(plg ontime)': 'success',
                         '(plg cepat)': 'warning',
                         'alpha': 'danger',
                         '(off)': 'secondary',

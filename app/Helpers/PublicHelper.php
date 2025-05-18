@@ -111,7 +111,7 @@ class PublicHelper
                         $waktuMasuk = Carbon::parse($logIn['time'])->format('H:i');
 
                         if ($waktuMasuk >= $checkinTime && $waktuMasuk <= $workTime) {
-                            $labelIn = '(on time)';
+                            $labelIn = '(dtg ontime)';
                             $jamIn = $waktuMasuk;
                         } elseif ($waktuMasuk > $workTime && $waktuMasuk <= $checkinDeadline) {
                             $labelIn = '(terlambat)';
@@ -124,7 +124,7 @@ class PublicHelper
                         $waktuPulang = Carbon::parse($logOut['time'])->format('H:i');
 
                         if ($waktuPulang >= $checkoutTime) {
-                            $labelOut = '(on time)';
+                            $labelOut = '(plg ontime)';
                             $jamOut = $waktuPulang;
                         } elseif ($waktuPulang > $checkinDeadline && $waktuPulang < $checkoutTime) {
                             $labelOut = '(plg cepat)';
@@ -233,7 +233,7 @@ class PublicHelper
                     $batasTerlambat = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_deadline_time']);
 
                     if ($waktuMasuk->between($batasAwal, $batasOntime)) {
-                        $labelIn = '(on time)';
+                        $labelIn = '(dtg ontime)';
                         $jamIn = $waktuMasuk->format('H:i');
                     } elseif ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
                         $labelIn = '(terlambat)';
@@ -251,7 +251,7 @@ class PublicHelper
                     $batasTerlambatPulang = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time']);
 
                     if ($waktuPulang->gte($batasPulang)) {
-                        $labelOut = '(on time)';
+                        $labelOut = '(plg ontime)';
                         $jamOut = $waktuPulang->format('H:i');
                     } elseif ($waktuPulang->between($batasTerlambatPulang, $batasPulang->copy()->subSecond())) {
                         $labelOut = '(plg cepat)';
