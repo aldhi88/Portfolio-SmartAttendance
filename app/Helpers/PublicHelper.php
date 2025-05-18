@@ -127,7 +127,7 @@ class PublicHelper
                             $labelOut = '(on time)';
                             $jamOut = $waktuPulang;
                         } elseif ($waktuPulang > $checkinDeadline && $waktuPulang < $checkoutTime) {
-                            $labelOut = '(cepat)';
+                            $labelOut = '(plg cepat)';
                             $jamOut = $waktuPulang;
                         }
                     }
