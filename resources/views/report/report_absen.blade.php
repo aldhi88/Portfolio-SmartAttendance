@@ -70,20 +70,33 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-md-7">
                                         <div class="form-group">
                                             <label>Nama Karyawan</label>
                                             <input type="text" wire:model="filter.name" name="name" class="form-control ex-filter">
                                         </div>
                                     </div>
+                                    <div class="col">
+                                        <div class="form-group mb-0 pb-0">
+                                            <label style="visibility: hidden">Action</label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <button type="submit" class="btn btn-info btn-block">Tampilkan Hasil Filter</button>
+                                            </div>
+                                            <div class="col">
+                                                <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset Filter</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col">
                                         <button type="submit" class="btn btn-info">Tampilkan Hasil Filter</button>
                                         <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary">Reset Filter</a>
                                     </div>
-                                </div>
+                                </div> --}}
 
                             </form>
                         </div>
