@@ -106,21 +106,17 @@ class PublicHelper
                     $logIn = $logsTanggalIni->sortBy('time')->first();
                     $logOut = $logsTanggalIni->sortByDesc('time')->first();
 
-                    // IN
+                   // IN
                     if ($logIn) {
                         $waktuMasuk = Carbon::parse($logIn['time'])->format('H:i');
 
                         if ($waktuMasuk >= $checkinTime && $waktuMasuk <= $workTime) {
-                            $labelIn = '(ontime)';
+                            $labelIn = '(on time)';
+                            $jamIn = $waktuMasuk;
                         } elseif ($waktuMasuk > $workTime && $waktuMasuk <= $checkinDeadline) {
                             $labelIn = '(terlambat)';
-                        } else {
-                            $waktuMasuk = null;
+                            $jamIn = $waktuMasuk;
                         }
-
-                        $jamIn = $waktuMasuk ?? '-';
-                    } else {
-                        $labelIn = 'alpha';
                     }
 
                     // OUT
@@ -128,15 +124,24 @@ class PublicHelper
                         $waktuPulang = Carbon::parse($logOut['time'])->format('H:i');
 
                         if ($waktuPulang >= $checkoutTime) {
-                            $labelOut = '(ontime)';
+                            $labelOut = '(on time)';
+                            $jamOut = $waktuPulang;
                         } elseif ($waktuPulang > $checkinDeadline && $waktuPulang < $checkoutTime) {
                             $labelOut = '(cepat)';
-                        } else {
-                            $waktuPulang = null;
+                            $jamOut = $waktuPulang;
                         }
+                    }
 
-                        $jamOut = $waktuPulang ?? '-';
-                    } else {
+                    if ($jamIn === '-' && $jamOut !== '-') {
+                        $labelIn = '(tdk absen)';
+                    }
+                    if ($jamIn !== '-' && $jamOut === '-') {
+                        $labelOut = '(tdk absen)';
+                    }
+
+                    // Jika keduanya tidak valid, maka alpha
+                    if ($jamIn === '-' && $jamOut === '-') {
+                        $labelIn = 'alpha';
                         $labelOut = 'alpha';
                     }
                 }
@@ -195,8 +200,8 @@ class PublicHelper
                 } else {
                     // OFF day
                     $result[$tanggalKey] = [
-                        'label_in'    => 'off',
-                        'label_out'   => 'off',
+                        'label_in'    => '(off)',
+                        'label_out'   => '(off)',
                         'in'          => '-',
                         'out'         => '-',
                         'tipe_jadwal' => $tipeJadwal,
@@ -228,7 +233,7 @@ class PublicHelper
                     $batasTerlambat = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_deadline_time']);
 
                     if ($waktuMasuk->between($batasAwal, $batasOntime)) {
-                        $labelIn = '(ontime)';
+                        $labelIn = '(on time)';
                         $jamIn = $waktuMasuk->format('H:i');
                     } elseif ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
                         $labelIn = '(terlambat)';
@@ -246,12 +251,19 @@ class PublicHelper
                     $batasTerlambatPulang = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time']);
 
                     if ($waktuPulang->gte($batasPulang)) {
-                        $labelOut = '(ontime)';
+                        $labelOut = '(on time)';
                         $jamOut = $waktuPulang->format('H:i');
                     } elseif ($waktuPulang->between($batasTerlambatPulang, $batasPulang->copy()->subSecond())) {
                         $labelOut = '(plg cepat)';
                         $jamOut = $waktuPulang->format('H:i');
                     }
+                }
+
+                if ($jamIn === '-' && $jamOut !== '-') {
+                    $labelIn = '(tdk absen)';
+                }
+                if ($jamIn !== '-' && $jamOut === '-') {
+                    $labelOut = '(tdk absen)';
                 }
 
                 // Final check: alpha jika benar-benar kosong

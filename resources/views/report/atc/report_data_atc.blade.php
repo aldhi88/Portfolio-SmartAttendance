@@ -3,9 +3,11 @@
     <style>
         #myTable tbody td:nth-child(n+5):nth-child(even) {
             background-color: #ffffff;
+            line-height: 1;
         }
         #myTable tbody td:nth-child(n+5):nth-child(odd) {
             background-color: #dcdde22f;
+            line-height: 1;
         }
     </style>
 @endsection
@@ -45,36 +47,20 @@
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
 
-                    if(abs.label_in==='(terlambat)'){
-                        color = 'warning';
-                        return `
-                            ${abs.in}<br>
-                            <strong class="text-${color}">${abs.label_in}</strong>
-                        `;
-                    }
+                    const colorMap = {
+                        '(on time)': 'success',
+                        '(terlambat)': 'warning',
+                        'alpha': 'danger',
+                        '(off)': 'secondary',
+                        '(tdk absen)': 'dark',
+                    };
 
-                    if(abs.label_in==='alpha'){
-                        color = 'danger';
-                        return `
-                            <strong class="text-${color}">${abs.label_in}</strong>
-                        `;
-                    }
-                    if(abs.label_in==='off'){
-                        color = 'dark';
-                        return `
-                            <strong class="text-${color}">${abs.label_in}</strong>
-                        `;
-                    }
+                    const color = colorMap[abs.label_in] ?? 'info';
 
-                    if(abs.label_in==='(ontime)'){
-                        color = 'success';
-                        return `
-                            ${abs.in}<br>
-                            <strong class="text-${color}">${abs.label_in}</strong>
-                        `;
-                    }
-
-                    return "";
+                    return `
+                        ${abs.in}<br>
+                        <strong class="text-${color}">${abs.label_in}</strong>
+                    `;
                 }
             }
         );
@@ -82,38 +68,18 @@
             { data: `absensi.${item.col_date}.out`, name: null, orderable: false, searchable: false,
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
-                    color = 'success';
-
-                    if(abs.label_out==='(plg cepat)'){
-                        color = 'warning';
-                        return `
-                            ${abs.out}<br>
-                            <strong class="text-${color}">${abs.label_out}</strong>
-                        `;
-                    }
-
-                    if(abs.label_out==='alpha'){
-                        color = 'danger';
-                        return `
-                            <strong class="text-${color}">${abs.label_out}</strong>
-                        `;
-                    }
-                    if(abs.label_out==='off'){
-                        color = 'dark';
-                        return `
-                            <strong class="text-${color}">${abs.label_out}</strong>
-                        `;
-                    }
-
-                    if(abs.label_out==='(ontime)'){
-                        color = 'success';
-                        return `
-                            ${abs.out}<br>
-                            <strong class="text-${color}">${abs.label_out}</strong>
-                        `;
-                    }
-
-                    return "";
+                    const colorMap = {
+                        '(on time)': 'success',
+                        '(plg cepat)': 'warning',
+                        'alpha': 'danger',
+                        '(off)': 'secondary',
+                        '(tdk absen)': 'dark',
+                    };
+                    const color = colorMap[abs.label_out] ?? 'info';
+                    return `
+                        ${abs.out}<br>
+                        <strong class="text-${color}">${abs.label_out}</strong>
+                    `;
                 }
             }
         );
