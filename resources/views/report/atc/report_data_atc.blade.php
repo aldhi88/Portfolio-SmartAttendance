@@ -86,9 +86,8 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: -1,dom: 'rt',
+        processing: true,serverSide: true,pageLength: 10,dom: 'rt',
         order: [[1, 'asc']],
-        fixedHeader: true,
         columnDefs: [
             { className: 'text-left text-nowrap', targets: [1] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
