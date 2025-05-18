@@ -1,5 +1,6 @@
 @section('style')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
     <style>
         #myTable tbody td:nth-child(n+5):nth-child(even) {
             background-color: #ffffff;
@@ -15,6 +16,7 @@
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
     <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
 @endsection
 
@@ -88,6 +90,9 @@
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: -1,dom: 'rt',
         order: [[1, 'asc']],
+        fixedColumns: {
+            leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix
+        },
         columnDefs: [
             { className: 'text-left text-nowrap', targets: [1] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
