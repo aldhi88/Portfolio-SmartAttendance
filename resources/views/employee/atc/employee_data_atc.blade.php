@@ -86,7 +86,7 @@
                 render: function (data, type, row, meta) {
                     if (row.master_schedules && row.master_schedules.length > 0) {
                         const list = row.master_schedules
-                            .map(schedule => `<li>${schedule.name}</li>`)
+                            .map(schedule => `<li>${schedule.kode}</li>`)
                             .join('');
                         return `<ul class="mb-0 pl-3">${list}</ul>`;
                     } else {

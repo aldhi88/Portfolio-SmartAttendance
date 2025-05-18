@@ -79,7 +79,7 @@ class OrganizationData extends Component
     public function wireDelete()
     {
         if($this->masterOrganizationRepo->delete($this->deleteId)){
-            $this->dispatch('reloadDT',data:'dtTable');
+            $this->dispatch('reloadDT',data:'myTable');
             $this->dispatch('closeModal',id:'modalConfirmDelete');
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
             return;

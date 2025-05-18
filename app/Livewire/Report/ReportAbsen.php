@@ -45,50 +45,44 @@ class ReportAbsen extends Component
 
     public function getTglCol()
     {
+        if ($this->filter['thisMonth'] == date('m') && $this->filter['thisYear'] == date('Y')) {
+            $start = Carbon::now()->startOfMonth();
+            $end = Carbon::now();
+        } else {
+            $start = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->startOfMonth();
+            $end = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->endOfMonth();
+        }
+
         $dates = collect();
-        while ($this->start->lte($this->end)) {
+        while ($start->lte($end)) {
             $dates->push([
-                'col_date' => $this->start->format('d-M-Y'),
-                'col_day' => PublicHelper::hariIndoByEng($this->start->format('l')),
+                'col_date' => $start->format('d'),
+                'col_day' => PublicHelper::hariIndoByEng($start->format('l')),
             ]);
 
-            $this->start->addDay();
+            $start->addDay();
         }
 
         $this->dt['tglCol'] = $dates->toArray();
-        // dd($this->all());
+        $this->thisMonthLabel = $this->dt['indoMonthList'][$this->filter['thisMonth']];
     }
 
     public $dt;
-    public $start;
-    public $end;
-    public $month;
-    public $year;
+    public $filter;
+    public $thisMonthLabel;
     public function mount()
     {
         $this->dt['organization'] = $this->masterOrganizationRepo->getAll()->toArray();
         $this->dt['position'] = $this->masterPositionRepo->getAll()->toArray();
         $this->dt['indoMonthList'] = PublicHelper::indoMonthList();
-
-        $this->month = request()->query('month');
-        $this->year = request()->query('year');
-
-        if ($this->month && $this->year) {
-            $this->start = Carbon::create($this->year, $this->month, 1)->startOfMonth();
-            if ($this->month == Carbon::now()->format('m') && $this->year == Carbon::now()->format('Y')) {
-                $this->end = Carbon::now();
-            } else {
-                $this->end = Carbon::create($this->year, $this->month, 1)->endOfMonth();
-            }
-        } else {
-            $this->month = date('m');
-            $this->year = date('Y');
-            $this->start = Carbon::now()->startOfMonth();
-            $this->end = Carbon::now();
-        }
-
+        $this->filter['thisMonth'] = request()->query('month', date('m'));
+        $this->filter['thisYear'] = request()->query('year', date('Y'));
+        $this->filter['master_organization_id'] = request()->query('master_organization_id', null);
+        $this->filter['master_position_id'] = request()->query('master_position_id', null);
+        $this->filter['name'] = request()->query('name', null);
 
         $this->getTglCol();
+        // dd($this->all());
     }
 
     public $pass;

@@ -71,9 +71,6 @@
         </div>
         <hr>
         <div class="row">
-            {{-- <div class="col-12">
-                <h5 class="bg-white mb-2 py-2 pl-2">Jam Absen Pagi</h5>
-            </div> --}}
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Check-In (Pagi)</label>
@@ -128,10 +125,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Check-In (Sore)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-sore
-                        @error('dtRotasi.day_work.shift_sore.checkin_time') is-invalid @enderror" id="checkin_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.sore.checkin_time" class="form-control input-mask-time-sore
+                        @error('dtRotasi.day_work.rotasi.sore.checkin_time') is-invalid @enderror" id="checkin_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_sore.checkin_time')
+                    @error('dtRotasi.day_work.rotasi.sore.checkin_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -139,10 +136,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Akhir Check-In Ontime  (Sore)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-sore
-                        @error('dtRotasi.day_work.shift_sore.work_time') is-invalid @enderror" id="work_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.sore.work_time" class="form-control input-mask-time-sore
+                        @error('dtRotasi.day_work.rotasi.sore.work_time') is-invalid @enderror" id="work_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_sore.work_time')
+                    @error('dtRotasi.day_work.rotasi.sore.work_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -150,10 +147,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Akhir Check-In  (Sore)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-sore
-                        @error('dtRotasi.day_work.shift_sore.checkin_deadline_time') is-invalid @enderror" id="checkin_deadline_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.sore.checkin_deadline_time" class="form-control input-mask-time-sore
+                        @error('dtRotasi.day_work.rotasi.sore.checkin_deadline_time') is-invalid @enderror" id="checkin_deadline_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_sore.checkin_deadline_time')
+                    @error('dtRotasi.day_work.rotasi.sore.checkin_deadline_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -161,10 +158,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Checkout  (Sore)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-sore
-                        @error('dtRotasi.day_work.shift_sore.checkout_time') is-invalid @enderror" id="checkout_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.sore.checkout_time" class="form-control input-mask-time-sore
+                        @error('dtRotasi.day_work.rotasi.sore.checkout_time') is-invalid @enderror" id="checkout_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_sore.checkout_time')
+                    @error('dtRotasi.day_work.rotasi.sore.checkout_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -175,10 +172,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Check-In (Malam)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-malam
-                        @error('dtRotasi.day_work.shift_malam.checkout_time') is-invalid @enderror" id="checkout_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.malam.checkin_time" class="form-control input-mask-time-malam
+                        @error('dtRotasi.day_work.rotasi.malam.checkin_time') is-invalid @enderror" id="checkin_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_malam.checkout_time')
+                    @error('dtRotasi.day_work.rotasi.malam.checkin_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -186,10 +183,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Akhir Check-In Ontime  (Malam)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-malam
-                        @error('dtRotasi.day_work.shift_malam.work_time') is-invalid @enderror" id="work_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.malam.work_time" class="form-control input-mask-time-malam
+                        @error('dtRotasi.day_work.rotasi.malam.work_time') is-invalid @enderror" id="work_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_malam.work_time')
+                    @error('dtRotasi.day_work.rotasi.malam.work_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -197,10 +194,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Akhir Check-In  (Malam)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-malam
-                        @error('dtRotasi.day_work.shift_malam.checkin_deadline_time') is-invalid @enderror" id="checkin_deadline_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.malam.checkin_deadline_time" class="form-control input-mask-time-malam
+                        @error('dtRotasi.day_work.rotasi.malam.checkin_deadline_time') is-invalid @enderror" id="checkin_deadline_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_malam.checkin_deadline_time')
+                    @error('dtRotasi.day_work.rotasi.malam.checkin_deadline_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -208,10 +205,10 @@
             <div class="col-6 col-md-3">
                 <div class="form-group">
                     <label>Jam Boleh Checkout  (Malam)</label>
-                    <input placeholder="HH:MM" class="form-control input-mask-time-malam
-                        @error('dtRotasi.day_work.shift_malam.checkout_time') is-invalid @enderror" id="checkout_time"
+                    <input placeholder="HH:MM" wire:model="dtRotasi.day_work.rotasi.malam.checkout_time" class="form-control input-mask-time-malam
+                        @error('dtRotasi.day_work.rotasi.malam.checkout_time') is-invalid @enderror" id="checkout_time"
                         data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtRotasi.day_work.shift_malam.checkout_time')
+                    @error('dtRotasi.day_work.rotasi.malam.checkout_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

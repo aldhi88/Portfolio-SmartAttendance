@@ -41,6 +41,15 @@ class ScheduleEdit extends Component
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
             "dtRotasi.day_work.off_day" => "required|numeric|min:1",
+
+            "dtRotasi.day_work.rotasi.sore.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.sore.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.sore.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.sore.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.malam.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.malam.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.malam.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+            "dtRotasi.day_work.rotasi.malam.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
         ];
     }
     // end edit rotasi
@@ -81,24 +90,34 @@ class ScheduleEdit extends Component
     public $validationAttributes = [
         "dtTetap.kode" => "Kode Jadwal",
         "dtTetap.name" => "Nama Jadwal",
-        "dtTetap.checkin_time" => "Jam Boleh Absen Masuk",
-        "dtTetap.work_time" => "Jam Mulai Kerja ",
-        "dtTetap.checkin_deadline_time" => "Jam Batas Toleransi",
-        "dtTetap.checkout_time" => "Jam Pulang",
+        "dtTetap.checkin_time" => "Jam Boleh Check-In",
+        "dtTetap.work_time" => "Jam Akhir Check-In Ontime",
+        "dtTetap.checkin_deadline_time" => "Jam Akhir Check-In",
+        "dtTetap.checkout_time" => "Jam Boleh Checkout",
         "dtTetap.day_work.regular" => "Hari Kerja Regular",
         "dtTetap.day_work.lembur" => "Hari Kerja Lembur",
 
         "dtRotasi.kode" => "Kode Jadwal",
         "dtRotasi.name" => "Nama Jadwal",
-        "dtRotasi.checkin_time" => "Jam Boleh Absen Masuk",
-        "dtRotasi.work_time" => "Jam Mulai Kerja ",
-        "dtRotasi.checkin_deadline_time" => "Jam Batas Toleransi",
-        "dtRotasi.checkout_time" => "Jam Pulang",
+        "dtRotasi.checkin_time" => "Jam Boleh Check-In",
+        "dtRotasi.work_time" => "Jam Akhir Check-In Ontime",
+        "dtRotasi.checkin_deadline_time" => "Jam Akhir Check-In",
+        "dtRotasi.checkout_time" => "Jam Boleh Checkout",
         "dtRotasi.day_work.regular" => "Hari Kerja Regular",
         "dtRotasi.day_work.lembur" => "Hari Kerja Lembur",
         "dtRotasi.day_work.start_date" => "Tanggal Mulai Rotasi",
         "dtRotasi.day_work.work_day" => "Jumlah Hari Kerja",
         "dtRotasi.day_work.off_day" => "Jumlah Hari Off",
+
+        "dtRotasi.day_work.rotasi.sore.checkin_time" => "Jam Boleh Check-In",
+        "dtRotasi.day_work.rotasi.sore.work_time" => "Jam Akhir Check-In Ontime",
+        "dtRotasi.day_work.rotasi.sore.checkin_deadline_time" => "Jam Akhir Check-In",
+        "dtRotasi.day_work.rotasi.sore.checkout_time" => "Jam Boleh Checkout",
+
+        "dtRotasi.day_work.rotasi.malam.checkin_time" => "Jam Boleh Check-In",
+        "dtRotasi.day_work.rotasi.malam.work_time" => "Jam Akhir Check-In Ontime",
+        "dtRotasi.day_work.rotasi.malam.checkin_deadline_time" => "Jam Akhir Check-In",
+        "dtRotasi.day_work.rotasi.malam.checkout_time" => "Jam Boleh Checkout",
     ];
 
     protected $messages = [
@@ -111,17 +130,26 @@ class ScheduleEdit extends Component
         'dtRotasi.work_time.regex' => 'Format tidak valid (ex: 08:00)',
         'dtRotasi.checkin_deadline_time.regex' => 'Format tidak valid (ex: 08:00)',
         'dtRotasi.checkout_time.regex' => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.sore.checkin_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.sore.work_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.sore.checkin_deadline_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.sore.checkout_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.malam.checkin_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.malam.work_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.malam.checkin_deadline_time.regex" => 'Format tidak valid (ex: 08:00)',
+        "dtRotasi.day_work.rotasi.malam.checkout_time.regex" => 'Format tidak valid (ex: 08:00)',
     ];
 
     public $hariIndo;
     public function mount()
     {
         $this->hariIndo = PublicHelper::getHariIndo();
-        if($this->pass['type'] == "tetap"){
+        if($this->pass['type'] == "Tetap"){
             $this->genDataEditTetap();
         }else{
             $this->genDataEditRotasi();
         }
+        // dd($this->dtRotasi);
     }
 
     public function genDataEditTetap()
