@@ -13,7 +13,7 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'asc']],
         columnDefs: [
-            { className: 'text-left text-nowrap', targets: [4,5] },
+            { className: 'text-left text-nowrap', targets: [5,6] },
             { className: 'px-0 text-nowrap', targets: [1] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
@@ -81,6 +81,7 @@
                     return el;
                 }
             },
+            { data: 'role_name', name: 'user_logins.user_role_id', orderable: false, searchable:true},
             { data: 'name', name: 'name', orderable: false, searchable:true },
             { data: null, name: 'master_schedule_id',orderable: false, searchable: false,
                 render: function (data, type, row, meta) {

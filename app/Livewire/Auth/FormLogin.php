@@ -3,8 +3,6 @@
 namespace App\Livewire\Auth;
 
 use App\Repositories\Interfaces\AuthInterface;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 class FormLogin extends Component
@@ -20,21 +18,17 @@ class FormLogin extends Component
     public function formSubmit()
     {
         $validated = $this->validate();
-
-        if ($this->authRepository->login($validated['dt'])) {
-            return redirect()->route('anchor');
-        }else{
-            session()->flash('message', 'Data login tidak ditemukan');
+        $cekLogin = $this->authRepository->login($validated['dt']);
+        if($cekLogin==='invalid_role'){
+            session()->flash('message', 'Aplikasi ini terbatas hanya untuk pengawas');
+            return;
         }
 
-        // $user = $this->userLoginRepository->getByUsername($this->dt['username']);
-        // if ($user && Hash::check($this->dt['password'], $user->password)) {
-        //     Auth::loginUsingId($user->id);
-        //     return redirect()->route('anchor');
-        // }else{
-        //     session()->flash('message', 'ID Login anda tidak ditemukan');
-        // }
+        if($cekLogin){
+            return redirect()->route('anchor');
+        }
 
+        session()->flash('message', 'Data login tidak ditemukan');
     }
 
     public $showPassword = false;

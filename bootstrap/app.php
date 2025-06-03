@@ -2,11 +2,16 @@
 
 use App\Http\Middleware\BlockApiBrowserRequest;
 use App\Http\Middleware\BlockHttpApiRequest;
+use App\Http\Middleware\CheckAuthorization;
 use App\Http\Middleware\CheckKeyApiRequest;
 use App\Repositories\AuthRepository;
 use App\Repositories\DataEmployeeRepo;
+use App\Repositories\DataLiburIzinRepo;
+use App\Repositories\DataLiburRepo;
 use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\DataEmployeeFace;
+use App\Repositories\Interfaces\DataLiburFace;
+use App\Repositories\Interfaces\DataLiburIzinFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
@@ -16,6 +21,7 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
+use App\Repositories\Interfaces\UserRoleFace;
 use App\Repositories\Interfaces\UserRoleInterface;
 use App\Repositories\LogAttendanceRepository;
 use App\Repositories\MasterFunctionRepo;
@@ -26,6 +32,7 @@ use App\Repositories\MasterPositionRepo;
 use App\Repositories\MasterScheduleRepo;
 use App\Repositories\RelDataEmployeeMasterScheduleRepo;
 use App\Repositories\UserLoginRepository;
+use App\Repositories\UserRoleRepo;
 use App\Repositories\UserRoleRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -45,6 +52,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn (Request $request) => route('auth.formLogin'));
 
+        $middleware->web(append: [
+            CheckAuthorization::class,
+
+        ]);
         $middleware->api(append: [
             BlockApiBrowserRequest::class,
             BlockHttpApiRequest::class,
@@ -67,5 +78,8 @@ return Application::configure(basePath: dirname(__DIR__))
         MasterScheduleFace::class => MasterScheduleRepo::class,
         RelDataEmployeeMasterScheduleFace::class => RelDataEmployeeMasterScheduleRepo::class,
         DataEmployeeFace::class => DataEmployeeRepo::class,
+        DataLiburFace::class => DataLiburRepo::class,
+        DataLiburIzinFace::class => DataLiburIzinRepo::class,
+        UserRoleFace::class => UserRoleRepo::class,
     ])
     ->create();

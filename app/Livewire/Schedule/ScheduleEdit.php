@@ -144,12 +144,12 @@ class ScheduleEdit extends Component
     public function mount()
     {
         $this->hariIndo = PublicHelper::getHariIndo();
-        if($this->pass['type'] == "Tetap"){
+        if($this->pass['type'] == "tetap"){
             $this->genDataEditTetap();
         }else{
             $this->genDataEditRotasi();
         }
-        // dd($this->dtRotasi);
+        // dd($this->all());
     }
 
     public function genDataEditTetap()

@@ -10,7 +10,7 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -50,7 +50,7 @@ class EmployeeCreate extends Component
     public function wireSubmit()
     {
         // dd($this->dtForm);
-        $this->validate();
+        // $this->validate();
         $dtEmployee = $this->dtForm;
         $dtEmployee['status'] = 'Aktif';
         // dd($this->dtForm);
@@ -61,6 +61,78 @@ class EmployeeCreate extends Component
             $dtEmployee['username'],
             $dtEmployee['password'],
         );
+
+
+        $selectedIds = collect($this->dtForm['master_schedule_id'])
+            ->filter(fn($val) => $val === true)
+            ->keys();
+
+        if ($selectedIds->count() > 1) {
+            $activeSchedules = [];
+
+            foreach ($selectedIds as $id) {
+                $effective = $this->dtForm['effective_at'][$id] ?? null;
+                $expired   = $this->dtForm['expired_at'][$id] ?? null;
+
+                if ($effective) {
+                    $start = $effective;
+                    $end = $expired ? $expired : null;
+
+                    $activeSchedules[] = [
+                        'id' => $id,
+                        'start' => $start,
+                        'end' => $end,
+                    ];
+                }
+            }
+
+            $activeWithoutEnd = collect($activeSchedules)->filter(fn($s) => is_null($s['end']));
+
+            if ($activeWithoutEnd->count() > 1) {
+                $this->addError('multi_schedule', 'Tanggal Selesai belum ditentukan, hanya jadwal aktif yang boleh tanpa Tanggal Selesai');
+                return;
+            }
+
+            $itemsToCheck = [];
+
+            foreach ($activeSchedules as $item) {
+                $start = Carbon::parse($item['start']);
+                $end = array_key_exists('end', $item) && !is_null($item['end'])
+                    ? Carbon::parse($item['end'])
+                    : Carbon::parse('9999-12-31');
+                // Jika end ada (bukan null), cek apakah start <= end
+                if (array_key_exists('end', $item) && !is_null($item['end'])) {
+                    if ($start > $end) {
+                        $this->addError('multi_schedule', 'Tanggal tidak valid, silahkan periksa lagi');
+                        return;
+                    }
+                }
+
+                $itemsToCheck[] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'id' => $item['id'] ?? null,
+                ];
+            }
+
+            // Urutkan berdasarkan start
+            usort($itemsToCheck, function ($a, $b) {
+                return $a['start']->timestamp <=> $b['start']->timestamp;
+            });
+
+            // Cek overlap antar jadwal
+            for ($i = 0; $i < count($itemsToCheck) - 1; $i++) {
+                $currentEnd = $itemsToCheck[$i]['end'];
+                $nextStart = $itemsToCheck[$i + 1]['start'];
+
+                if ($nextStart <= $currentEnd) {
+                    $this->addError('multi_schedule', 'Tanggal tidak valid, silahkan periksa lagi');
+                    return;
+                }
+            }
+
+
+        }
 
         $index = 0;
         foreach ($this->dtForm['master_schedule_id'] as $key => $value) {
@@ -73,6 +145,7 @@ class EmployeeCreate extends Component
             $index++;
         }
 
+
         $dtLogin['nickname'] = $this->dtForm['name'];
         $dtLogin['username'] = $this->dtForm['username'];
         $dtLogin['password'] = Hash::make($this->dtForm['password']);
@@ -80,13 +153,13 @@ class EmployeeCreate extends Component
         // dd($dtEmployee, $dtRel, $dtLogin);
 
         try {
-            DB::transaction(function () use($dtEmployee, $dtRel, $dtLogin) {
+            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin) {
                 $userId = $this->userLoginRepository->create($dtLogin);
-                if($userId){
+                if ($userId) {
                     $dtEmployee['user_login_id'] = $userId;
                     $this->dataEmployeeRepo->createForm($dtEmployee);
                     $this->relDataEmployeeMasterScheduleRepo->insert($dtRel);
-                }else{
+                } else {
                     throw new \Exception('Gagal membuat user login.');
                 }
             });
@@ -97,17 +170,27 @@ class EmployeeCreate extends Component
             // dd($e);
             $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
         }
-
     }
+
+    // public function updated($property, $value)
+    // {
+    //     foreach ($value as $key => $item) {
+    //         if(!$item){
+    //             unset($va);
+    //         }
+    //     }
+
+    //     dd($property, $value, $this->dtForm['master_schedule_id']);
+    // }
 
     public function checkSchedule($id)
     {
         $this->dtForm['expired_at'][$id] = null;
         $this->dtForm['effective_at'][$id] = null;
 
-        if($this->dtForm['master_schedule_id'][$id]){
+        if ($this->dtForm['master_schedule_id'][$id]) {
             $this->dtForm['effective_at'][$id] = date('Y-m-d');
-        }else{
+        } else {
             unset(
                 $this->dtForm['master_schedule_id'][$id],
                 $this->dtForm['effective_at'][$id],

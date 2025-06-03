@@ -26,6 +26,10 @@ class DataEmployee extends Model
         ->withTimestamps();
     }
 
+    public function data_izins():HasMany
+    {
+        return $this->hasMany(DataIzin::class, 'data_employee_id', 'id');
+    }
     public function user_logins():BelongsTo
     {
         return $this->belongsTo(UserLogin::class, 'user_login_id', 'id');

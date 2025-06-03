@@ -29,7 +29,7 @@ class RelDataEmployeeMasterScheduleRepo implements RelDataEmployeeMasterSchedule
                 $scheduleId = $item['master_schedule_id'];
                 $syncData[$scheduleId] = [
                     'effective_at' => $item['effective_at'],
-                    'expired_at'   => $item['expired_at'],
+                    'expired_at'   => $item['expired_at']!=""?$item['expired_at']:null,
                 ];
             }
 
@@ -47,8 +47,20 @@ class RelDataEmployeeMasterScheduleRepo implements RelDataEmployeeMasterSchedule
 
     public function delByCol($col, $val)
     {
+        // dd($col, $val);
         try {
             RelDataEmployeeMasterSchedule::where($col, $val)->delete();
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Delete rel_data_employee_master_schedules failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+    public function delByColMulti($col, $val)
+    {
+        // dd($col, $val);
+        try {
+            RelDataEmployeeMasterSchedule::whereIn($col, $val)->delete();
             return true;
         } catch (\Exception $e) {
             Log::error("Delete rel_data_employee_master_schedules failed", ['error' => $e->getMessage()]);

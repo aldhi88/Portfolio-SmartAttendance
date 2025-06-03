@@ -9,4 +9,5 @@ interface RelDataEmployeeMasterScheduleFace
     public function isExistByCol($col, $val);
     public function getMultiByCol($col, $val);
     public function delByCol($col, $val);
+    public function delByColMulti($col, $val);
 }

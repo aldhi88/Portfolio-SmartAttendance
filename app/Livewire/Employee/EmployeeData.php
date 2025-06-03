@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
+use App\Repositories\Interfaces\UserRoleFace;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -24,6 +25,7 @@ class EmployeeData extends Component
     protected $dataEmployeeRepo;
     protected $userLoginRepository;
     protected $masterSchedulesRepo;
+    protected $userRoleRepo;
 
     public function boot(
         MasterOrganizationFace $masterOrganizationRepo,
@@ -34,6 +36,7 @@ class EmployeeData extends Component
         DataEmployeeFace $dataEmployeeRepo,
         UserLoginInterface $userLoginRepository,
         MasterScheduleFace $masterSchedulesRepo,
+        UserRoleFace $userRoleRepo,
     ) {
         $this->masterOrganizationRepo = $masterOrganizationRepo;
         $this->masterPositionRepo = $masterPositionRepo;
@@ -43,6 +46,7 @@ class EmployeeData extends Component
         $this->dataEmployeeRepo = $dataEmployeeRepo;
         $this->userLoginRepository = $userLoginRepository;
         $this->masterSchedulesRepo = $masterSchedulesRepo;
+        $this->userRoleRepo = $userRoleRepo;
     }
 
     // delete section
@@ -54,6 +58,7 @@ class EmployeeData extends Component
     }
     public function wireDelete()
     {
+        dd($this->all());
         try {
             DB::transaction(function () {
                 $userLoginId = $this->dataEmployeeRepo->getColValByCol('id', $this->deleteId, 'user_login_id');
@@ -77,15 +82,16 @@ class EmployeeData extends Component
     }
     public function deleteMultiple()
     {
+        // dd($this->all());
         try {
             DB::transaction(function () {
-                $userLoginId = $this->dataEmployeeRepo->getColValByCol('id', $this->deleteId, 'user_login_id');
-                $this->relDataEmployeeMasterScheduleRepo->delByCol('data_employee_id', $this->deleteId);
-                $this->dataEmployeeRepo->delete($this->deleteId);
-                $this->userLoginRepository->delete($userLoginId);
+                $userLoginId = $this->dataEmployeeRepo->getColValByColMulti('id', $this->deleteMultipleId, 'user_login_id');
+                $this->relDataEmployeeMasterScheduleRepo->delByColMulti('data_employee_id', $this->deleteMultipleId);
+                $this->dataEmployeeRepo->deleteMulti($this->deleteMultipleId);
+                $this->userLoginRepository->deleteMulti($userLoginId);
             });
             $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmDelete');
+            $this->dispatch('closeModal',id:'modalConfirmDeleteMultiple');
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
         } catch (\Throwable $e) {
             $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
@@ -101,6 +107,8 @@ class EmployeeData extends Component
         $this->dt['location'] = $this->masterLocationRepo->getAll()->toArray();
         $this->dt['function'] = $this->masterFunctionRepo->getAll()->toArray();
         $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
+        $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
+        $this->dt['roles'] = $this->userRoleRepo->getAll()->toArray();
     }
 
     public $pass;

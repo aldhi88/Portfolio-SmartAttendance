@@ -142,7 +142,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>Status</label>
+                            <label>Aktifasi</label>
                             <select wire:model="dtForm.status"
                                 class="form-control @error('dtForm.status') is-invalid @enderror">
                                 <option value="Aktif">Aktif</option>
@@ -154,12 +154,33 @@
                             @enderror
                         </div>
                     </div>
+
+                    @if (Auth::user()->user_roles->id == 100)
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select wire:model="dtForm.role"
+                                    class="form-control @error('dtForm.role') is-invalid @enderror">
+                                    @foreach ($dtEdit['roles'] as $item)
+                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                    @endforeach
+                                </select>
+                                @error('dtForm.role')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
             </div>
 
             <div class="col">
                 <label>Pilih Jadwal Kerja :</label>
                 @error('dtForm.master_schedule_id')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+                @error('multi_schedule')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
                 <div class="table-responsive bg-white">

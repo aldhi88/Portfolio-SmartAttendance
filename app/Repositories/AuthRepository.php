@@ -10,14 +10,35 @@ class AuthRepository implements AuthInterface
 {
     public function login($data)
     {
-        $isLoginValid = Auth::attempt(
-            [
-                'username' => $data['username'],
-                'password' => $data['password']
-            ]
-        );
+        $credentials = [
+            'username' => $data['username'],
+            'password' => $data['password'],
+        ];
 
-        return $isLoginValid;
+        if (Auth::validate($credentials)) {
+            $user = UserLogin::query()
+                ->with('user_roles:id,name')
+                ->where('username', $data['username'])
+                ->first()
+                ->toArray()
+                ;
+
+            // if (in_array($user['user_roles']['name'], ['Supervisor', 'Super User'])) {
+            //     $isLoginValid = Auth::attempt($credentials );
+            //     return $isLoginValid;
+            // }else{
+            //     return "non pengawas";
+            // }
+            if (in_array($user['user_roles']['id'], [300])) {
+                return "invalid_role";
+            }
+            $isLoginValid = Auth::attempt($credentials );
+            return $isLoginValid;
+
+        }
+
+        return false;
+
     }
     public function logout()
     {

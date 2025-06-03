@@ -44,41 +44,52 @@
 
     tglCol.forEach(function(item) {
         pushCols.push(
-            { data: `absensi.${item.col_date}.in`, name: null, orderable: false, searchable: false,
+            { data: `absensi.${item.col_date}.time_in`, name: null, orderable: false, searchable: false,
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
-
                     const colorMap = {
-                        '(dtg ontime)': 'success',
-                        '(terlambat)': 'warning',
+                        'izin': 'warning',
+                        'hadir': 'success',
                         'alpha': 'danger',
-                        '(off)': 'secondary',
-                        '(tdk absen)': 'dark',
+                        'tgl merah': 'danger',
+                        'off': 'secondary',
                     };
 
-                    const color = colorMap[abs.label_in] ?? 'info';
+                    let color = colorMap[abs.status] ?? 'info';
+                    if(
+                        abs.label_in=='tdk absen' ||
+                        abs.label_in=='terlambat'
+                    ){
+                        color = 'dark';
+                    }
 
                     return `
-                        ${abs.in}<br>
+                        ${abs.time_in}<br>
                         <strong class="text-${color}">${abs.label_in}</strong>
                     `;
                 }
             }
         );
         pushCols.push(
-            { data: `absensi.${item.col_date}.out`, name: null, orderable: false, searchable: false,
+            { data: `absensi.${item.col_date}.time_out`, name: null, orderable: false, searchable: false,
                 render: function (data, type, row) {
                     const abs = row.absensi?.[item.col_date];
                     const colorMap = {
-                        '(plg ontime)': 'success',
-                        '(plg cepat)': 'warning',
+                        'izin': 'warning',
+                        'hadir': 'success',
                         'alpha': 'danger',
-                        '(off)': 'secondary',
-                        '(tdk absen)': 'dark',
+                        'tgl merah': 'danger',
+                        'off': 'secondary',
                     };
-                    const color = colorMap[abs.label_out] ?? 'info';
+                    let color = colorMap[abs.status] ?? 'info';
+                    if(
+                        abs.label_out=='tdk absen' ||
+                        abs.label_out=='plg cepat'
+                    ){
+                        color = 'dark';
+                    }
                     return `
-                        ${abs.out}<br>
+                        ${abs.time_out}<br>
                         <strong class="text-${color}">${abs.label_out}</strong>
                     `;
                 }

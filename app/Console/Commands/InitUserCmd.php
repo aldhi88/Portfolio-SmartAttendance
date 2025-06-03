@@ -42,22 +42,14 @@ class InitUserCmd extends Command
                     ],
                 ]
             ],
-            // [
-            //     'id' => 200,
-            //     'name' => 'Administrator',
-            //     'user_logins' => [
-            //         [
-            //             'id' => 201,
-            //             'user_role_id' => 200,
-            //             'nickname' => 'admin',
-            //             'username' => 'admin',
-            //             'password' => Hash::make('admin'),
-            //         ],
-            //     ]
-            // ],
+            [
+                'id' => 200,
+                'name' => 'Pengawas',
+                'user_logins' => []
+            ],
             [
                 'id' => 300,
-                'name' => 'Employee',
+                'name' => 'Karyawan',
                 'user_logins' => []
             ],
         ];

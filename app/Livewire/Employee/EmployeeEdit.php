@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
+use App\Repositories\Interfaces\UserRoleFace;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -26,6 +27,7 @@ class EmployeeEdit extends Component
     protected $dataEmployeeRepo;
     protected $relDataEmployeeMasterScheduleRepo;
     protected $userLoginRepository;
+    protected $userRoleRepo;
     public function boot(
         MasterOrganizationFace $masterOrganizationRepo,
         MasterPositionFace $masterPositionRepo,
@@ -34,7 +36,8 @@ class EmployeeEdit extends Component
         MasterScheduleFace $masterScheduleRepo,
         DataEmployeeFace $dataEmployeeRepo,
         RelDataEmployeeMasterScheduleFace $relDataEmployeeMasterScheduleRepo,
-        UserLoginInterface $userLoginRepository
+        UserLoginInterface $userLoginRepository,
+        UserRoleFace $userRoleRepo
     ) {
         $this->masterOrganizationRepo = $masterOrganizationRepo;
         $this->masterPositionRepo = $masterPositionRepo;
@@ -44,13 +47,13 @@ class EmployeeEdit extends Component
         $this->dataEmployeeRepo = $dataEmployeeRepo;
         $this->relDataEmployeeMasterScheduleRepo = $relDataEmployeeMasterScheduleRepo;
         $this->userLoginRepository = $userLoginRepository;
+        $this->userRoleRepo = $userRoleRepo;
     }
 
     // insert
     public function wireSubmit()
     {
-        // dd($this->dtForm);
-        $this->validate();
+        // $this->validate();
         $dtEmployee = $this->dtForm;
         unset(
             $dtEmployee['id'],
@@ -64,7 +67,79 @@ class EmployeeEdit extends Component
             $dtEmployee['user_logins'],
             $dtEmployee['username'],
             $dtEmployee['password'],
+            $dtEmployee['role'],
         );
+
+        $selectedIds = collect($this->dtForm['master_schedule_id'])
+            ->filter(fn($val) => $val === true)
+            ->keys();
+
+        if ($selectedIds->count() > 1) {
+            $activeSchedules = [];
+
+            foreach ($selectedIds as $id) {
+                $effective = $this->dtForm['effective_at'][$id] ?? null;
+                $expired   = $this->dtForm['expired_at'][$id] ?? null;
+
+                if ($effective) {
+                    $start = $effective;
+                    $end = $expired ? $expired : null;
+
+                    $activeSchedules[] = [
+                        'id' => $id,
+                        'start' => $start,
+                        'end' => $end,
+                    ];
+                }
+            }
+
+            $activeWithoutEnd = collect($activeSchedules)->filter(fn($s) => is_null($s['end']));
+
+            if ($activeWithoutEnd->count() > 1) {
+                $this->addError('multi_schedule', 'Tanggal Selesai belum ditentukan, hanya jadwal aktif yang boleh tanpa Tanggal Selesai');
+                return;
+            }
+
+            $itemsToCheck = [];
+
+            foreach ($activeSchedules as $item) {
+                $start = Carbon::parse($item['start']);
+                $end = array_key_exists('end', $item) && !is_null($item['end'])
+                    ? Carbon::parse($item['end'])
+                    : Carbon::parse('9999-12-31');
+                // Jika end ada (bukan null), cek apakah start <= end
+                if (array_key_exists('end', $item) && !is_null($item['end'])) {
+                    if ($start > $end) {
+                        $this->addError('multi_schedule', 'Tanggal tidak valid, silahkan periksa lagi');
+                        return;
+                    }
+                }
+
+                $itemsToCheck[] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'id' => $item['id'] ?? null,
+                ];
+            }
+
+            // Urutkan berdasarkan start
+            usort($itemsToCheck, function ($a, $b) {
+                return $a['start']->timestamp <=> $b['start']->timestamp;
+            });
+
+            // Cek overlap antar jadwal
+            for ($i = 0; $i < count($itemsToCheck) - 1; $i++) {
+                $currentEnd = $itemsToCheck[$i]['end'];
+                $nextStart = $itemsToCheck[$i + 1]['start'];
+
+                if ($nextStart <= $currentEnd) {
+                    $this->addError('multi_schedule', 'Tanggal tidak valid, silahkan periksa lagi');
+                    return;
+                }
+            }
+
+
+        }
 
         $index = 0;
         foreach ($this->dtForm['master_schedule_id'] as $key => $value) {
@@ -72,13 +147,12 @@ class EmployeeEdit extends Component
             $dtRel[$index]['master_schedule_id'] = $key;
             $dtRel[$index]['effective_at'] = $this->dtForm['effective_at'][$key];
             $dtRel[$index]['expired_at'] = $this->dtForm['expired_at'][$key];
-            $dtRel[$index]['created_at'] = Carbon::now();
-            $dtRel[$index]['updated_at'] = Carbon::now();
             $index++;
         }
 
         $dtLogin['nickname'] = $this->dtForm['name'];
         $dtLogin['username'] = $this->dtForm['username'];
+        $dtLogin['user_role_id'] = $this->dtForm['role'];
         if(isset($this->dtForm['password'])){
             $dtLogin['password'] = Hash::make($this->dtForm['password']);
         }
@@ -174,6 +248,7 @@ class EmployeeEdit extends Component
         $this->dtEdit['location'] = $this->masterLocationRepo->getAll()->toArray();
         $this->dtEdit['function'] = $this->masterFunctionRepo->getAll()->toArray();
         $this->dtEdit['schedule'] = $this->masterScheduleRepo->getAll()->toArray();
+        $this->dtEdit['roles'] = $this->userRoleRepo->getAll()->toArray();
         $this->genDataEdit();
     }
 
@@ -204,6 +279,7 @@ class EmployeeEdit extends Component
             }
         }
 
+        $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
         $this->dtForm['master_schedule_id'] = $scheduleId;
         $this->dtForm['effective_at'] = $effectiveAt;
         $this->dtForm['expired_at'] = $expiredAt;

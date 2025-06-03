@@ -42,7 +42,10 @@
                                                 </div>
 
                                                 <h4 class="font-size-18 mt-4">{{ config('app.name') }}</h4>
-                                                <p class="text-muted">{{ $data['page_desc'] }}</p>
+                                                <p class="text-muted">
+                                                    {{ $data['page_desc'] }} <br>
+                                                    <span>Akses terbatas hanya untuk pengawas.</span>
+                                                </p>
                                             </div>
 
                                             <div class="p-2 mt-5">

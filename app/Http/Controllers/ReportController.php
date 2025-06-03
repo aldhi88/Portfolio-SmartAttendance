@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\PublicHelper;
 use App\Repositories\Interfaces\DataEmployeeFace;
+use App\Repositories\Interfaces\DataLiburFace;
 use DataTables;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,11 @@ class ReportController extends Controller
         return view('index', compact('data'));
     }
 
-    public function absenDT(DataEmployeeFace $dataEmployeeRepo, Request $request)
+    public function absenDT(
+        DataEmployeeFace $dataEmployeeRepo,
+        DataLiburFace $dataLiburRepo,
+        Request $request
+    )
     {
         // dd($request->all());
         $data = $dataEmployeeRepo->getReportDT(0);
@@ -33,12 +38,16 @@ class ReportController extends Controller
         ])
             ->where('status', 'Aktif')
             ->with([
-                'master_schedules:id,type,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('data_employee_id', 'time')
                     ->whereYear('time', $request->filter_year)
                     ->whereMonth('time', $request->filter_month);
-                }
+                },
+                'data_izins' => function ($q) use ($request) {
+                    $q->select('id','data_employee_id','jenis','from','to','desc')
+                        ->where('status', 'Disetujui');
+                },
             ])
         ;
 
@@ -55,16 +64,20 @@ class ReportController extends Controller
         $dateInMonth = PublicHelper::dateInMonth($request->filter_month, $request->filter_year);
         // dd($dateInMonth);
 
-        // dd($data->get()->toArray());
+        $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
+        // dd($dataLibur);
+
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
             })
-            ->addColumn('absensi', function ($data) use($dateInMonth) {
+            ->addColumn('absensi', function ($data) use($dateInMonth, $tglMerah) {
                 return PublicHelper::getDtAbsen(
                     $dateInMonth,
                     $data->log_attendances->toArray(),
-                    $data->master_schedules->toArray()
+                    $data->master_schedules->toArray(),
+                    $data->data_izins->toArray(),
+                    $tglMerah,
                 );
             })
             ->smart(false)

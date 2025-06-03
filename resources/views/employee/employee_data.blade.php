@@ -29,6 +29,7 @@
                                 <th class="text-center"></th>
                                 <th class="text-center">No</th>
                                 <th class="text-center">Status</th>
+                                <th class="text-center">Role</th>
                                 <th class="text-center">Nama</th>
                                 <th class="text-center">Jadwal</th>
                                 <th class="text-center">Perusahaan</th>
@@ -51,6 +52,14 @@
                                             <option value="Aktif">Aktif</option>
                                             <option value="Belum Aktif">Belum Aktif</option>
                                             <option value="Tidak Aktif">Tidak Aktif</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-center">
+                                        <select name="" class="form-control form-control-sm search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($dt['roles'] as $item)
+                                            <option value="{{$item['id']}}">{{$item['name']}}</option>
+                                            @endforeach
                                         </select>
                                     </th>
                                     <th class="text-center">

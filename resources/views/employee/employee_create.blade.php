@@ -143,10 +143,12 @@
                 </div>
             </div>
 
-
             <div class="col">
                 <label>Pilih Jadwal Kerja :</label>
                 @error('dtForm.master_schedule_id')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+                @error('multi_schedule')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
                 <div class="table-responsive bg-white">

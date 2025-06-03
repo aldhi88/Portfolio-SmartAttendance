@@ -50,6 +50,16 @@ class UserLoginRepository implements UserLoginInterface
             return false;
         }
     }
+    public function deleteMulti($id)
+    {
+        try {
+            UserLogin::whereIn('id',$id)->delete();
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Delete user_logins failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
 
     public function getByUsername($data)
     {
