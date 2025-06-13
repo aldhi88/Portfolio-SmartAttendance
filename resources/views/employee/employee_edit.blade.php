@@ -121,14 +121,20 @@
             <div class="col-12">
                 <div class="row">
                     <div class="col-md">
-                        <div class="form-group">
+                        <div class="form-group" x-data>
                             <label>Username Login</label>
-                            <input wire:model="dtForm.username" type="text"
-                                class="form-control @error('dtForm.username') is-invalid @enderror">
+                            <input
+                                wire:model="dtForm.username"
+                                type="text"
+                                class="form-control @error('dtForm.username') is-invalid @enderror"
+                                x-on:keydown.space.prevent
+                                x-on:input="$event.target.value = $event.target.value.replace(/\s/g, '')"
+                            >
                             @error('dtForm.username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                     </div>
                     <div class="col-md">
                         <div class="form-group">

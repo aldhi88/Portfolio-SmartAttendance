@@ -13,7 +13,7 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'asc']],
         columnDefs: [
-            { className: 'text-left text-nowrap', targets: [5,6] },
+            { className: 'text-left text-nowrap', targets: [6,7] },
             { className: 'px-0 text-nowrap', targets: [1] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
@@ -21,10 +21,7 @@
         columns: [
             { data: null, name: 'check', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
-                    el = '';
-                    if (data.log_attendances?.length === 0) {
-                        el += '<input class="data-check" type="checkbox" value="'+data.id+'">';
-                    }
+                    el = '<input class="data-check" type="checkbox" value="'+data.id+'">';
                     return el;
                 }
             },
@@ -142,7 +139,10 @@
         $('.check-data-all').prop('checked', false);
     });
 
-    $(document).on('click', '#btnDeleteSelected', function () {
+    $(document).on('click', '.btnMultipleProcess', function () {
+        let process = $(this).data('process');
+        let msg = $(this).data('msg');
+
         let ids = $('.data-check:checked').map(function () {
             return $(this).val();
         }).get();
@@ -152,12 +152,15 @@
             return;
         }
 
-        Livewire.dispatch('setDeleteMultipleId', { ids: ids });
+        Livewire.dispatch('setProcessMultipleId', { ids: ids });
 
-        $('#modalConfirmDeleteMultiple')
-            .find('#submitModalConfirmDeleteMultiple')
-            .attr('wire:click', 'deleteMultiple()');
-        $('#modalConfirmDeleteMultiple').modal('show');
+        $('#modalConfirm')
+            .find('#submitModalConfirm')
+            .attr('wire:click', 'multipleProcess("'+process+'")');
+        $('#modalConfirm')
+            .find('#proses-label')
+            .text(msg);
+        $('#modalConfirm').modal('show');
 
     });
 </script>

@@ -4,6 +4,7 @@ namespace App\Repositories\Interfaces;
 
 interface DataEmployeeFace
 {
+    public function setStatusMultiple($data, $status);
     public function createForm($data);
     public function update($id, $data);
     public function getByKey($id);

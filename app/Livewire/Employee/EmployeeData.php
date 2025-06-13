@@ -74,28 +74,31 @@ class EmployeeData extends Component
         }
 
     }
-    public $deleteMultipleId;
-    #[On('setDeleteMultipleId')]
-    public function setDeleteMultipleId($ids)
+    public $multipleId;
+    #[On('setProcessMultipleId')]
+    public function setProcessMultipleId($ids)
     {
-        $this->deleteMultipleId = $ids;
+        $this->multipleId = $ids;
     }
-    public function deleteMultiple()
+    public function multipleProcess($process)
     {
-        // dd($this->all());
-        try {
-            DB::transaction(function () {
-                $userLoginId = $this->dataEmployeeRepo->getColValByColMulti('id', $this->deleteMultipleId, 'user_login_id');
-                $this->relDataEmployeeMasterScheduleRepo->delByColMulti('data_employee_id', $this->deleteMultipleId);
-                $this->dataEmployeeRepo->deleteMulti($this->deleteMultipleId);
-                $this->userLoginRepository->deleteMulti($userLoginId);
-            });
-            $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmDeleteMultiple');
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
-        } catch (\Throwable $e) {
-            $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
-        }
+            try {
+                if($process==='set-aktif'){
+                    DB::transaction(function () {
+                        $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Aktif');
+                    });
+                }
+                if($process==='set-nonaktif'){
+                    DB::transaction(function () {
+                        $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Tidak Aktif');
+                    });
+                }
+                $this->dispatch('reloadDT',data:'dtTable');
+                $this->dispatch('closeModal',id:'modalConfirm');
+                $this->dispatch('alert', data:['type' => 'success',  'message' => 'Proses berhasil dilakukan.']);
+            } catch (\Throwable $e) {
+                $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
+            }
     }
     // end delete section
 

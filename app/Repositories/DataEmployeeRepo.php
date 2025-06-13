@@ -9,6 +9,21 @@ use Illuminate\Support\Facades\Log;
 class DataEmployeeRepo implements DataEmployeeFace
 {
 
+    public function setStatusMultiple($data, $status)
+    {
+        try {
+            DataEmployee::whereIn('id', $data)
+                ->where('status', '!=', $status)
+                ->whereNotNull('user_login_id')
+                ->whereHas('master_schedules')
+                ->update(['status' => $status]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Set status multiple data_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
     public function searchByName($name)
     {
         return DataEmployee::select('id','name')

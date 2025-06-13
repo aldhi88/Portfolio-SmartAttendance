@@ -53,7 +53,7 @@ class EmployeeEdit extends Component
     // insert
     public function wireSubmit()
     {
-        // $this->validate();
+        $this->validate();
         $dtEmployee = $this->dtForm;
         unset(
             $dtEmployee['id'],

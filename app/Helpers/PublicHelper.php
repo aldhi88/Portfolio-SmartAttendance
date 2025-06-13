@@ -66,6 +66,7 @@ class PublicHelper
 
     public static function getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
     {
+        // dump($schedules);
         $result = [];
         $logAttendances = collect($logAttendances);
         $schedules = collect($schedules);

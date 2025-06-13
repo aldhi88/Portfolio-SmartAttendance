@@ -185,5 +185,5 @@
 
         </div>
     </div>
-    @include('report.atc.report_data_atc')
+    @include('report.atc.report_absen_atc')
 </div>

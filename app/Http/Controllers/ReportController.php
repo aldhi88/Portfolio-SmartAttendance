@@ -25,7 +25,6 @@ class ReportController extends Controller
         Request $request
     )
     {
-        // dd($request->all());
         $data = $dataEmployeeRepo->getReportDT(0);
         $data->select([
             'data_employees.id',
@@ -37,6 +36,7 @@ class ReportController extends Controller
             'data_employees.master_function_id',
         ])
             ->where('status', 'Aktif')
+            ->has('master_schedules')
             ->with([
                 'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) use ($request) {
@@ -66,6 +66,8 @@ class ReportController extends Controller
 
         $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
         // dd($dataLibur);
+
+        // dd($data->get()->toArray());
 
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
