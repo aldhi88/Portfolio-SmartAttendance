@@ -121,6 +121,8 @@ class PublicHelper
                 return $tglCek->between($from, $to);
             });
 
+            // dump($izinTanggalIni);
+
             if ($scheduleMatch['type'] == 'Tetap') {
 
                 // Cek apakah ini hari kerja regular (bukan lembur)
@@ -130,13 +132,47 @@ class PublicHelper
                     continue; //langsung stop, return off
                 }
 
+                // if ($izinTanggalIni) {
+                //     $return['label_in'] = $izinTanggalIni['jenis'];
+                //     $return['label_out'] = $izinTanggalIni['jenis'];
+                //     $return['status'] = 'izin';
+                //     $result[$tglIndex] = $return;
+                //     continue;
+                // }
+
+                $kenaIzinMasuk = false;
+                $kenaIzinKeluar = false;
+
                 if ($izinTanggalIni) {
-                    $return['label_in'] = $izinTanggalIni['jenis'];
-                    $return['label_out'] = $izinTanggalIni['jenis'];
-                    $return['status'] = 'izin';
-                    $result[$tglIndex] = $return;
-                    continue;
+                    $izinStart = Carbon::parse($izinTanggalIni['from']);
+                    $izinEnd = Carbon::parse($izinTanggalIni['to']);
+
+                    $jamMasuk = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_time']);
+                    $jamKeluar = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkout_time']);
+
+                    // Cek apakah jam masuk dan keluar tercakup dalam izin
+                    $kenaIzinMasuk = $izinStart->lte($jamMasuk) && $izinEnd->gte($jamMasuk);
+                    $kenaIzinKeluar = $izinStart->lte($jamKeluar) && $izinEnd->gte($jamKeluar);
+
+                    if ($kenaIzinMasuk) {
+                        $return['label_in'] = $izinTanggalIni['jenis'];
+                    }
+                    if ($kenaIzinKeluar) {
+                        $return['label_out'] = $izinTanggalIni['jenis'];
+                    }
+
+                    if ($kenaIzinMasuk || $kenaIzinKeluar) {
+                        // Jika dua-duanya kena izin dan tidak perlu proses lebih lanjut, langsung continue
+                        if ($kenaIzinMasuk && $kenaIzinKeluar) {
+                            $return['status'] = 'izin';
+                            $result[$tglIndex] = $return;
+                            continue;
+                        }
+                    }
+
+                    // dd($kenaIzinMasuk, $kenaIzinKeluar, $result);
                 }
+
 
                 $checkinTime = $scheduleMatch['checkin_time'];
                 $workTime = $scheduleMatch['work_time'];
@@ -149,36 +185,41 @@ class PublicHelper
                     return $logTime->format('Y-m-d') === $tanggalYMD
                         && $logTime->format('H:i') >= $checkinTime;
                 })->sortBy('time')->first();
-                $return['label_in'] = 'tdk absen'; //set nilai default
-
-                if ($logIn) {
-                    $waktuMasuk = Carbon::parse($logIn['time'])->format('H:i');
-                    $return['status'] = 'hadir';
-                    if ($waktuMasuk >= $checkinTime && $waktuMasuk <= $workTime) {
-                        $return['label_in'] = 'dtg ontime';
-                        $return['time_in'] = $waktuMasuk;
-                    } elseif ($waktuMasuk > $workTime && $waktuMasuk <= $checkinDeadline) {
-                        $return['label_in'] = 'terlambat';
-                        $return['time_in'] = $waktuMasuk;
+                if(!$kenaIzinMasuk){
+                    $return['label_in'] = 'tdk absen'; //set nilai default
+                    if ($logIn) {
+                        $waktuMasuk = Carbon::parse($logIn['time'])->format('H:i');
+                        $return['status'] = 'hadir';
+                        if ($waktuMasuk >= $checkinTime && $waktuMasuk <= $workTime) {
+                            $return['label_in'] = 'dtg ontime';
+                            $return['time_in'] = $waktuMasuk;
+                        } elseif ($waktuMasuk > $workTime && $waktuMasuk <= $checkinDeadline) {
+                            $return['label_in'] = 'terlambat';
+                            $return['time_in'] = $waktuMasuk;
+                        }
                     }
                 }
                 // === OUT ===
                 $logOut = $logAttendances->filter(function ($log) use ($tanggalYMD) {
                     return Carbon::parse($log['time'])->format('Y-m-d') === $tanggalYMD;
                 })->sortByDesc('time')->first();
-                $return['label_out'] = 'tdk absen'; //set nilai default
 
-                if ($logOut) {
-                    $waktuPulang = Carbon::parse($logOut['time'])->format('H:i');
-                    $return['status'] = 'hadir';
-                    if ($waktuPulang >= $checkoutTime) {
-                        $return['label_out'] = 'plg ontime';
-                        $return['time_out'] = $waktuPulang;
-                    } elseif ($waktuPulang > $checkinDeadline && $waktuPulang < $checkoutTime) {
-                        $return['label_out'] = 'plg cepat';
-                        $return['time_out'] = $waktuPulang;
+                if(!$kenaIzinKeluar){
+                    $return['label_out'] = 'tdk absen'; //set nilai default
+                    if ($logOut) {
+                        $waktuPulang = Carbon::parse($logOut['time'])->format('H:i');
+                        $return['status'] = 'hadir';
+                        if ($waktuPulang >= $checkoutTime) {
+                            $return['label_out'] = 'plg ontime';
+                            $return['time_out'] = $waktuPulang;
+                        } elseif ($waktuPulang > $checkinDeadline && $waktuPulang < $checkoutTime) {
+                            $return['label_out'] = 'plg cepat';
+                            $return['time_out'] = $waktuPulang;
+                        }
                     }
                 }
+
+
 
                 // === Final Evaluasi ===
                 if ($return['label_in'] === 'tdk absen' && $return['label_out'] === 'tdk absen') {
@@ -335,7 +376,9 @@ class PublicHelper
             }
 
             $result[$tglIndex] = $return;
+
         }
+        // dd($result);
 
         return $result;
     }

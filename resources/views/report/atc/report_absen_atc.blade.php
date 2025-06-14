@@ -63,6 +63,15 @@
                         color = 'dark';
                     }
 
+                    if(
+                        abs.label_in=='Sakit' ||
+                        abs.label_in=='Keluar' ||
+                        abs.label_in=='Pulang' ||
+                        abs.label_in=='Dinas'
+                    ){
+                        color = 'warning';
+                    }
+
                     return `
                         ${abs.time_in}<br>
                         <strong class="text-${color}">${abs.label_in}</strong>
@@ -87,6 +96,14 @@
                         abs.label_out=='plg cepat'
                     ){
                         color = 'dark';
+                    }
+                    if(
+                        abs.label_out=='Sakit' ||
+                        abs.label_out=='Keluar' ||
+                        abs.label_out=='Pulang' ||
+                        abs.label_out=='Dinas'
+                    ){
+                        color = 'warning';
                     }
                     return `
                         ${abs.time_out}<br>
