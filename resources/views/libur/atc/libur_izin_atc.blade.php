@@ -35,10 +35,17 @@
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="${editUrl}">
-                                    <i class="fas fa-edit fa-fw"></i> Edit Data
-                                </a>
                     `;
+                    // let html = `
+                    //     <div class="btn-group">
+                    //         <a href="javascript:void(0)" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                    //             <i class="mdi mdi-dots-vertical"></i>
+                    //         </a>
+                    //         <div class="dropdown-menu">
+                    //             <a class="dropdown-item" href="${editUrl}">
+                    //                 <i class="fas fa-edit fa-fw"></i> Edit Data
+                    //             </a>
+                    // `;
 
                     if (data.status === 'Proses' || data.status === 'Ditolak') {
                         const dtJson = {

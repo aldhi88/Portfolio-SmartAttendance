@@ -5,7 +5,7 @@
             <div class="page-title-box d-flex align-items-center justify-content-between row">
                 @include('components.app_layout_title')
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <a href="{{ route('libur.dataIzin') }}" class="btn btn-secondary">
+                    <a href="{{ route('izin.indexIzin') }}" class="btn btn-secondary">
                         Kembali <i class="fas fa-angle-right ml-1"></i>
                     </a>
                 </div>

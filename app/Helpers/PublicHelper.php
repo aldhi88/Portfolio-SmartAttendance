@@ -132,14 +132,6 @@ class PublicHelper
                     continue; //langsung stop, return off
                 }
 
-                // if ($izinTanggalIni) {
-                //     $return['label_in'] = $izinTanggalIni['jenis'];
-                //     $return['label_out'] = $izinTanggalIni['jenis'];
-                //     $return['status'] = 'izin';
-                //     $result[$tglIndex] = $return;
-                //     continue;
-                // }
-
                 $kenaIzinMasuk = false;
                 $kenaIzinKeluar = false;
 
@@ -147,7 +139,7 @@ class PublicHelper
                     $izinStart = Carbon::parse($izinTanggalIni['from']);
                     $izinEnd = Carbon::parse($izinTanggalIni['to']);
 
-                    $jamMasuk = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_time']);
+                    $jamMasuk = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_deadline_time']);
                     $jamKeluar = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkout_time']);
 
                     // Cek apakah jam masuk dan keluar tercakup dalam izin
@@ -170,7 +162,6 @@ class PublicHelper
                         }
                     }
 
-                    // dd($kenaIzinMasuk, $kenaIzinKeluar, $result);
                 }
 
 

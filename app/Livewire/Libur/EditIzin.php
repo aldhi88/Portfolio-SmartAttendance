@@ -4,6 +4,7 @@ namespace App\Livewire\Libur;
 
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
+use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -26,7 +27,7 @@ class EditIzin extends Component
 
     public function wireSubmit()
     {
-        dd($this->form);
+        // dd($this->form);
         $this->validate();
         if(!$this->form['data_employee_id']){
             $this->addError('employee_invalid', 'Ketik dan Pilih karyawan yang tersedia, anda belum memilih karyawan yang tersedia');
@@ -104,6 +105,8 @@ class EditIzin extends Component
     public function mount()
     {
         $this->form = $this->dataLiburIzinRepo->getByCol('id', $this->pass['id']);
+        $this->form['from'] = Carbon::parse($this->form['from'])->format('Y-m-d H:i');
+        $this->form['to'] = Carbon::parse($this->form['to'])->format('Y-m-d H:i');
         $this->query = $this->form['data_employees']['name'];
         unset(
             $this->form['id'],
@@ -112,7 +115,7 @@ class EditIzin extends Component
             $this->form['deleted_at'],
             $this->form['data_employees'],
         );
-        dd($this->form);
+        // dd($this->form);
 
         // $this->form['data_employee_id'] = false;
     }

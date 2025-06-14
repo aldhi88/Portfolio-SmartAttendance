@@ -8,11 +8,24 @@
 @push('push-script')
 
 <script>
-    flatpickr(".datetime", {
+    flatpickr("input[name=start]", {
         enableTime: true,
         noCalendar: false,
         dateFormat: "Y-m-d H:i",
         time_24hr: true,
+        defaultHour: 0,
+        defaultMinute: 0,
+        defaultDate: "{{ $form['from'] ?? '' }}",
+    });
+
+    flatpickr("input[name=end]", {
+        enableTime: true,
+        noCalendar: false,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        defaultHour: 23,
+        defaultMinute: 59,
+        defaultDate: "{{ $form['to'] ?? '' }}",
     });
 </script>
 
