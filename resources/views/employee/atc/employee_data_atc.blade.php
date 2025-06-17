@@ -95,14 +95,15 @@
             { data: 'name', name: 'name', orderable: false, searchable:true },
             { data: null, name: 'master_schedule_id',orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
-                    if (row.master_schedules && row.master_schedules.length > 0) {
-                        const list = row.master_schedules
-                            .map(schedule => `<li>${schedule.kode}</li>`)
-                            .join('');
-                        return `<ul class="mb-0 pl-3">${list}</ul>`;
-                    } else {
-                        return '-';
+                    const schedules = row.master_schedules || [];
+                    if (schedules.length === 0) {
+                        return '';
                     }
+                    if (schedules.length === 1) {
+                        return schedules[0].kode || '-';
+                    }
+                    const aktif = schedules.find(s => s.expired_at === null);
+                    return aktif ? aktif.kode : '-';
                 }
             },
             { data: 'master_organizations.name', name: 'master_organization_id', orderable: false, searchable:true,

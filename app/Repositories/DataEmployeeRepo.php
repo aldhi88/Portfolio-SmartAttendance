@@ -197,6 +197,7 @@ class DataEmployeeRepo implements DataEmployeeFace
                 'master_functions:id,name',
                 'master_positions:id,name',
                 'user_logins.user_roles',
+                'master_schedules'
             ])
         ;
     }

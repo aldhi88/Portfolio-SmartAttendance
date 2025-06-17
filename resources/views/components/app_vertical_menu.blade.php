@@ -58,6 +58,7 @@
                             <span>Data Lembur</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
+                            <li class="child"><a href="#">Data Pekerjaan Lembur</a></li>
                             <li class="child"><a href="#">Data Pengajuan Lembur</a></li>
                             <li class="child"><a href="#">Buat Pengajuan Lembur</a></li>
                         </ul>
