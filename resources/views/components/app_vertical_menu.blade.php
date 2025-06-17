@@ -16,7 +16,7 @@
                         </a>
                     </li>
 
-                    <li class="parent jadwal-kerja karyawan">
+                    <li class="parent">
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
                             <i class="ri-archive-line"></i>
                             <span>Data Master</span>
