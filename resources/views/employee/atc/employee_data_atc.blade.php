@@ -50,23 +50,6 @@
                         `;
                     }
 
-
-                    if (data.log_attendances?.length === 0) {
-                        const dtJson = {
-                            msg: `Apakah anda yakin menghapus data ${data.name}?`,
-                            id: data.id
-                        };
-
-                        html += `
-                            <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
-                            data-toggle="modal" data-target="#modalConfirmDelete"
-                            data-dispatch="wireDelete()"
-                            href="javascript:void(0);">
-                            <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
-                            </a>
-                        `;
-                    }
-
                     html += `</div></div>`;
                     return html;
                 }
