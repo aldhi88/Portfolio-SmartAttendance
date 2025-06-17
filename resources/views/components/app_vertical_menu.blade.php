@@ -58,9 +58,14 @@
                             <span>Data Lembur</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li class="child"><a href="#">Data Pekerjaan Lembur</a></li>
-                            <li class="child"><a href="#">Data Pengajuan Lembur</a></li>
-                            <li class="child"><a href="#">Buat Pengajuan Lembur</a></li>
+                            <li class="child"><a href="#">Daftar Pekerjaan</a></li>
+                            <li class="child"><a href="#">Pejabat Penanda Tangan</a></li>
+                            <li class="child"><a href="#">Data Pengajuan</a></li>
+                            <li class="child"><a href="#">Pengajuan Baru</a></li>
+                            <li class="child"><a href="#">Pembatalan</a></li>
+                            <li class="child"><a href="#">Print Surat Lembur</a></li>
+                            <li class="child"><a href="#">Rekap Laporan 40 Jam</a></li>
+                            <li class="child"><a href="#">Rekap Laporan 40 Jam+</a></li>
                         </ul>
                     </li>
 
@@ -79,31 +84,76 @@
 
                     <hr>
 
-                    <li class="menu-title">RUMAH DINAS</li>
+                    <li class="menu-title">RUMAH DINAS PERTAMINA <br> (masih proses)</li>
 
-                    {{-- <li>
-                        <a href="{{ route('dashboard.index') }}" class="waves-effect">
+                    <li>
+                        <a href="#" class="waves-effect">
                             <i class="ri-dashboard-line"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-
-                    <li class="parent jadwal-kerja karyawan">
+                    <li class="parent">
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
                             <i class="ri-archive-line"></i>
                             <span>Data Master</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li class="child perusahaan"><a href="{{ route('perusahaan.index') }}">Perusahaan</a></li>
-                            <li class="child jabatan"><a href="{{ route('jabatan.index') }}">Jabatan</a></li>
-                            <li class="child lokasi"><a href="{{ route('lokasi.index') }}">Lokasi</a></li>
-                            <li class="child fungsi"><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
+                            <li class="child perusahaan"><a href="#">Data Aset</a></li>
+                            <li class="child perusahaan"><a href="#">Penjabat Penanda Tangan</a></li>
                         </ul>
-                    </li> --}}
-
-
-
-
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-archive-line"></i>
+                            <span>Data Vendor</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child perusahaan"><a href="#">Daftar Vendor</a></li>
+                            <li class="child perusahaan"><a href="#">Buat Vendor Baru</a></li>
+                            <li class="child perusahaan"><a href="#">Rekap Daftar Permintaan</a></li>
+                        </ul>
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-archive-line"></i>
+                            <span>Pengajuan Masuk</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child perusahaan"><a href="#">Daftar Pengajuan Masuk</a></li>
+                            <li class="child perusahaan"><a href="#">Pengajuan Baru Keluar</a></li>
+                            <li class="child perusahaan"><a href="#">Cetak SIP</a></li>
+                        </ul>
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-archive-line"></i>
+                            <span>Pengadaan</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child perusahaan"><a href="#">Daftar Pengadaan</a></li>
+                            <li class="child perusahaan"><a href="#">Pengadaan Baru</a></li>
+                        </ul>
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-archive-line"></i>
+                            <span>Perbaikan</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child perusahaan"><a href="#">Daftar Perbaikan</a></li>
+                            <li class="child perusahaan"><a href="#">Perbaikan Baru</a></li>
+                        </ul>
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-archive-line"></i>
+                            <span>Pengajuan Keluar</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child perusahaan"><a href="#">Daftar Pengajuan Keluar</a></li>
+                            <li class="child perusahaan"><a href="#">Pengajuan Keluar Baru</a></li>
+                        </ul>
+                    </li>
 
                 </ul>
             </div>
