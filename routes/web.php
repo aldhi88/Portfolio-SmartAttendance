@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataEmployeeController;
 use App\Http\Controllers\DataLiburController;
+use App\Http\Controllers\DataPengawasEmployeeController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MasterFunctionController;
 use App\Http\Controllers\MasterLocationController;
@@ -123,6 +124,16 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('indexDT', 'indexDT')->name('indexDT');
                 Route::get('create', 'create')->name('create');
                 Route::get('edit/{id}', 'edit')->name('edit');
+            });
+        });
+    });
+
+    Route::prefix('pengawas')->group(function () {
+        Route::name('pengawas.')->group(function () {
+            Route::controller(DataPengawasEmployeeController::class)->group(function () {
+                Route::get('index', 'index')->name('index');
+                Route::get('indexDTEmployee', 'indexDTEmployee')->name('indexDTEmployee');
+                Route::get('indexDTMember', 'indexDTMember')->name('indexDTMember');
             });
         });
     });

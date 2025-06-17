@@ -4,12 +4,34 @@ namespace App\Repositories;
 
 use App\Models\DataIzin;
 use App\Repositories\Interfaces\DataLiburIzinFace;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DataLiburIzinRepo implements DataLiburIzinFace
 {
+    public function update($data)
+    {
+        try {
+            if (isset($data['form']['bukti'])) {
+                $file = $data['form']['bukti'];
+                $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('bukti', $uniqueName, 'public');
+                $data['form']['bukti'] = $uniqueName;
+                if(!is_null($data['old_file'])){
+                    Storage::disk('public')->delete('bukti/' . $data['old_file']);
+                }
+            }
+
+            DataIzin::find($data['id'])->update($data['form']);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Insert data_izins failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
     public function create($data)
     {
         try {
@@ -31,6 +53,19 @@ class DataLiburIzinRepo implements DataLiburIzinFace
     public function getDataIzinDT($data)
     {
         return DataIzin::query()
+            ->with([
+                'data_employees',
+                'data_employee_admins',
+            ])
+        ;
+    }
+
+    public function getDataIzinByPengawasDT($data)
+    {
+        return DataIzin::query()
+            ->whereHas('data_employees.pengawas', function ($q) {
+                $q->where('pengawas_id', Auth::user()->data_employees->id);
+            })
             ->with([
                 'data_employees',
                 'data_employee_admins',
@@ -95,6 +130,11 @@ class DataLiburIzinRepo implements DataLiburIzinFace
             Log::error("Delete multiple data_izins failed", ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    public function getIzinList()
+    {
+        return DataIzin::izinList();
     }
 
 }

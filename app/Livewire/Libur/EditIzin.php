@@ -27,12 +27,13 @@ class EditIzin extends Component
 
     public function wireSubmit()
     {
-        // dd($this->form);
         $this->validate();
         if(!$this->form['data_employee_id']){
             $this->addError('employee_invalid', 'Ketik dan Pilih karyawan yang tersedia, anda belum memilih karyawan yang tersedia');
             return;
         }
+
+        $this->form['approved_by'] = $this->dataEmployeeRepo->pengawasCheck($this->form['data_employee_id']);
 
         $from = Carbon::parse($this->form['from']);
         $to = Carbon::parse($this->form['to']);
@@ -41,21 +42,18 @@ class EditIzin extends Component
             return;
         }
 
-        if (isset($this->form['bukti'])) {
-            $file = $this->form['bukti'];
-            $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('bukti', $uniqueName, 'public');
-            $this->form['bukti'] = $uniqueName;
-        }
-
         $this->form['status'] = "Disetujui";
+        $dtEdit['old_file'] = $this->form['old_file'];
+        unset($this->form['old_file']);
+        $dtEdit['form'] = $this->form;
+        $dtEdit['id'] = $this->pass['id'];
 
-        if($this->dataLiburIzinRepo->create($this->form)){
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
-            $this->reset('form');
-            $this->form['bukti'] = null;
-            $this->query = "";
-            $this->results = [];
+        if($this->dataLiburIzinRepo->update($dtEdit)){
+            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Perubahan data berhasil disimpan.']);
+            $this->initEdit();
+            // $this->form['bukti'] = null;
+            // $this->query = "";
+            // $this->results = [];
             return;
         }
 
@@ -73,7 +71,7 @@ class EditIzin extends Component
             "form.from" => "required",
             "form.to" => "required",
             "form.desc" => "nullable",
-            "form.bukti" => "nullable|file|max:10240",
+            "form.bukti" => "nullable|file|mimes:pdf,jpg,jpeg,png|max:10240",
         ];
     }
     public $validationAttributes = [
@@ -102,11 +100,12 @@ class EditIzin extends Component
         $this->results = [];
     }
 
-    public function mount()
+    public function initEdit()
     {
         $this->form = $this->dataLiburIzinRepo->getByCol('id', $this->pass['id']);
         $this->form['from'] = Carbon::parse($this->form['from'])->format('Y-m-d H:i');
         $this->form['to'] = Carbon::parse($this->form['to'])->format('Y-m-d H:i');
+        $this->form['old_file'] = $this->form['bukti'];
         $this->query = $this->form['data_employees']['name'];
         unset(
             $this->form['id'],
@@ -114,10 +113,15 @@ class EditIzin extends Component
             $this->form['updated_at'],
             $this->form['deleted_at'],
             $this->form['data_employees'],
+            $this->form['bukti'],
         );
-        // dd($this->form);
+    }
 
-        // $this->form['data_employee_id'] = false;
+    public $izinList;
+    public function mount()
+    {
+        $this->izinList = $this->dataLiburIzinRepo->getIzinList();
+        $this->initEdit();
     }
 
     public $pass;

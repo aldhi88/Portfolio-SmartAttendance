@@ -56,24 +56,24 @@ class EmployeeData extends Component
     {
         $this->deleteId = $id;
     }
-    public function wireDelete()
-    {
-        dd($this->all());
-        try {
-            DB::transaction(function () {
-                $userLoginId = $this->dataEmployeeRepo->getColValByCol('id', $this->deleteId, 'user_login_id');
-                $this->relDataEmployeeMasterScheduleRepo->delByCol('data_employee_id', $this->deleteId);
-                $this->dataEmployeeRepo->delete($this->deleteId);
-                $this->userLoginRepository->delete($userLoginId);
-            });
-            $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmDelete');
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
-        } catch (\Throwable $e) {
-            $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
-        }
+    // public function wireDelete()
+    // {
+    //     dd($this->all());
+    //     try {
+    //         DB::transaction(function () {
+    //             $userLoginId = $this->dataEmployeeRepo->getColValByCol('id', $this->deleteId, 'user_login_id');
+    //             $this->relDataEmployeeMasterScheduleRepo->delByCol('data_employee_id', $this->deleteId);
+    //             $this->dataEmployeeRepo->delete($this->deleteId);
+    //             $this->userLoginRepository->delete($userLoginId);
+    //         });
+    //         $this->dispatch('reloadDT',data:'dtTable');
+    //         $this->dispatch('closeModal',id:'modalConfirmDelete');
+    //         $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
+    //     } catch (\Throwable $e) {
+    //         $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
+    //     }
 
-    }
+    // }
     public $multipleId;
     #[On('setProcessMultipleId')]
     public function setProcessMultipleId($ids)

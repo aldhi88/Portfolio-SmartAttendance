@@ -46,10 +46,9 @@
                             <label>Jenis Izin</label>
                             <select wire:model="form.jenis" class="form-control @error('form.jenis') is-invalid @enderror">
                                 <option value="">Pilih</option>
-                                <option value="Sakit">Sakit</option>
-                                <option value="Keluar">Keluar</option>
-                                <option value="Pulang">Pulang</option>
-                                <option value="Dinas">Dinas</option>
+                                @foreach ($izinList as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @endforeach
                             </select>
                             @error('form.jenis')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -110,3 +109,4 @@
 
     @include('libur.atc.libur_izin_create_atc')
 </div>
+

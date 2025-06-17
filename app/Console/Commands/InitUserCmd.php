@@ -52,6 +52,16 @@ class InitUserCmd extends Command
                 'name' => 'Karyawan',
                 'user_logins' => []
             ],
+            [
+                'id' => 400,
+                'name' => 'Pengawas & RDP',
+                'user_logins' => []
+            ],
+            [
+                'id' => 500,
+                'name' => 'Manajer',
+                'user_logins' => []
+            ],
         ];
 
 

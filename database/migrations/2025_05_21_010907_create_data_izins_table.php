@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('data_izins', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(DataEmployee::class)->constrained();
-            $table->enum('jenis',['Sakit','Keluar','Pulang','Dinas']);
+            $table->enum('jenis',['Sakit','Keluar','Pulang','Dinas', 'Cuti']);
             $table->timestamp('from');
             $table->timestamp('to');
             $table->text('desc')->nullable();

@@ -36,16 +36,12 @@
                             </a>
                             <div class="dropdown-menu">
                     `;
-                    // let html = `
-                    //     <div class="btn-group">
-                    //         <a href="javascript:void(0)" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                    //             <i class="mdi mdi-dots-vertical"></i>
-                    //         </a>
-                    //         <div class="dropdown-menu">
-                    //             <a class="dropdown-item" href="${editUrl}">
-                    //                 <i class="fas fa-edit fa-fw"></i> Edit Data
-                    //             </a>
-                    // `;
+
+                    html += `
+                                <a class="dropdown-item" href="${editUrl}">
+                                    <i class="fas fa-edit fa-fw"></i> Edit Data
+                                </a>
+                    `;
 
                     if (data.status === 'Proses' || data.status === 'Ditolak') {
                         const dtJson = {
@@ -56,7 +52,7 @@
 
                         html += `
                             <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item"
-                            data-toggle="modal" data-target="#modalConfirm"
+                            data-toggle="modal" data-target="#modalConfirmSetuju"
                             data-dispatch="wireProses('Disetujui')"
                             href="javascript:void(0);">
                             <i class="fas fa-check fa-fw"></i> Setujui Data Izin
@@ -72,7 +68,7 @@
 
                         html += `
                             <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger"
-                            data-toggle="modal" data-target="#modalConfirm"
+                            data-toggle="modal" data-target="#modalConfirmSetuju"
                             data-dispatch="wireProses('Ditolak')"
                             href="javascript:void(0);">
                             <i class="fas fa-times fa-fw"></i> Tolak Data Izin

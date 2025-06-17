@@ -248,7 +248,11 @@ class EmployeeEdit extends Component
         $this->dtEdit['location'] = $this->masterLocationRepo->getAll()->toArray();
         $this->dtEdit['function'] = $this->masterFunctionRepo->getAll()->toArray();
         $this->dtEdit['schedule'] = $this->masterScheduleRepo->getAll()->toArray();
-        $this->dtEdit['roles'] = $this->userRoleRepo->getAll()->toArray();
+        $this->dtEdit['roles'] = $this->userRoleRepo
+            ->getAll()
+            ->filter(fn ($role) => $role->name !== 'Super User')
+            ->values() // reset index agar array rapi
+            ->toArray();
         $this->genDataEdit();
     }
 
@@ -256,8 +260,11 @@ class EmployeeEdit extends Component
     {
         $this->dtForm = $this->dataEmployeeRepo->getByKey($this->pass['editId'])->toArray();
         $this->dtForm['username'] = "";
+        $this->dtForm['username'] = null;
+        $this->dtForm['role'] = null;
         if($this->dtForm['user_logins']){
             $this->dtForm['username'] = $this->dtForm['user_logins']['username'];
+            $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
         }
 
         // dd($this->dtForm);
@@ -279,11 +286,12 @@ class EmployeeEdit extends Component
             }
         }
 
-        $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
         $this->dtForm['master_schedule_id'] = $scheduleId;
         $this->dtForm['effective_at'] = $effectiveAt;
         $this->dtForm['expired_at'] = $expiredAt;
-        // dd($this->dtForm);
+        if($this->dtForm['status']=='Belum Aktif'){
+            $this->dtForm['status'] = "Aktif";
+        }
     }
 
     public $pass;

@@ -52,19 +52,24 @@ class DataIzin extends Component
     }
     // end delete section
 
-
+    public $prosesId;
+    #[On('setProsesId')]
+    public function setProsesId($id)
+    {
+        $this->prosesId = $id;
+    }
     public function wireProses($proses)
     {
         $data['status'] = $proses;
-        if(!Auth::user()->data_employees){
-            $this->dispatch('closeModal',id:'modalConfirm');
-            $this->dispatch('alert', data:['type' => 'error',  'message' => 'User ini tidak ada akses.']);
-            return;
-        }
-        $data['approved_by'] = Auth::user()->data_employees->id;
+        // if(!Auth::user()->data_employees){
+        //     $this->dispatch('closeModal',id:'modalConfirmSetuju');
+        //     $this->dispatch('alert', data:['type' => 'error',  'message' => 'User ini tidak ada akses.']);
+        //     return;
+        // }
+        $data['approved_by'] = Auth::user()->data_employees?->id ?? null;
         if($this->dataLiburIzinRepo->process($this->prosesId, $data)){
             $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirm');
+            $this->dispatch('closeModal',id:'modalConfirmSetuju');
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil diproses.']);
             return;
         }

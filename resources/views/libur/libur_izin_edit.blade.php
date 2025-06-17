@@ -54,10 +54,9 @@
                             <label>Jenis Izin</label>
                             <select wire:model="form.jenis" class="form-control @error('form.jenis') is-invalid @enderror">
                                 <option value="">Pilih</option>
-                                <option value="Sakit">Sakit</option>
-                                <option value="Keluar">Keluar</option>
-                                <option value="Pulang">Pulang</option>
-                                <option value="Dinas">Dinas</option>
+                                @foreach ($izinList as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @endforeach
                             </select>
                             @error('form.jenis')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -96,13 +95,14 @@
                         <div class="form-group">
                             <label>Upload Bukti</label>
                             <input wire:model="form.bukti" type="file" class="form-control">
+                            <small>*Biarkan kosong jika tidak ingin mengganti file</small>
                         </div>
                     </div>
                 </div>
 
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Simpan Data</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan Data</button>
                 </div>
 
 

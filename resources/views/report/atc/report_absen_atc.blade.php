@@ -72,9 +72,15 @@
                         color = 'warning';
                     }
 
+                    var type = '';
+                    if(abs.type==='Rotasi'){
+                        type = '<br><small>'+abs.shift+'</small>';
+                    }
+
                     return `
                         ${abs.time_in}<br>
                         <strong class="text-${color}">${abs.label_in}</strong>
+                        ${type}
                     `;
                 }
             }
@@ -105,9 +111,15 @@
                     ){
                         color = 'warning';
                     }
+                    var type = '';
+
+                    if(abs.type==='Rotasi'){
+                        type = '<br><small>'+abs.shift+'</small>';
+                    }
                     return `
                         ${abs.time_out}<br>
                         <strong class="text-${color}">${abs.label_out}</strong>
+                        ${type}
                     `;
                 }
             }

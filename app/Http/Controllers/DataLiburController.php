@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class DataLiburController extends Controller
 {
@@ -26,7 +27,11 @@ class DataLiburController extends Controller
     }
     public function indexIzinDT(DataLiburIzinFace $dataLiburIzinRepo)
     {
-        $data = $dataLiburIzinRepo->getDataIzinDT(0);
+        if(Auth::user()->is_pengawas){
+            $data = $dataLiburIzinRepo->getDataIzinByPengawasDT(0);
+        }else{
+            $data = $dataLiburIzinRepo->getDataIzinDT(0);
+        }
 
         return DataTables::of($data)
             ->toJson();

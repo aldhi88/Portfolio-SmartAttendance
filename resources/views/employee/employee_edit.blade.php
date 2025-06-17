@@ -148,11 +148,10 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>Aktifasi</label>
+                            <label>Status</label>
                             <select wire:model="dtForm.status"
                                 class="form-control @error('dtForm.status') is-invalid @enderror">
                                 <option value="Aktif">Aktif</option>
-                                <option value="Belum Aktif">Belum Aktif</option>
                                 <option value="Tidak Aktif">Tidak Aktif</option>
                             </select>
                             @error('dtForm.status')
@@ -161,7 +160,8 @@
                         </div>
                     </div>
 
-                    @if (Auth::user()->user_roles->id == 100)
+                    {{-- @if (Auth::user()->user_roles->id == 100) --}}
+                    @if (in_array(Auth::user()->user_roles->id, [100]))
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Role</label>
@@ -229,7 +229,7 @@
         </div>
 
         <hr>
-        <div class="row">
+        <div class="row pb-5">
             <div class="col">
                 <button type="submit" class="btn btn-primary">
                     <i class=" fas fa-check  mr-1"></i> Simpan Data

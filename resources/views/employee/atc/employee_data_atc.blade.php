@@ -33,10 +33,23 @@
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="edit/`+data.id+`">
-                                    <i class="fas fa-edit fa-fw"></i> Edit Data
-                                </a>
                     `;
+
+                    if(!row.user_login_id){
+                        html += `
+                            <a class="dropdown-item" href="edit/`+data.id+`">
+                                <i class="fas fa-edit fa-fw"></i> Aktivasi
+                            </a>
+                        `;
+
+                    }else{
+                        html += `
+                            <a class="dropdown-item" href="edit/`+data.id+`">
+                                <i class="fas fa-edit fa-fw"></i> Edit Data
+                            </a>
+                        `;
+                    }
+
 
                     if (data.log_attendances?.length === 0) {
                         const dtJson = {

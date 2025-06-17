@@ -4,10 +4,76 @@ namespace App\Repositories;
 
 use App\Models\DataEmployee;
 use App\Repositories\Interfaces\DataEmployeeFace;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class DataEmployeeRepo implements DataEmployeeFace
 {
+
+    public function pengawasCheck($id)
+    {
+
+        return DataEmployee::find($id)?->pengawas->first()->id ?? NULL;
+    }
+
+    public function delMember($data)
+    {
+        try {
+            DataEmployee::where('id', $data['pengawas'])->first()?->member()->detach($data['member']);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Delete data rel_pengawas_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+    public function addMember($data)
+    {
+        try {
+            DataEmployee::where('id', $data['pengawas'])->first()?->member()->attach($data['member']);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Create ke  rel_pengawas_employees failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public function getPengawas()
+    {
+        return DataEmployee::select('id', 'name')
+            ->whereHas('user_logins.user_roles', function ($q) {
+                $q->select('id', 'name')
+                    ->whereIn('id', [200, 400]);
+            })
+            ->get()
+            ->toArray();
+    }
+    public function getNonMember($data)
+    {
+        return DataEmployee::whereDoesntHave('pengawas', function ($q) use ($data) {
+            $q->where('pengawas_id', $data['id']);
+        })
+            ->with([
+                'master_organizations:id,name',
+                'master_locations:id,name',
+                'master_functions:id,name',
+                'master_positions:id,name',
+            ])
+        ;
+    }
+
+    public function getMember($data)
+    {
+        return DataEmployee::whereHas('pengawas', function ($q) use ($data) {
+            $q->where('pengawas_id', $data['id']);
+        })
+            ->with([
+                'master_organizations:id,name',
+                'master_locations:id,name',
+                'master_functions:id,name',
+                'master_positions:id,name',
+            ])
+        ;
+    }
 
     public function setStatusMultiple($data, $status)
     {
@@ -26,11 +92,29 @@ class DataEmployeeRepo implements DataEmployeeFace
 
     public function searchByName($name)
     {
-        return DataEmployee::select('id','name')
-            ->where('name', 'like', '%' . $name . '%')
-            ->limit(10)
-            ->get()
-            ->toArray();
+
+        if(Auth::user()->is_pengawas){
+            $pengawasId = Auth::user()->data_employees->id;
+            return DataEmployee::select('id', 'name')
+                ->where('name', 'like', '%' . $name . '%')
+                ->where(function ($q) use ($pengawasId) {
+                    $q->whereHas('pengawas', function ($q2) use ($pengawasId) {
+                        $q2->where('pengawas_id', $pengawasId);
+                    });
+                    // $q->whereHas('pengawas', function ($q2) use ($pengawasId) {
+                    //     $q2->where('pengawas_id', $pengawasId);
+                    // })->orWhereDoesntHave('pengawas');
+                })
+                ->limit(10)
+                ->get()
+                ->toArray();
+        }
+
+        return DataEmployee::select('id', 'name')
+                ->where('name', 'like', '%' . $name . '%')
+                ->limit(10)
+                ->get()
+                ->toArray();
     }
     public function createForm($data)
     {
@@ -86,7 +170,7 @@ class DataEmployeeRepo implements DataEmployeeFace
 
     public function getByKey($id)
     {
-        return DataEmployee::where('id',$id)
+        return DataEmployee::where('id', $id)
             ->with([
                 'master_schedules',
                 'user_logins.user_roles',
@@ -152,9 +236,7 @@ class DataEmployeeRepo implements DataEmployeeFace
     public function getMultiByCol($col, $val)
     {
         return DataEmployee::whereIn($col, $val)
-                    ->pluck($col)
-                    ->toArray();
+            ->pluck($col)
+            ->toArray();
     }
-
-
 }

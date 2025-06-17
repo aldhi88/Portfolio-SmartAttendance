@@ -6,6 +6,7 @@ use Illuminate\Support\Carbon;
 
 class PublicHelper
 {
+
     public static function getHariIndo(): array
     {
         return ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
@@ -66,7 +67,7 @@ class PublicHelper
 
     public static function getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
     {
-        // dump($schedules);
+        // dd($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
         $result = [];
         $logAttendances = collect($logAttendances);
         $schedules = collect($schedules);
@@ -78,9 +79,10 @@ class PublicHelper
                 'label_out' => 'off',
                 'time_in' => '-',
                 'time_out' => '-',
-                'status' => 'off'
+                'status' => 'off',
+                'type' => '-',
+                'shift' => '-',
             ];
-
 
 
             $tglCek = Carbon::parse($value);
@@ -110,9 +112,6 @@ class PublicHelper
                     : $tglCek->greaterThanOrEqualTo($effective);
             });
 
-
-
-
             $hariKe = $tglCek->isoWeekday(); // 1 = Senin, ..., 7 = Minggu
 
             $izinTanggalIni = $izin->first(function ($iz) use ($tglCek) {
@@ -124,6 +123,7 @@ class PublicHelper
             // dump($izinTanggalIni);
 
             if ($scheduleMatch['type'] == 'Tetap') {
+                $return['type'] = 'Tetap';
 
                 // Cek apakah ini hari kerja regular (bukan lembur)
                 $isRegular = $scheduleMatch['day_work']['regular'][$hariKe] ?? false;
@@ -161,7 +161,6 @@ class PublicHelper
                             continue;
                         }
                     }
-
                 }
 
 
@@ -176,7 +175,7 @@ class PublicHelper
                     return $logTime->format('Y-m-d') === $tanggalYMD
                         && $logTime->format('H:i') >= $checkinTime;
                 })->sortBy('time')->first();
-                if(!$kenaIzinMasuk){
+                if (!$kenaIzinMasuk) {
                     $return['label_in'] = 'tdk absen'; //set nilai default
                     if ($logIn) {
                         $waktuMasuk = Carbon::parse($logIn['time'])->format('H:i');
@@ -195,7 +194,7 @@ class PublicHelper
                     return Carbon::parse($log['time'])->format('Y-m-d') === $tanggalYMD;
                 })->sortByDesc('time')->first();
 
-                if(!$kenaIzinKeluar){
+                if (!$kenaIzinKeluar) {
                     $return['label_out'] = 'tdk absen'; //set nilai default
                     if ($logOut) {
                         $waktuPulang = Carbon::parse($logOut['time'])->format('H:i');
@@ -221,6 +220,7 @@ class PublicHelper
             }
 
             if ($scheduleMatch['type'] == 'Rotasi') {
+                $return['type'] = 'Rotasi';
 
                 $startDate = Carbon::createFromFormat('Y-m-d', $scheduleMatch['day_work']['start_date'])->startOfDay();
                 $diff = $tglCek->diffInDays($startDate, true);
@@ -249,6 +249,7 @@ class PublicHelper
                     $result[$tglIndex] = $return;
                     continue;
                 }
+                $return['shift'] = $shift;
 
                 if ($izinTanggalIni) {
                     $return['label_in'] = $izinTanggalIni['jenis'];
@@ -303,27 +304,54 @@ class PublicHelper
                 if ($logIn) {
                     $waktuMasuk = Carbon::parse($logIn['time']);
 
-                    // Default asumsi tanggal log in = tanggal jadwal
-                    $tanggalEvaluasi = $tanggalLogIn;
+                    // Evaluasi tanggal acuan batas berdasarkan shift
+                    $tanggalBatas = ($shift === 'malam')
+                        ? Carbon::parse($tanggalLogIn)->addDay()->toDateString()
+                        : $tanggalLogIn;
 
-                    if ($shift === 'malam' && $waktuMasuk->isSameDay(Carbon::parse($tanggalLogIn)->addDay())) {
-                        $tanggalEvaluasi = Carbon::parse($tanggalLogIn)->addDay()->toDateString();
-                    }
-
-                    $batasAwal = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkin_time']);
-                    $batasOntime = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['work_time']);
-                    $batasTerlambat = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkin_deadline_time']);
+                    $batasAwal = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_time']);
+                    $batasOntime = Carbon::parse($tanggalBatas . ' ' . $jadwal['work_time']);
+                    $batasTerlambat = Carbon::parse($tanggalBatas . ' ' . $jadwal['checkin_deadline_time']);
 
                     if ($waktuMasuk->between($batasAwal, $batasOntime)) {
                         $return['label_in'] = 'dtg ontime';
                         $return['time_in'] = $waktuMasuk->format('H:i');
-                    } else if ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
+                    } elseif ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
                         $return['label_in'] = 'terlambat';
                         $return['time_in'] = $waktuMasuk->format('H:i');
                     }
                 } else {
                     $return['label_in'] = 'tdk absen';
                 }
+                // if ($logIn) {
+                //     $waktuMasuk = Carbon::parse($logIn['time']);
+
+                //     // Default asumsi tanggal log in = tanggal jadwal
+                //     $tanggalEvaluasi = $tanggalLogIn;
+
+                //     if ($shift === 'malam' && $waktuMasuk->isSameDay(Carbon::parse($tanggalLogIn)->addDay())) {
+                //         $tanggalEvaluasi = Carbon::parse($tanggalLogIn)->addDay()->toDateString();
+                //     }
+
+                //     $batasAwal = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkin_time']);
+                //     $batasOntime = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['work_time']);
+                //     $batasTerlambat = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkin_deadline_time']);
+
+                //     if ($waktuMasuk->between($batasAwal, $batasOntime)) {
+                //         $return['label_in'] = 'dtg ontime';
+                //         $return['time_in'] = $waktuMasuk->format('H:i');
+                //     } else if ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
+                //         $return['label_in'] = 'terlambat';
+                //         $return['time_in'] = $waktuMasuk->format('H:i');
+                //     }
+                // } else {
+                //     $return['label_in'] = 'tdk absen';
+                // }
+
+                // if ($tglIndex == 10) {
+                //     dd($logIn, $scheduleMatch, $waktuMasuk, $tanggalEvaluasi, $batasAwal, $batasOntime, $batasTerlambat, $return);
+                //     // dd($return, $scheduleMatch, $logIn);
+                // }
 
                 // // --- OUT
                 if ($logOut) {
@@ -367,7 +395,6 @@ class PublicHelper
             }
 
             $result[$tglIndex] = $return;
-
         }
         // dd($result);
 

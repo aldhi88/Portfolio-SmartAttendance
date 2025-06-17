@@ -4,6 +4,11 @@ namespace App\Repositories\Interfaces;
 
 interface DataEmployeeFace
 {
+    public function delMember($data);
+    public function addMember($data);
+    public function getPengawas();
+    public function getNonMember($data);
+    public function getMember($data);
     public function setStatusMultiple($data, $status);
     public function createForm($data);
     public function update($id, $data);

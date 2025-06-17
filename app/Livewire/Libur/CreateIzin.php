@@ -32,6 +32,8 @@ class CreateIzin extends Component
             return;
         }
 
+        $this->form['approved_by'] = $this->dataEmployeeRepo->pengawasCheck($this->form['data_employee_id']);
+
         $from = Carbon::parse($this->form['from']);
         $to = Carbon::parse($this->form['to']);
         if($from > $to){
@@ -40,6 +42,8 @@ class CreateIzin extends Component
         }
 
         $this->form['status'] = "Disetujui";
+
+        // dd($this->all());
 
         if($this->dataLiburIzinRepo->create($this->form)){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
@@ -93,8 +97,10 @@ class CreateIzin extends Component
         $this->results = [];
     }
 
+    public $izinList;
     public function mount()
     {
+        $this->izinList = $this->dataLiburIzinRepo->getIzinList();
         $this->form['data_employee_id'] = false;
     }
 

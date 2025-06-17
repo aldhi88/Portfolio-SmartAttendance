@@ -19,4 +19,9 @@ class DataIzin extends Model
     {
         return $this->belongsTo(DataEmployee::class, 'data_employee_id', 'id');
     }
+
+    public static function izinList()
+    {
+        return ['Sakit','Keluar','Pulang','Dinas', 'Cuti'];
+    }
 }

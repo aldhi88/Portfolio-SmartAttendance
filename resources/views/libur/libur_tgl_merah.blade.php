@@ -1,7 +1,7 @@
 <div>
-    {{-- <div class="loading-50" wire:loading wire:target="wireSubmit">
+    <div class="loading-50" wire:loading>
         <div class="loader"></div>
-    </div> --}}
+    </div>
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between row">

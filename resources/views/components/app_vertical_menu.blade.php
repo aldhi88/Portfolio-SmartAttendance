@@ -7,7 +7,7 @@
             <div id="sidebar-menu">
                 <!-- Left Menu Start -->
                 <ul class="metismenu list-unstyled" id="side-menu">
-                    <li class="menu-title">Menu</li>
+                    <li class="menu-title">Smart Absensi</li>
 
                     <li>
                         <a href="{{ route('dashboard.index') }}" class="waves-effect">
@@ -18,17 +18,25 @@
 
                     <li class="parent jadwal-kerja karyawan">
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-team-line"></i>
-                            <span>Manajemen SDM</span>
+                            <i class="ri-archive-line"></i>
+                            <span>Data Master</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li class="child perusahaan"><a href="{{ route('perusahaan.index') }}">Perusahaan</a></li>
                             <li class="child jabatan"><a href="{{ route('jabatan.index') }}">Jabatan</a></li>
                             <li class="child lokasi"><a href="{{ route('lokasi.index') }}">Lokasi</a></li>
                             <li class="child fungsi"><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
+                        </ul>
+                    </li>
+                    <li class="parent jadwal-kerja karyawan">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-team-line"></i>
+                            <span>SDM & Jadwal</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
                             <li class="child jadwal-kerja"><a href="{{ route('jadwal-kerja.index') }}">Jadwal Kerja</a></li>
                             <li class="child karyawan "><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
-                            {{-- <li class="child "><a href="#">Penjadwalan Karyawan</a></li> --}}
+                            <li class="child pengawas "><a href="{{ route('pengawas.index') }}">Pengawas</a></li>
                         </ul>
                     </li>
 
@@ -38,9 +46,20 @@
                             <span>Data Libur</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li class="child izin"><a href="{{ route('izin.indexIzin') }}">Izin</a></li>
-                            <li class="child"><a href="{{ route('merah.indexMerah') }}">Tanggal Merah</a></li>
+                            <li class="child"><a href="{{ route('izin.indexIzin') }}">Data Pengajuan Izin</a></li>
+                            <li class="child"><a href="{{ route('izin.izinCreate') }}">Buat Pengajuan Izin</a></li>
+                            <li class="child"><a href="{{ route('merah.indexMerah') }}">Set Tanggal Merah</a></li>
                             {{-- <li class="child "><a href="#">Penjadwalan Karyawan</a></li> --}}
+                        </ul>
+                    </li>
+                    <li class="parent">
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="ri-history-line"></i>
+                            <span>Data Lembur</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li class="child"><a href="#">Data Pengajuan Lembur</a></li>
+                            <li class="child"><a href="#">Buat Pengajuan Lembur</a></li>
                         </ul>
                     </li>
 
@@ -51,24 +70,35 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
-                            <li><a href="ecommerce-product-detail.html">Rekap Penilaian</a></li>
+                            <li><a href="#">Rekap Passing Grade</a></li>
                             <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
-                            <li><a href="ecommerce-product-detail.html">Log Lokasi</a></li>
+                            <li><a href="#">Log Lokasi</a></li>
                         </ul>
                     </li>
 
-                    {{-- @if (Auth::user()->user_roles->name == 'Super User')
+                    <hr>
 
-                    <li>
+                    <li class="menu-title">RUMAH DINAS</li>
+
+                    {{-- <li>
+                        <a href="{{ route('dashboard.index') }}" class="waves-effect">
+                            <i class="ri-dashboard-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="parent jadwal-kerja karyawan">
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class="ri-settings-3-line"></i>
-                            <span>Pengaturan</span>
+                            <i class="ri-archive-line"></i>
+                            <span>Data Master</span>
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
-                            <li><a href="{{ route('settings.indexAuthorize') }}">Authorization</a></li>
+                            <li class="child perusahaan"><a href="{{ route('perusahaan.index') }}">Perusahaan</a></li>
+                            <li class="child jabatan"><a href="{{ route('jabatan.index') }}">Jabatan</a></li>
+                            <li class="child lokasi"><a href="{{ route('lokasi.index') }}">Lokasi</a></li>
+                            <li class="child fungsi"><a href="{{ route('fungsi.index') }}">Fungsi</a></li>
                         </ul>
-                    </li>
-                    @endif --}}
+                    </li> --}}
 
 
 
