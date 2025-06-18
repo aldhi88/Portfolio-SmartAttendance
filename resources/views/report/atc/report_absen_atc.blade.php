@@ -185,9 +185,13 @@
         })
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.xlsx`;
+
             const a = document.createElement('a');
             a.href = url;
-            a.download = "report_absen.xlsx";
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -220,9 +224,13 @@
         })
         .then(blob => {
             const url = window.URL.createObjectURL(blob);
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.xlsx`;
+
             const a = document.createElement('a');
             a.href = url;
-            a.download = "report_absen.pdf";
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             a.remove();

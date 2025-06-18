@@ -94,6 +94,12 @@ class ReportController extends Controller
 
     public function exportExcel(Request $request, DataLiburFace $dataLiburRepo)
     {
+        $timestamp = now()->format('Hisv');
+        $bulan = Carbon::create($request->filter_year, $request->filter_month)->locale('id')->translatedFormat('F');
+        $tahun = $request->filter_year;
+
+        $filename = 'report-absen-' . strtolower($bulan) . '-' . $tahun . '-' . $timestamp . '.xlsx';
+
         return Excel::download(
             new ReportAbsenExport(
                 $request->filter_year,
@@ -103,9 +109,10 @@ class ReportController extends Controller
                 $request->filter_name,
                 $dataLiburRepo
             ),
-            'report_absen.xlsx'
+            $filename
         );
     }
+
 
     public function exportPdf(Request $request, DataLiburFace $dataLiburRepo)
     {
@@ -182,7 +189,6 @@ class ReportController extends Controller
             return $row;
         })->toArray();
 
-        $customPaper = [0, 0, 1600, 842]; // lebar 1600pt (lebih dari A2)
         $pdf = Pdf::loadView('report.export.report_export_pdf', [
             'data' => $data,
             'tglCol' => $tglCol,
@@ -190,7 +196,12 @@ class ReportController extends Controller
             'month' => $month
         ])->setPaper('A4', 'landscape');
 
-        return $pdf->download('report_absen.pdf');
+        $timestamp = now()->format('Hisv'); // jammenitdetikmilisecond
+        $bulan = now()->locale('id')->translatedFormat('F'); // Juni
+        $tahun = now()->year;
+
+        $filename = 'report-absen-' . strtolower($bulan) . '-' . $tahun . '-' . $timestamp . '.pdf';
+        return $pdf->download($filename);
     }
 
 
