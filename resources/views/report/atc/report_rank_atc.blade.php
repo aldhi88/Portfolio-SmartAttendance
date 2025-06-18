@@ -107,7 +107,7 @@
 
                 const rank1 = json.data[0];
                 console.log(rank1);
-                $('#rank1-name').text(rank1.name);
+                $('#rank1-name').html(rank1.name);
                 $('#rank1-point').text(rank1.akumulasi.total_poin);
                 $('#rank1-org').html(rank1.master_organizations.name);
                 $('#rank1-as').text(rank1.master_positions.name);
