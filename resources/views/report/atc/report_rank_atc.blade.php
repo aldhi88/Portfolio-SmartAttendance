@@ -41,27 +41,27 @@
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.loyal_time_read;
+                return row.akumulasi.loyal_time_read+' jam';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.hari_kerja;
+                return row.akumulasi.hari_kerja+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.hadir;
+                return row.akumulasi.hadir+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.alpa;
+                return row.akumulasi.izin+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.izin;
+                return row.akumulasi.alpa+' hari';
             }
         },
         { name: 'id', orderable: true, searchable:false,
@@ -72,8 +72,8 @@
     ];
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 100,dom: 'rtp',
-        order: [[6, 'desc']],
+        processing: true,serverSide: true,pageLength: 100,dom: 'lrtp',
+        order: [[8, 'desc']],
         columnDefs: [
             { className: 'text-left text-nowrap', targets: [1] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
@@ -104,6 +104,18 @@
                     // Jika masih sama, urutkan berdasarkan loyal_time (desc)
                     return b.akumulasi.loyal_time - a.akumulasi.loyal_time;
                 });
+
+                const rank1 = json.data[0];
+                console.log(rank1);
+                $('#rank1-name').text(rank1.name);
+                $('#rank1-point').text(rank1.akumulasi.total_poin);
+                $('#rank1-org').text(rank1.master_organizations.name);
+                $('#rank1-as').text(rank1.master_positions.name);
+                $('#rank1-day-work').text(rank1.akumulasi.hari_kerja);
+                $('#rank1-hadir').text(rank1.akumulasi.hadir);
+                $('#rank1-noabsen').text(rank1.akumulasi.tdk_absen);
+                $('#rank1-loyal').text(rank1.akumulasi.loyal_time_read);
+
 
                 return json.data;
             }

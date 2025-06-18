@@ -17,7 +17,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <div class="row mt-4">
+                    <div class="row">
                         <div class="col">
                             <h4 class="lead mb-0 mt-2"><h4 class="lead">Form Filter</h4></h4>
                         </div>
@@ -145,7 +145,6 @@
                         <div class="col">
                             <div class="d-flex justify-content-between mb-2">
                                 <div id="lengthContainer"></div>
-                                <!-- kamu bisa taruh search custom di sini juga kalau mau -->
                             </div>
                             <div class="table-responsive mt-2">
                                 <table id="myTable" class="table table-bordered table-striped" style="width: 100%">

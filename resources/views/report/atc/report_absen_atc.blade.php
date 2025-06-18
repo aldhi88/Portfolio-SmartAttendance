@@ -168,7 +168,6 @@
         columns: pushCols,
         initComplete: function(settings){
             table = settings.oInstance.api();
-
             $('#lengthContainer').append($('#myTable_length'));
             initSearchCol(table,'#header-filter','search-col-dt');
         }

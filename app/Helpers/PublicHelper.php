@@ -433,7 +433,7 @@ class PublicHelper
 
         $akumulasi['loyal_time_read'] =
             ($akumulasi['loyal_time'] >= 0 ? '+' : '-') . // kasih tanda + atau -
-            number_format(abs($akumulasi['loyal_time'] / 3600), 3, ',', '') . ' jam';
+            number_format(abs($akumulasi['loyal_time'] / 3600), 3, ',', '');
 
 
 
