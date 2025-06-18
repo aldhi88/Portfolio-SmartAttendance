@@ -128,7 +128,6 @@
         }
     });
 
-
     function launchConfetti() {
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
@@ -196,85 +195,6 @@
 
         animationId = requestAnimationFrame(animate);
     }
-
-    // $('#export-excel').on('click', function () {
-    //     const data = {
-    //         filter_year: "{{ $filter['thisYear'] }}",
-    //         filter_month: "{{ $filter['thisMonth'] }}",
-    //         filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
-    //         filter_master_position_id: "{{ $filter['master_position_id'] }}",
-    //         filter_name: "{{ $filter['name'] }}"
-    //     };
-    //     fetch("{{ route('report.exportExcel') }}", {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //         },
-    //         body: JSON.stringify(data)
-    //     })
-    //     .then(response => {
-    //         if (!response.ok) throw new Error("Gagal export file.");
-    //         return response.blob();
-    //     })
-    //     .then(blob => {
-    //         const url = window.URL.createObjectURL(blob);
-    //         const now = new Date();
-    //         const pad = (n) => n.toString().padStart(2, '0');
-    //         const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.xlsx`;
-
-    //         const a = document.createElement('a');
-    //         a.href = url;
-    //         a.download = fileName;
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         a.remove();
-    //     })
-    //     .catch(error => {
-    //         alert(error.message);
-    //     });
-    // });
-
-    // $('#export-pdf').on('click', function () {
-    //     const data = {
-    //         filter_year: "{{ $filter['thisYear'] }}",
-    //         filter_month: "{{ $filter['thisMonth'] }}",
-    //         filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
-    //         filter_master_position_id: "{{ $filter['master_position_id'] }}",
-    //         filter_name: "{{ $filter['name'] }}"
-    //     };
-
-    //     fetch("{{ route('report.exportPdf') }}", {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //         },
-    //         body: JSON.stringify(data)
-    //     })
-    //     .then(response => {
-    //         if (!response.ok) throw new Error("Gagal export file.");
-    //         return response.blob();
-    //     })
-    //     .then(blob => {
-    //         const url = window.URL.createObjectURL(blob);
-    //         const now = new Date();
-    //         const pad = (n) => n.toString().padStart(2, '0');
-    //         const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.xlsx`;
-
-    //         const a = document.createElement('a');
-    //         a.href = url;
-    //         a.download = fileName;
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         a.remove();
-    //     })
-    //     .catch(error => {
-    //         alert(error.message);
-    //     });
-    // });
-
-
 
 
 </script>
