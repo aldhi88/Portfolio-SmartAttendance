@@ -41,28 +41,28 @@ class MasterSchedule extends Model
             set: fn (array $value) => json_encode($value),
         );
     }
-    protected function checkinTime(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
-        );
-    }
-    protected function workTime(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
-        );
-    }
-    protected function checkinDeadlineTime(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
-        );
-    }
-    protected function checkoutTime(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
-        );
-    }
+    // protected function checkinTime(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+    //     );
+    // }
+    // protected function workTime(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+    //     );
+    // }
+    // protected function checkinDeadlineTime(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+    //     );
+    // }
+    // protected function checkoutTime(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => Carbon::createFromFormat('H:i:s', $value)->format('H:i'),
+    //     );
+    // }
 }

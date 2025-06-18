@@ -24,7 +24,7 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        { data: null, name: 'id', orderable: true, searchable:false,
+        { data: null, name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
                 let html = `<h6 class="">${row.name}</h6>`;
                 html += `<div class="text-muted text-rapat">`;
@@ -32,6 +32,16 @@
                 html += `<div class="text-muted text-rapat">${row.master_positions.name}</div>`;
 
                 return html;
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.tdk_absen+' kali';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.loyal_time_read;
             }
         },
         { name: 'id', orderable: false, searchable:false,
@@ -80,8 +90,21 @@
                 d.filter_name = "{{ $filter['name'] }}";
             },
             dataSrc: function(json) {
-                // Optional: sort client-side once by total_poin desc
-                json.data.sort((a, b) => b.akumulasi.total_poin - a.akumulasi.total_poin);
+                json.data.sort((a, b) => {
+                    // Urutkan berdasarkan total_poin (desc)
+                    if (b.akumulasi.total_poin !== a.akumulasi.total_poin) {
+                        return b.akumulasi.total_poin - a.akumulasi.total_poin;
+                    }
+
+                    // Jika total_poin sama, urutkan berdasarkan tdk_absen (asc)
+                    if (a.akumulasi.tdk_absen !== b.akumulasi.tdk_absen) {
+                        return a.akumulasi.tdk_absen - b.akumulasi.tdk_absen;
+                    }
+
+                    // Jika masih sama, urutkan berdasarkan loyal_time (desc)
+                    return b.akumulasi.loyal_time - a.akumulasi.loyal_time;
+                });
+
                 return json.data;
             }
         },

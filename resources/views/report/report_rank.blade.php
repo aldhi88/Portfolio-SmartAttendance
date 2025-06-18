@@ -94,7 +94,7 @@
                         <div class="col">
                             <h4 class="lead mb-0 mt-2">Hasil Filter</h4>
                         </div>
-                        <div class="col text-right">
+                        {{-- <div class="col text-right">
                             <div class="form-group">
                                 <div class="btn-group">
                                     <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
@@ -105,7 +105,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <hr class="mt-0">
                     <div class="row mt-3">
@@ -137,6 +137,8 @@
                                         <tr>
                                             <th rowspan="2" class="text-center" style="min-width: 10px">Rank</th>
                                             <th rowspan="2" class="text-center">Nama <br> Perusahaan <br> Jabatan</th>
+                                            <th rowspan="2" class="text-center">Tidak <br> Absen</th>
+                                            <th rowspan="2" class="text-center">Loyal <br> Time</th>
                                             <th rowspan="2" class="text-center">Jumlah <br> Hari <br> Kerja</th>
                                             <th colspan="3" class="text-center">Akumulasi</th>
                                             <th rowspan="2" class="text-center">Total <br> Poin</th>
