@@ -92,6 +92,80 @@ class ReportController extends Controller
         ;
     }
 
+    public function rank()
+    {
+        $data['tab_title'] = "Rekap Passing Grade | " . config('app.name');
+        $data['page_title'] = "Rekap Passing Grade";
+        $data['page_desc'] = "Menamplikan rekap penilaian passing grade.";
+        $data['lw'] = "report.report-rank";
+        return view('index', compact('data'));
+    }
+
+    public function rankDT(
+        DataEmployeeFace $dataEmployeeRepo,
+        DataLiburFace $dataLiburRepo,
+        Request $request
+    )
+    {
+        $data = $dataEmployeeRepo->getReportDT(0);
+        $data->select([
+            'data_employees.id',
+            'data_employees.name',
+            'data_employees.status',
+            'data_employees.master_organization_id',
+            'data_employees.master_position_id',
+            'data_employees.master_location_id',
+            'data_employees.master_function_id',
+        ])
+            ->where('status', 'Aktif')
+            ->has('master_schedules')
+            ->with([
+                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'log_attendances' => function ($q) use ($request) {
+                    $q->select('data_employee_id', 'time')
+                    ->whereYear('time', $request->filter_year)
+                    ->whereMonth('time', $request->filter_month);
+                },
+                'data_izins' => function ($q) use ($request) {
+                    $q->select('id','data_employee_id','jenis','from','to','desc')
+                        ->where('status', 'Disetujui');
+                },
+            ])
+        ;
+
+        if($request->filter_master_organization_id){
+            $data->where('master_organization_id', $request->filter_master_organization_id);
+        }
+        if($request->filter_master_position_id){
+            $data->where('master_position_id', $request->filter_master_position_id);
+        }
+
+        $dateInMonth = PublicHelper::dateInMonth($request->filter_month, $request->filter_year);
+        // dd($dateInMonth);
+
+        $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
+        // dd($dataLibur);
+
+        // dd($data->get()->toArray());
+
+        return DataTables::of($data)
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->addColumn('akumulasi', function ($data) use($dateInMonth, $tglMerah) {
+                return PublicHelper::getAkumulasi(
+                    $dateInMonth,
+                    $data->log_attendances->toArray(),
+                    $data->master_schedules->toArray(),
+                    $data->data_izins->toArray(),
+                    $tglMerah,
+                );
+            })
+            ->smart(false)
+            ->toJson()
+        ;
+    }
+
     public function exportExcel(Request $request, DataLiburFace $dataLiburRepo)
     {
         $timestamp = now()->format('Hisv');

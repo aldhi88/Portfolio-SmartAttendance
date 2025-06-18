@@ -2,16 +2,14 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
     <style>
-        #myTable tbody td:nth-child(n+4):nth-child(odd) {
+        #myTable tbody td:nth-child(n+3):nth-child(odd) {
             background-color: #ffffff;
-            line-height: 1;
         }
-        #myTable tbody td:nth-child(n+4):nth-child(even) {
+        #myTable tbody td:nth-child(n+3):nth-child(even) {
             background-color: #dcdde22f;
-            line-height: 1;
         }
-        #myTable tbody td:nth-child(n+3) {
-            line-height: 1;
+        .text-rapat {
+            line-height: 16px;
         }
     </style>
 @endsection
@@ -21,14 +19,6 @@
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
-    <!-- Buttons -->
-    {{-- <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script> --}}
 @endsection
 
 @push('push-script')
@@ -41,13 +31,16 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        { data: 'name', name: 'name', orderable: true, searchable:false },
-        { data: 'master_organizations.name', name: 'master_organization_id', orderable: false, searchable:true,
-            render: function (data, type, row, meta) {
-                return row.master_organizations.name+'<br>('+row.master_positions.name+')';
+        { data: null, name: 'id', orderable: true, searchable:false,
+            render: function(data, type, row, meta){
+                let html = `<h6 class="mb-2">${row.name}</h6>`;
+                html += `<div class="text-muted text-rapat">`;
+                html += `${row.master_organizations.name}</div>`;
+                html += `<div class="text-muted text-rapat">${row.master_positions.name}</div>`;
+
+                return html;
             }
         }
-
     ];
 
     tglCol.forEach(function(item) {
@@ -87,8 +80,10 @@
 
                     return `
                         ${abs.time_in}<br>
-                        <strong class="text-${color}">${abs.label_in}</strong>
-                        ${type}
+                        <div class="text-rapat">
+                            <strong class="text-${color}">${abs.label_in}</strong>
+                            ${type}
+                        </div>
                     `;
                 }
             }
@@ -126,8 +121,10 @@
                     }
                     return `
                         ${abs.time_out}<br>
-                        <strong class="text-${color}">${abs.label_out}</strong>
-                        ${type}
+                        <div class="text-rapat">
+                            <strong class="text-${color}">${abs.label_out}</strong>
+                            ${type}
+                        </div>
                     `;
                 }
             }
@@ -135,7 +132,7 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: -1,dom: 'rtp',
+        processing: true,serverSide: true,pageLength: 100,dom: 'rtp',
         order: [[1, 'asc']],
         fixedColumns: {
             leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix

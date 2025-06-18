@@ -23,7 +23,7 @@
                             <form class="p-3 bg-light rounded" method="get">
 
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-2">
                                         <div class="form-group">
                                             <label>Bulan</label>
                                             <select name="month" wire:model="filter.thisMonth" class="form-control ex-filter">
@@ -33,7 +33,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-2">
                                         <div class="form-group">
                                             <label>Tahun</label>
                                             <select name="year" wire:model="filter.thisYear" class="form-control ex-filter">
@@ -45,7 +45,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Perusahaan</label>
                                             <select name="master_organization_id" wire:model="filter.master_organization_id" class="form-control ex-filter">
@@ -56,7 +56,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md">
                                         <div class="form-group">
                                             <label>Jabatan</label>
                                             <select name="master_position_id" wire:model="filter.master_position_id" class="form-control ex-filter">
@@ -67,37 +67,25 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-7">
-                                        <div class="form-group">
-                                            <label>Nama Karyawan</label>
-                                            <input type="text" wire:model="filter.name" name="name" class="form-control ex-filter">
-                                        </div>
-                                    </div>
                                     <div class="col">
-                                        <div class="form-group mb-0 pb-0">
-                                            <label style="visibility: hidden">Action</label>
-                                        </div>
                                         <div class="row">
-                                            <div class="col-md-7">
-                                                <button type="submit" class="btn btn-info btn-block">Tampilkan Hasil Filter</button>
-                                            </div>
-                                            <div class="col">
-                                                <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset Filter</a>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-0 pb-0">
+                                                    <label style="visibility: hidden">Action</label>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-7">
+                                                        <button type="submit" class="btn btn-info btn-block">Filter</button>
+                                                    </div>
+                                                    <div class="col">
+                                                        <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
-
-                                {{-- <div class="row">
-                                    <div class="col">
-                                        <button type="submit" class="btn btn-info">Tampilkan Hasil Filter</button>
-                                        <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary">Reset Filter</a>
-                                    </div>
-                                </div> --}}
-
                             </form>
                         </div>
                     </div>
@@ -145,31 +133,18 @@
                         <div class="col">
                             <div class="table-responsive mt-2">
                                 <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
-                                    <thead class="thead-light">
+                                    <thead>
                                         <tr>
-                                            <th rowspan="2" class="text-center" style="min-width: 10px">No</th>
-                                            <th rowspan="2" class="text-center">Nama</th>
-                                            {{-- kolom dinamis --}}
-                                            @foreach ($dt['tglCol'] as $item)
-                                            <th colspan="2" class="text-center text-nowrap
-                                                {{ $item['col_day']=='Sabtu' || $item['col_day']=='Minggu' ? 'bg-soft-danger':'bg-soft-secondary' }}
-                                                ">
-                                                {{ $item['col_day'] }} <br>
-                                                {{ $item['col_date'] }}
-                                            </th>
-                                            @endforeach
+                                            <th rowspan="2" class="text-center" style="min-width: 10px">Rank</th>
+                                            <th rowspan="2" class="text-center">Nama <br> Perusahaan <br> Jabatan</th>
+                                            <th rowspan="2" class="text-center">Jumlah <br> Hari <br> Kerja</th>
+                                            <th colspan="3" class="text-center">Akumulasi</th>
+                                            <th rowspan="2" class="text-center">Total <br> Poin</th>
                                         </tr>
                                         <tr>
-                                            {{-- kolom dinamis baris ke 2 --}}
-                                            @foreach ($dt['tglCol'] as $item)
-                                            <th class="text-center bg-soft-secondary">
-                                                <i class="fas fa-angle-double-down"></i>
-
-                                            </th>
-                                            <th class="text-center">
-                                                <i class="fas fa-angle-double-up"></i>
-                                            </th>
-                                            @endforeach
+                                            <th class="text-center">Kehadiran <br> 50%</th>
+                                            <th class="text-center">Ketidakhadiran <br> 30%</th>
+                                            <th class="text-center">Izin Keluar <br> 20%</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -184,5 +159,5 @@
 
         </div>
     </div>
-    @include('report.atc.report_absen_atc')
+    @include('report.atc.report_rank_atc')
 </div>

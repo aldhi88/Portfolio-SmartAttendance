@@ -60,7 +60,7 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
-                            <li><a href="#">Rekap Passing Grade</a></li>
+                            <li><a href="{{ route('report.rank') }}">Rekap Passing Grade</a></li>
                             <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
                             <li><a href="#">Log Lokasi</a></li>
                         </ul>

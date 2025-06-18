@@ -145,6 +145,9 @@ Route::middleware('auth:web')->group(function(){
                 Route::post('absen-dt', 'absenDT')->name('absenDT');
                 Route::post('export/excel', 'exportExcel')->name('exportExcel');
                 Route::post('export/pdf', 'exportPdf')->name('exportPdf');
+
+                Route::get('rank', 'rank')->name('rank');
+                Route::post('rank-dt', 'rankDT')->name('rankDT');
             });
         });
     });
