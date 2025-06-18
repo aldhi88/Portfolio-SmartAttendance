@@ -133,7 +133,7 @@
                         <div class="col">
                             <div class="table-responsive mt-2">
                                 <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
-                                    <thead>
+                                    <thead class="thead-light">
                                         <tr>
                                             <th rowspan="2" class="text-center" style="min-width: 10px">Rank</th>
                                             <th rowspan="2" class="text-center">Nama <br> Perusahaan <br> Jabatan</th>

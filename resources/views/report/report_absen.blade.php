@@ -17,7 +17,24 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="lead">Form Filter</h4>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <h4 class="lead mb-0 mt-2"><h4 class="lead">Form Filter</h4></h4>
+                        </div>
+                        <div class="col text-right">
+                            <div class="form-group">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
+                                        <i class="far fa-file-excel fa-fw"></i>Excel
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger waves-light waves-effect" id="export-pdf">
+                                        <i class="fas fa-file-pdf fa-fw"></i>PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-12">
                             <form class="p-3 bg-light rounded" method="get">
@@ -102,25 +119,8 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col">
-                            <h4 class="lead mb-0 mt-2">Hasil Filter</h4>
-                        </div>
-                        <div class="col text-right">
-                            <div class="form-group">
-                                <div class="btn-group">
-                                    <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
-                                        <i class="far fa-file-excel fa-fw"></i>Excel
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-danger waves-light waves-effect" id="export-pdf">
-                                        <i class="fas fa-file-pdf fa-fw"></i>PDF
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <hr class="mt-0">
-                    <div class="row mt-3">
+                    {{-- <div class="row mt-3">
                         <div class="col-md-2">
                             <div class="form-group m-0">
                                 <label class="m-0">Bulan Tahun :</label>
@@ -139,16 +139,23 @@
                                 <h5 class="m-0" id="filter-position">{{ $filter['pos_label']??'Semua' }}</h5>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="row">
                         <div class="col">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div id="lengthContainer"></div>
+                                <!-- kamu bisa taruh search custom di sini juga kalau mau -->
+                            </div>
                             <div class="table-responsive mt-2">
                                 <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
                                     <thead class="thead-light">
                                         <tr>
                                             <th rowspan="2" class="text-center" style="min-width: 10px">No</th>
-                                            <th rowspan="2" class="text-center">Nama</th>
+                                            <th rowspan="2" class="text-center" id="header-filter">
+                                                Nama <br> Perusahaan <br> Jabatan
+                                                <input type="text" placeholder="cari nama karyawan" class="form-control form-control-sm text-center search-col-dt">
+                                            </th>
                                             {{-- kolom dinamis --}}
                                             @foreach ($dt['tglCol'] as $item)
                                             <th colspan="2" class="text-center text-nowrap
@@ -171,7 +178,29 @@
                                             </th>
                                             @endforeach
                                         </tr>
+                                        {{-- <tr id="header-filter">
+                                            <th class="text-center"></th>
+                                            <th class="text-center">
+                                                <input type="text" placeholder="cari nama" class="form-control form-control-sm text-center search-col-dt">
+                                            </th>
+                                            @foreach ($dt['tglCol'] as $item)
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            @endforeach
+                                        </tr> --}}
                                     </thead>
+                                    {{-- <thead id="header-filter">
+                                        <tr>
+                                            <th class="text-center"></th>
+                                            <th class="text-center">
+                                                <input type="text" placeholder="cari nama" class="form-control form-control-sm text-center search-col-dt">
+                                            </th>
+                                            @foreach ($dt['tglCol'] as $item)
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            @endforeach
+                                        </tr>
+                                    </thead> --}}
                                     <tbody></tbody>
                                 </table>
                             </div>

@@ -11,6 +11,18 @@
         .text-rapat {
             line-height: 16px;
         }
+
+        .dataTables_length label {
+            display: flex;
+            align-items: center;
+            gap: 4px; /* atau 8px kalau mau lebih longgar */
+            margin-bottom: 0;
+            font-size: 0.875rem;
+        }
+
+        .dataTables_length select {
+            margin: 0 4px;
+        }
     </style>
 @endsection
 
@@ -26,12 +38,12 @@
     const tglCol = @json($dt['tglCol']);
 
     let pushCols = [
-        { data: 'name', name: 'name', orderable: false, searchable: false,
+        { data: 'name', name: 'id', orderable: false, searchable: false,
             render: function (data, type, row, meta) {
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        { data: null, name: 'id', orderable: true, searchable:false,
+        { data: null, name: 'name', orderable: false, searchable:true,
             render: function(data, type, row, meta){
                 let html = `<h6 class="mb-2">${row.name}</h6>`;
                 html += `<div class="text-muted text-rapat">`;
@@ -132,8 +144,8 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 100,dom: 'rtp',
-        order: [[1, 'asc']],
+        processing: true,serverSide: true,pageLength: 100,dom: 'lrtp',
+        order: [[0, 'asc']],
         fixedColumns: {
             leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix
         },
@@ -156,6 +168,8 @@
         columns: pushCols,
         initComplete: function(settings){
             table = settings.oInstance.api();
+
+            $('#lengthContainer').append($('#myTable_length'));
             initSearchCol(table,'#header-filter','search-col-dt');
         }
     });
