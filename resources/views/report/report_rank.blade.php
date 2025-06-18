@@ -172,12 +172,7 @@
 
                     </div>
                 </div>
-                {{-- <div class="card-body border-top py-3">
-                    <div class="text-truncate">
-                        <span class="badge badge-soft-success font-size-11"><i class="mdi mdi-menu-up"> </i> 2.4% </span>
-                        <span class="text-muted ml-2">From previous period</span>
-                    </div>
-                </div> --}}
+
             </div>
         </div>
     </div>
@@ -199,9 +194,9 @@
                                                 Nama <br> Perusahaan <br> Jabatan
                                                 <input type="text" placeholder="cari nama karyawan" class="form-control form-control-sm text-center search-col-dt">
                                             </th>
+                                            <th rowspan="2" class="text-center">Jumlah <br> Hari <br> Kerja</th>
                                             <th rowspan="2" class="text-center">Tidak <br> Absen</th>
                                             <th rowspan="2" class="text-center">Loyal <br> Time</th>
-                                            <th rowspan="2" class="text-center">Jumlah <br> Hari <br> Kerja</th>
                                             <th colspan="3" class="text-center">Akumulasi</th>
                                             <th rowspan="2" class="text-center">Total <br> Poin</th>
                                         </tr>

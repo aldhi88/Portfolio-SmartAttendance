@@ -36,17 +36,17 @@
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
+                return row.akumulasi.hari_kerja+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
                 return row.akumulasi.tdk_absen+' kali';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
                 return row.akumulasi.loyal_time_read+' jam';
-            }
-        },
-        { name: 'id', orderable: false, searchable:false,
-            render: function(data, type, row, meta){
-                return row.akumulasi.hari_kerja+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
