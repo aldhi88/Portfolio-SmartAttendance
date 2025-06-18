@@ -52,6 +52,20 @@
                             {{-- <li class="child "><a href="#">Penjadwalan Karyawan</a></li> --}}
                         </ul>
                     </li>
+
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class=" ri-file-list-3-line"></i>
+                            <span>Laporan</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
+                            <li><a href="#">Rekap Passing Grade</a></li>
+                            <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
+                            <li><a href="#">Log Lokasi</a></li>
+                        </ul>
+                    </li>
+
                     <li class="parent">
                         <a href="javascript: void(0);" class="has-arrow waves-effect">
                             <i class="ri-history-line"></i>
@@ -66,19 +80,6 @@
                             <li class="child"><a href="#">Print Surat Lembur</a></li>
                             <li class="child"><a href="#">Rekap Laporan 40 Jam</a></li>
                             <li class="child"><a href="#">Rekap Laporan 40 Jam+</a></li>
-                        </ul>
-                    </li>
-
-                    <li>
-                        <a href="javascript: void(0);" class="has-arrow waves-effect">
-                            <i class=" ri-file-list-3-line"></i>
-                            <span>Laporan</span>
-                        </a>
-                        <ul class="sub-menu" aria-expanded="false">
-                            <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
-                            <li><a href="#">Rekap Passing Grade</a></li>
-                            <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
-                            <li><a href="#">Log Lokasi</a></li>
                         </ul>
                     </li>
 

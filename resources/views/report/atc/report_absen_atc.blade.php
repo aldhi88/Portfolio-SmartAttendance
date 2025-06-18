@@ -19,8 +19,16 @@
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
     <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <!-- Buttons -->
+    {{-- <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script> --}}
 @endsection
 
 @push('push-script')
@@ -127,7 +135,7 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: -1,dom: 'rt',
+        processing: true,serverSide: true,pageLength: -1,dom: 'rtp',
         order: [[1, 'asc']],
         fixedColumns: {
             leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix
@@ -154,6 +162,77 @@
             initSearchCol(table,'#header-filter','search-col-dt');
         }
     });
+
+    $('#export-excel').on('click', function () {
+        const data = {
+            filter_year: "{{ $filter['thisYear'] }}",
+            filter_month: "{{ $filter['thisMonth'] }}",
+            filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
+            filter_master_position_id: "{{ $filter['master_position_id'] }}",
+            filter_name: "{{ $filter['name'] }}"
+        };
+        fetch("{{ route('report.exportExcel') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal export file.");
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "report_absen.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+
+    $('#export-pdf').on('click', function () {
+        const data = {
+            filter_year: "{{ $filter['thisYear'] }}",
+            filter_month: "{{ $filter['thisMonth'] }}",
+            filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
+            filter_master_position_id: "{{ $filter['master_position_id'] }}",
+            filter_name: "{{ $filter['name'] }}"
+        };
+
+        fetch("{{ route('report.exportPdf') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Gagal export file.");
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "report_absen.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+
+
 
 
 </script>

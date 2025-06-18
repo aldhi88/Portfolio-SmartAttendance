@@ -109,10 +109,10 @@
                         <div class="col text-right">
                             <div class="form-group">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-success waves-light waves-effect">
+                                    <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
                                         <i class="far fa-file-excel fa-fw"></i>Excel
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger waves-light waves-effect">
+                                    <button type="button" class="btn btn-sm btn-danger waves-light waves-effect" id="export-pdf">
                                         <i class="fas fa-file-pdf fa-fw"></i>PDF
                                     </button>
                                 </div>

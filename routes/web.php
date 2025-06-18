@@ -143,6 +143,8 @@ Route::middleware('auth:web')->group(function(){
             Route::controller(ReportController::class)->group(function () {
                 Route::get('absen', 'absen')->name('absen');
                 Route::post('absen-dt', 'absenDT')->name('absenDT');
+                Route::post('export/excel', 'exportExcel')->name('exportExcel');
+                Route::post('export/pdf', 'exportPdf')->name('exportPdf');
             });
         });
     });
