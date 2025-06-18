@@ -97,7 +97,6 @@ class ReportController extends Controller
         $timestamp = now()->format('Hisv');
         $bulan = Carbon::create($request->filter_year, $request->filter_month)->locale('id')->translatedFormat('F');
         $tahun = $request->filter_year;
-
         $filename = 'report-absen-' . strtolower($bulan) . '-' . $tahun . '-' . $timestamp . '.xlsx';
 
         return Excel::download(
@@ -199,8 +198,8 @@ class ReportController extends Controller
         $timestamp = now()->format('Hisv'); // jammenitdetikmilisecond
         $bulan = now()->locale('id')->translatedFormat('F'); // Juni
         $tahun = now()->year;
-
         $filename = 'report-absen-' . strtolower($bulan) . '-' . $tahun . '-' . $timestamp . '.pdf';
+
         return $pdf->download($filename);
     }
 
