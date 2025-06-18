@@ -109,7 +109,7 @@
                 console.log(rank1);
                 $('#rank1-name').text(rank1.name);
                 $('#rank1-point').text(rank1.akumulasi.total_poin);
-                $('#rank1-org').text(rank1.master_organizations.name);
+                $('#rank1-org').html(rank1.master_organizations.name);
                 $('#rank1-as').text(rank1.master_positions.name);
                 $('#rank1-day-work').text(rank1.akumulasi.hari_kerja);
                 $('#rank1-hadir').text(rank1.akumulasi.hadir);
