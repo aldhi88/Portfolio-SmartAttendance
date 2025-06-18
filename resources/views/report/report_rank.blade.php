@@ -96,7 +96,7 @@
                 <div class="card-body position-relative">
                     <div class="media">
                         <div class="media-body overflow-hidden pr-2">
-                            <p class="text-truncate font-size-14 mb-2">Karyawan Terbaik</p>
+                            <p class="text-truncate font-size-14 mb-2">Karyawan Disiplin</p>
                             <h1 class="mb-1">
                                 <i class="fas fa-coins text-danger" style="scale: 0.5"></i>
                                 <span id="rank1-point">-</span>
