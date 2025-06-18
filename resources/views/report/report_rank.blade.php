@@ -149,6 +149,21 @@
                                             <th class="text-center">Izin Keluar <br> 20%</th>
                                         </tr>
                                     </thead>
+                                    <thead id="header-filter">
+                                        <tr>
+                                            <th class="text-center"></th>
+                                            <th class="text-center">
+                                                <input type="text" placeholder="cari nama" class="form-control form-control-sm text-center search-col-dt">
+                                            </th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                        </tr>
+                                    </thead>
                                     <tbody></tbody>
                                 </table>
                             </div>

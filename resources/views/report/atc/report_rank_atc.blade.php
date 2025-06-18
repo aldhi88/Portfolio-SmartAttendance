@@ -24,7 +24,7 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        { data: null, name: 'id', orderable: false, searchable:false,
+        { data: null, name: 'name', orderable: false, searchable:true,
             render: function(data, type, row, meta){
                 let html = `<h6 class="">${row.name}</h6>`;
                 html += `<div class="text-muted text-rapat">`;
