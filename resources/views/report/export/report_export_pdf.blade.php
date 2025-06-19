@@ -50,7 +50,7 @@
 
     <div class="section-title">
         <strong>LAPORAN ABSENSI</strong><br>
-        <strong>{{ $firstDate }}–{{ $lastDate }} {{ $monthName }}</strong>
+        <strong>{{ $firstDate ." - ". $lastDate }} {{ $monthName }}</strong>
     </div>
 
     <div class="table-wrap">
@@ -67,8 +67,8 @@
                 </tr>
                 <tr>
                     @foreach ($tglChunk as $tgl)
-                        <th>I</th>
-                        <th>O</th>
+                        <th>IN</th>
+                        <th>OUT</th>
                     @endforeach
                 </tr>
             </thead>

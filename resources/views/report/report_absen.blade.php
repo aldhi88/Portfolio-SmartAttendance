@@ -15,32 +15,31 @@
 
     <div class="row">
         <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <h4 class="lead mb-0 mt-2"><h4 class="lead">Form Filter</h4></h4>
-                        </div>
-                        <div class="col text-right">
-                            <div class="form-group">
-                                <div class="btn-group">
-                                    <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
-                                        <i class="far fa-file-excel fa-fw"></i>Excel
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-danger waves-light waves-effect" id="export-pdf">
-                                        <i class="fas fa-file-pdf fa-fw"></i>PDF
-                                    </button>
-                                </div>
-                            </div>
+            <div class="row">
+                <div class="col">
+                    <h4 class="lead mb-0 mt-2"><h4 class="lead">Form Filter</h4></h4>
+                </div>
+                <div class="col text-right">
+                    <div class="form-group">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-sm btn-success waves-light waves-effect" id="export-excel">
+                                <i class="far fa-file-excel fa-fw"></i>Excel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger waves-light waves-effect" id="export-pdf">
+                                <i class="fas fa-file-pdf fa-fw"></i>PDF
+                            </button>
                         </div>
                     </div>
-
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
                     <div class="row">
                         <div class="col-12">
                             <form class="p-3 bg-light rounded" method="get">
 
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-2">
                                         <div class="form-group">
                                             <label>Bulan</label>
                                             <select name="month" wire:model="filter.thisMonth" class="form-control ex-filter">
@@ -50,7 +49,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-2">
                                         <div class="form-group">
                                             <label>Tahun</label>
                                             <select name="year" wire:model="filter.thisYear" class="form-control ex-filter">
@@ -62,7 +61,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Perusahaan</label>
                                             <select name="master_organization_id" wire:model="filter.master_organization_id" class="form-control ex-filter">
@@ -73,7 +72,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md">
                                         <div class="form-group">
                                             <label>Jabatan</label>
                                             <select name="master_position_id" wire:model="filter.master_position_id" class="form-control ex-filter">
@@ -84,63 +83,38 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-7">
-                                        <div class="form-group">
-                                            <label>Nama Karyawan</label>
-                                            <input type="text" wire:model="filter.name" name="name" class="form-control ex-filter">
-                                        </div>
-                                    </div>
                                     <div class="col">
-                                        <div class="form-group mb-0 pb-0">
-                                            <label style="visibility: hidden">Action</label>
-                                        </div>
                                         <div class="row">
-                                            <div class="col-md-7">
-                                                <button type="submit" class="btn btn-info btn-block">Tampilkan Hasil Filter</button>
-                                            </div>
-                                            <div class="col">
-                                                <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset Filter</a>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-0 pb-0">
+                                                    <label style="visibility: hidden">Action</label>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-7">
+                                                        <button type="submit" class="btn btn-info btn-block">Filter</button>
+                                                    </div>
+                                                    <div class="col">
+                                                        <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {{-- <div class="row">
-                                    <div class="col">
-                                        <button type="submit" class="btn btn-info">Tampilkan Hasil Filter</button>
-                                        <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary">Reset Filter</a>
-                                    </div>
-                                </div> --}}
+                                </div>
 
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <hr class="mt-0">
-                    {{-- <div class="row mt-3">
-                        <div class="col-md-2">
-                            <div class="form-group m-0">
-                                <label class="m-0">Bulan Tahun :</label>
-                                <h5 class="m-0" id="filter-bln-thn">{{ $thisMonthLabel }} {{ $filter['thisYear'] }}</h5>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group m-0">
-                                <label class="m-0">Perusahaan :</label>
-                                <h5 class="m-0" id="filter-organization">{{ $filter['org_label']??'Semua' }}</h5>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group m-0">
-                                <label class="m-0">Jabatan :</label>
-                                <h5 class="m-0" id="filter-position">{{ $filter['pos_label']??'Semua' }}</h5>
-                            </div>
-                        </div>
-                    </div> --}}
-
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
                     <div class="row">
                         <div class="col">
                             <div class="d-flex justify-content-between mb-2">

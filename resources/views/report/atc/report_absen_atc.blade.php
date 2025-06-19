@@ -174,6 +174,7 @@
     });
 
     $('#export-excel').on('click', function () {
+        $('.loading').fadeIn(200);
         const data = {
             filter_year: "{{ $filter['thisYear'] }}",
             filter_month: "{{ $filter['thisMonth'] }}",
@@ -205,13 +206,16 @@
             document.body.appendChild(a);
             a.click();
             a.remove();
+            $('.loading').fadeOut(500);
         })
         .catch(error => {
+            $('.loading').fadeOut(500);
             alert(error.message);
         });
     });
 
     $('#export-pdf').on('click', function () {
+        $('.loading').fadeIn(200);
         const data = {
             filter_year: "{{ $filter['thisYear'] }}",
             filter_month: "{{ $filter['thisMonth'] }}",
@@ -244,8 +248,10 @@
             document.body.appendChild(a);
             a.click();
             a.remove();
+            $('.loading').fadeOut(500);
         })
         .catch(error => {
+            $('.loading').fadeOut(500);
             alert(error.message);
         });
     });
