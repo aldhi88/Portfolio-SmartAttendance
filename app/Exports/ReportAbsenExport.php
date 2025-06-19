@@ -14,16 +14,15 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
 {
-    protected $year, $month, $org, $pos, $name;
+    protected $year, $month, $org, $pos;
     protected $dataLiburRepo;
 
-    public function __construct($year, $month, $org, $pos, $name, DataLiburFace $dataLiburRepo)
+    public function __construct($year, $month, $org, $pos, DataLiburFace $dataLiburRepo)
     {
         $this->year = $year;
         $this->month = $month;
         $this->org = $org;
         $this->pos = $pos;
-        $this->name = $name;
         $this->dataLiburRepo = $dataLiburRepo;
     }
 
@@ -96,9 +95,6 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
         }
         if ($this->pos) {
             $data->where('master_position_id', $this->pos);
-        }
-        if ($this->name) {
-            $data->where('name', 'like', "%{$this->name}%");
         }
 
         $dateInMonth = PublicHelper::dateInMonth($this->month, $this->year);

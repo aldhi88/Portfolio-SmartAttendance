@@ -62,9 +62,9 @@ class ReportController extends Controller
         if($request->filter_master_position_id){
             $data->where('master_position_id', $request->filter_master_position_id);
         }
-        if($request->filter_name){
-            $data->where('name', 'like', "%{$request->filter_name}%");
-        }
+        // if($request->filter_name){
+        //     $data->where('name', 'like', "%{$request->filter_name}%");
+        // }
 
         $dateInMonth = PublicHelper::dateInMonth($request->filter_month, $request->filter_year);
         // dd($dateInMonth);
@@ -179,8 +179,8 @@ class ReportController extends Controller
                 $request->filter_month,
                 $request->filter_master_organization_id,
                 $request->filter_master_position_id,
-                $request->filter_name,
-                $dataLiburRepo
+                // $request->filter_name,
+                $dataLiburRepo,
             ),
             $filename
         );
@@ -193,7 +193,7 @@ class ReportController extends Controller
         $month = $request->filter_month;
         $org = $request->filter_master_organization_id;
         $pos = $request->filter_master_position_id;
-        $name = $request->filter_name;
+        // $name = $request->filter_name;
 
         $start = Carbon::create($year, $month, 1)->startOfMonth();
         $end = ($year == now()->year && $month == now()->month)
@@ -244,9 +244,9 @@ class ReportController extends Controller
         if ($pos) {
             $query->where('master_position_id', $pos);
         }
-        if ($name) {
-            $query->where('name', 'like', "%{$name}%");
-        }
+        // if ($name) {
+        //     $query->where('name', 'like', "%{$name}%");
+        // }
 
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
         $dateInMonth = PublicHelper::dateInMonth($month, $year);
