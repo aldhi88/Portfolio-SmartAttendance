@@ -435,19 +435,23 @@ class PublicHelper
             ($akumulasi['loyal_time'] >= 0 ? '+' : '-') . // kasih tanda + atau -
             number_format(abs($akumulasi['loyal_time'] / 3600), 3, ',', '');
 
-
-
         // Nilai poin maksimal dan faktor
         $poin_maksimal = 100;
-        $poin_per_hari = $akumulasi['hari_kerja'] > 0 ? $poin_maksimal / $akumulasi['hari_kerja'] : 0;
-        $faktor_izin = 0.5;
-        $faktor_alpa = 0.0;
+        $alpa = $akumulasi['alpa']/$akumulasi['hari_kerja']*100;
+        $izin = $akumulasi['izin']/$akumulasi['hari_kerja']*100/2;
+        $tdkAbsen = $akumulasi['tdk_absen']/$akumulasi['hari_kerja']*100;
+        $totalPoin = $poin_maksimal - $alpa - $izin - $tdkAbsen;
+        $akumulasi['total_poin'] = floor($totalPoin * 100) / 100;
 
-        $akumulasi['hadir_poin'] = $akumulasi['hadir'] * $poin_per_hari;
-        $akumulasi['izin_poin'] = $akumulasi['izin'] * $poin_per_hari * $faktor_izin;
-        $akumulasi['alpa_poin'] = $akumulasi['alpa'] * $poin_per_hari * $faktor_alpa;
+        // $poin_per_hari = $akumulasi['hari_kerja'] > 0 ? $poin_maksimal / $akumulasi['hari_kerja'] : 0;
+        // $faktor_izin = 0.5;
+        // $faktor_alpa = 0.0;
 
-        $akumulasi['total_poin'] = round($akumulasi['hadir_poin'] + $akumulasi['izin_poin'] + $akumulasi['alpa_poin'], 2);
+        // $akumulasi['hadir_poin'] = $akumulasi['hadir'] * $poin_per_hari;
+        // $akumulasi['izin_poin'] = $akumulasi['izin'] * $poin_per_hari * $faktor_izin;
+        // $akumulasi['alpa_poin'] = $akumulasi['alpa'] * $poin_per_hari * $faktor_alpa;
+
+        // $akumulasi['total_poin'] = round($akumulasi['hadir_poin'] + $akumulasi['izin_poin'] + $akumulasi['alpa_poin'], 2);
 
         return $akumulasi;
     }

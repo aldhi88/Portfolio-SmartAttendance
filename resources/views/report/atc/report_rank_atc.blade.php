@@ -96,10 +96,10 @@
                         return b.akumulasi.total_poin - a.akumulasi.total_poin;
                     }
 
-                    // Jika total_poin sama, urutkan berdasarkan tdk_absen (asc)
-                    if (a.akumulasi.tdk_absen !== b.akumulasi.tdk_absen) {
-                        return a.akumulasi.tdk_absen - b.akumulasi.tdk_absen;
-                    }
+                    // // Jika total_poin sama, urutkan berdasarkan tdk_absen (asc)
+                    // if (a.akumulasi.tdk_absen !== b.akumulasi.tdk_absen) {
+                    //     return a.akumulasi.tdk_absen - b.akumulasi.tdk_absen;
+                    // }
 
                     // Jika masih sama, urutkan berdasarkan loyal_time (desc)
                     return b.akumulasi.loyal_time - a.akumulasi.loyal_time;

@@ -22,6 +22,6 @@ class DataIzin extends Model
 
     public static function izinList()
     {
-        return ['Sakit','Keluar','Pulang','Dinas', 'Cuti'];
+        return ['Sakit','Keluar Urusan Pribadi','Pulang','Dinas', 'Cuti', 'Keluar Urusan Kerja'];
     }
 }
