@@ -240,7 +240,7 @@
             const url = window.URL.createObjectURL(blob);
             const now = new Date();
             const pad = (n) => n.toString().padStart(2, '0');
-            const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.xlsx`;
+            const fileName = `report-absen-${now.toLocaleString('id-ID', { month: 'long' }).toLowerCase()}-${now.getFullYear()}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${now.getMilliseconds()}.pdf`;
 
             const a = document.createElement('a');
             a.href = url;
