@@ -149,11 +149,8 @@
             return;
         }
 
-        Livewire.dispatch('setProcessMultipleId', { ids: ids });
+        Livewire.dispatch('setProcessMultipleId', { ids: ids, process: process });
 
-        $('#modalConfirm')
-            .find('#submitModalConfirm')
-            .attr('wire:click', 'multipleProcess("'+process+'")');
         $('#modalConfirm')
             .find('#proses-label')
             .text(msg);

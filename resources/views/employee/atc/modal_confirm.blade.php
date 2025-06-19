@@ -21,7 +21,7 @@
                     </div>
                     <div class="text-center mt-4">
                         <button type="button" class="btn btn-light waves-effect px-5" data-dismiss="modal">Batal</button>
-                        <button type="button" id="submitModalConfirm" class="btn btn-primary waves-effect waves-light px-5" wire:click="">Ya, yakin</button>
+                        <button type="button" id="submitModalConfirm" wire:click="multipleProcess()" class="btn btn-primary waves-effect waves-light px-5" wire:click="">Ya, yakin</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div>

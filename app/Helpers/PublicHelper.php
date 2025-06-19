@@ -77,6 +77,10 @@ class PublicHelper
         return $h * 3600 + $m * 60 + $s;
     }
 
+    public static function safeDivide($a, $b, $default = 0) {
+        return $b == 0 ? $default : $a / $b;
+    }
+
     public static function getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
     {
         // dd($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
@@ -436,22 +440,17 @@ class PublicHelper
             number_format(abs($akumulasi['loyal_time'] / 3600), 3, ',', '');
 
         // Nilai poin maksimal dan faktor
+        $totalPoin = 0;
         $poin_maksimal = 100;
-        $alpa = $akumulasi['alpa']/$akumulasi['hari_kerja']*100;
-        $izin = $akumulasi['izin']/$akumulasi['hari_kerja']*100/2;
-        $tdkAbsen = $akumulasi['tdk_absen']/$akumulasi['hari_kerja']*100;
-        $totalPoin = $poin_maksimal - $alpa - $izin - $tdkAbsen;
+        $alpa = PublicHelper::safeDivide($akumulasi['alpa'], $akumulasi['hari_kerja']) * 100;
+        $izin = PublicHelper::safeDivide($akumulasi['izin'], $akumulasi['hari_kerja']) * 100 / 2;
+        $tdkAbsen = PublicHelper::safeDivide($akumulasi['tdk_absen'], $akumulasi['hari_kerja']) * 100;
+
+        if($akumulasi['hari_kerja']>0){
+            $totalPoin = $poin_maksimal - $alpa - $izin - $tdkAbsen;
+        }
+
         $akumulasi['total_poin'] = floor($totalPoin * 100) / 100;
-
-        // $poin_per_hari = $akumulasi['hari_kerja'] > 0 ? $poin_maksimal / $akumulasi['hari_kerja'] : 0;
-        // $faktor_izin = 0.5;
-        // $faktor_alpa = 0.0;
-
-        // $akumulasi['hadir_poin'] = $akumulasi['hadir'] * $poin_per_hari;
-        // $akumulasi['izin_poin'] = $akumulasi['izin'] * $poin_per_hari * $faktor_izin;
-        // $akumulasi['alpa_poin'] = $akumulasi['alpa'] * $poin_per_hari * $faktor_alpa;
-
-        // $akumulasi['total_poin'] = round($akumulasi['hadir_poin'] + $akumulasi['izin_poin'] + $akumulasi['alpa_poin'], 2);
 
         return $akumulasi;
     }

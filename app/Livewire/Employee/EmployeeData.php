@@ -56,49 +56,34 @@ class EmployeeData extends Component
     {
         $this->deleteId = $id;
     }
-    // public function wireDelete()
-    // {
-    //     dd($this->all());
-    //     try {
-    //         DB::transaction(function () {
-    //             $userLoginId = $this->dataEmployeeRepo->getColValByCol('id', $this->deleteId, 'user_login_id');
-    //             $this->relDataEmployeeMasterScheduleRepo->delByCol('data_employee_id', $this->deleteId);
-    //             $this->dataEmployeeRepo->delete($this->deleteId);
-    //             $this->userLoginRepository->delete($userLoginId);
-    //         });
-    //         $this->dispatch('reloadDT',data:'dtTable');
-    //         $this->dispatch('closeModal',id:'modalConfirmDelete');
-    //         $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
-    //     } catch (\Throwable $e) {
-    //         $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
-    //     }
 
-    // }
     public $multipleId;
+    public $processType;
     #[On('setProcessMultipleId')]
-    public function setProcessMultipleId($ids)
+    public function setProcessMultipleId($ids, $process)
     {
         $this->multipleId = $ids;
+        $this->processType = $process;
     }
-    public function multipleProcess($process)
+    public function multipleProcess()
     {
-            try {
-                if($process==='set-aktif'){
-                    DB::transaction(function () {
-                        $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Aktif');
-                    });
-                }
-                if($process==='set-nonaktif'){
-                    DB::transaction(function () {
-                        $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Tidak Aktif');
-                    });
-                }
-                $this->dispatch('reloadDT',data:'dtTable');
-                $this->dispatch('closeModal',id:'modalConfirm');
-                $this->dispatch('alert', data:['type' => 'success',  'message' => 'Proses berhasil dilakukan.']);
-            } catch (\Throwable $e) {
-                $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
+        try {
+            if($this->processType==='set-aktif'){
+                DB::transaction(function () {
+                    $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Aktif');
+                });
             }
+            if($this->processType==='set-nonaktif'){
+                DB::transaction(function () {
+                    $this->dataEmployeeRepo->setStatusMultiple($this->multipleId, 'Tidak Aktif');
+                });
+            }
+            $this->dispatch('reloadDT',data:'dtTable');
+            $this->dispatch('closeModal',id:'modalConfirm');
+            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Proses berhasil dilakukan.']);
+        } catch (\Throwable $e) {
+            $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
+        }
     }
     // end delete section
 
