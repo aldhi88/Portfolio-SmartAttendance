@@ -410,13 +410,13 @@ class PublicHelper
         $akumulasi['hari_kerja'] = $akumulasi['hari_bulan'] - $akumulasi['off'] - $akumulasi['merah'];
 
         $akumulasi['alpa'] = collect($result)->filter(function ($item) {
-            return in_array($item['label_in'] ?? '', ['alpha', 'Sakit', 'Pulang']) ||
-                in_array($item['label_out'] ?? '', ['Sakit', 'Pulang']);
+            return in_array($item['label_in'] ?? '', ['alpha', 'Sakit', 'Keluar Urusan Pribadi', 'Pulang']) ||
+                in_array($item['label_out'] ?? '', ['Sakit', 'Keluar Urusan Pribadi', 'Pulang']);
         })->count();
 
         $akumulasi['izin'] = collect($result)->filter(function ($item) {
-            return in_array($item['label_in'] ?? '', ['Keluar', 'Dinas', 'Cuti']) ||
-                in_array($item['label_out'] ?? '', ['Keluar', 'Dinas', 'Cuti']);
+            return in_array($item['label_in'] ?? '', ['Keluar Urusan Kerja', 'Dinas', 'Cuti']) ||
+                in_array($item['label_out'] ?? '', ['Keluar Urusan Kerja', 'Dinas', 'Cuti']);
         })->count();
 
         $akumulasi['tdk_absen'] = collect($result)->filter(function ($item) {
