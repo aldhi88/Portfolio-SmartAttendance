@@ -72,7 +72,7 @@
     ];
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 100,dom: 'lrtp',
+        processing: true,serverSide: true,pageLength: 100,dom: 'lrtip',
         order: [[8, 'desc']],
         columnDefs: [
             { className: 'text-left text-nowrap', targets: [1] },

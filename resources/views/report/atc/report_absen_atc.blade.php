@@ -144,7 +144,7 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 100,dom: 'lrtp',
+        processing: true,serverSide: true,pageLength: 100,dom: 'lrtip',
         order: [[0, 'asc']],
         fixedColumns: {
             leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix
