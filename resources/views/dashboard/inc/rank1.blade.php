@@ -24,7 +24,7 @@
     <div class="col">
         <div class="p-3">
                 <div class="row">
-                    <div class="col-12 col-md border-right border-secondary">
+                    <div class="col-6 col-md border-right border-secondary">
                         <div class="media text-center">
                             <div class="media-body overflow-hidden">
                                 <div class="d-flex justify-content-center">
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md border-right border-secondary">
+                    <div class="col-6 col-md border-right border-secondary">
                         <div class="media text-center">
                             <div class="media-body overflow-hidden">
                                 <div class="d-flex justify-content-center">
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md border-right border-secondary">
+                    <div class="col-6 col-md border-right border-secondary">
                         <div class="media text-center">
                             <div class="media-body overflow-hidden">
                                 <div class="d-flex justify-content-center">
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md">
+                    <div class="col-6 col-md">
                         <div class="media text-center">
                             <div class="media-body overflow-hidden">
                                 <div class="d-flex justify-content-center">
