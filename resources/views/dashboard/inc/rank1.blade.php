@@ -22,63 +22,62 @@
         </div>
     </div>
     <div class="col">
-        <div class="p-3">
-                <div class="row">
-                    <div class="col-6 col-md border-right border-secondary">
-                        <div class="media text-center">
-                            <div class="media-body overflow-hidden">
-                                <div class="d-flex justify-content-center">
-                                    <div class="d-flex align-items-center justify-content-center bg-soft-primary rounded-circle" style="width: 59px; height: 59px;">
-                                        <i class="fas fa-business-time text-primary" style="font-size: 30px;"></i>
-                                    </div>
+        <div class="p-3 border-bottom border-secondary">
+            <div class="row">
+                <div class="col-6 col-md border-right border-secondary">
+                    <div class="media text-center">
+                        <div class="media-body overflow-hidden">
+                            <div class="d-flex justify-content-center">
+                                <div class="d-flex align-items-center justify-content-center bg-soft-primary rounded-circle" style="width: 59px; height: 59px;">
+                                    <i class="fas fa-business-time text-primary" style="font-size: 30px;"></i>
                                 </div>
-                                <h4 class="mt-1 mb-0"><span id="rank1-day-work">-</span> <small>hari kerja</small></h4>
-                                <p class="text-truncate font-size-14 mb-0 pb-0">Dalam Sebulan</p>
                             </div>
+                            <h4 class="mt-1 mb-0"><span id="rank1-day-work">-</span> <small>hari kerja</small></h4>
+                            <p class="text-truncate font-size-14 mb-0 pb-0">Dalam Sebulan</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md border-right border-secondary">
-                        <div class="media text-center">
-                            <div class="media-body overflow-hidden">
-                                <div class="d-flex justify-content-center">
-                                    <div class="d-flex align-items-center justify-content-center bg-soft-success rounded-circle" style="width: 59px; height: 59px;">
-                                        <i class="fas fa-calendar-check text-success" style="font-size: 30px;"></i>
-                                    </div>
+                </div>
+                <div class="col-6 col-md border-right border-secondary">
+                    <div class="media text-center">
+                        <div class="media-body overflow-hidden">
+                            <div class="d-flex justify-content-center">
+                                <div class="d-flex align-items-center justify-content-center bg-soft-success rounded-circle" style="width: 59px; height: 59px;">
+                                    <i class="fas fa-calendar-check text-success" style="font-size: 30px;"></i>
                                 </div>
-                                <h4 class="mt-1 mb-0"><span id="rank1-hadir">-</span> <small>hari</small></h4>
-                                <p class="text-truncate font-size-14 mb-0 pb-0">Kehadiran</p>
                             </div>
+                            <h4 class="mt-1 mb-0"><span id="rank1-hadir">-</span> <small>hari</small></h4>
+                            <p class="text-truncate font-size-14 mb-0 pb-0">Kehadiran</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md border-right border-secondary">
-                        <div class="media text-center">
-                            <div class="media-body overflow-hidden">
-                                <div class="d-flex justify-content-center">
-                                    <div class="d-flex align-items-center justify-content-center bg-soft-warning rounded-circle" style="width: 59px; height: 59px;">
-                                        <i class="fas fa-calendar-times text-warning" style="font-size: 30px;"></i>
-                                    </div>
+                </div>
+                <div class="col-6 col-md border-right border-secondary">
+                    <div class="media text-center">
+                        <div class="media-body overflow-hidden">
+                            <div class="d-flex justify-content-center">
+                                <div class="d-flex align-items-center justify-content-center bg-soft-warning rounded-circle" style="width: 59px; height: 59px;">
+                                    <i class="fas fa-calendar-times text-warning" style="font-size: 30px;"></i>
                                 </div>
-                                <h4 class="mt-1 mb-0"><span id="rank1-noabsen">-</span> <small>kali</small></h4>
-                                <p class="text-truncate font-size-14 mb-0 pb-0">Tidak Absen</p>
                             </div>
+                            <h4 class="mt-1 mb-0"><span id="rank1-noabsen">-</span> <small>kali</small></h4>
+                            <p class="text-truncate font-size-14 mb-0 pb-0">Tidak Absen</p>
                         </div>
                     </div>
-                    <div class="col-6 col-md">
-                        <div class="media text-center">
-                            <div class="media-body overflow-hidden">
-                                <div class="d-flex justify-content-center">
-                                    <div class="d-flex align-items-center justify-content-center bg-soft-info rounded-circle" style="width: 59px; height: 59px;">
-                                        <i class="fas fa-clock text-info" style="font-size: 30px;"></i>
-                                    </div>
+                </div>
+                <div class="col-6 col-md">
+                    <div class="media text-center">
+                        <div class="media-body overflow-hidden">
+                            <div class="d-flex justify-content-center">
+                                <div class="d-flex align-items-center justify-content-center bg-soft-info rounded-circle" style="width: 59px; height: 59px;">
+                                    <i class="fas fa-clock text-info" style="font-size: 30px;"></i>
                                 </div>
-                                <h4 class="mt-1 mb-0"><span id="rank1-loyal">-</span> <small>jam</small></h4>
-                                <p class="text-truncate font-size-14 mb-0 pb-0">Loyal Time</p>
                             </div>
+                            <h4 class="mt-1 mb-0"><span id="rank1-loyal">-</span> <small>jam</small></h4>
+                            <p class="text-truncate font-size-14 mb-0 pb-0">Loyal Time</p>
                         </div>
                     </div>
-
                 </div>
 
+            </div>
         </div>
     </div>
 </div>
