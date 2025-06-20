@@ -19,6 +19,11 @@
 <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/dashboard.init.js') }}"></script> --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        launchConfetti(); // atau dipicu dari event lain
+    });
+</script>
 @endsection
 
 @push('push-script')
@@ -36,7 +41,6 @@
         }),
         success: function(response) {
             const data = response.data;
-            console.log(data);
 
             setJuara(data);
         },
@@ -55,7 +59,6 @@
 
         const rank1 = data[0];
 
-
         // Tampilkan ke elemen HTML
         $('#rank1-name').html(rank1.name);
         $('#rank1-point').html(rank1.akumulasi.total_poin);
@@ -66,7 +69,7 @@
         $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
         $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
 
-        launchConfetti();
+        // launchConfetti();
     }
 
 </script>
