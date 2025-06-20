@@ -54,7 +54,7 @@
         });
 
         const rank1 = data[0];
-        launchConfetti();
+
 
         // Tampilkan ke elemen HTML
         $('#rank1-name').html(rank1.name);
@@ -65,6 +65,8 @@
         $('#rank1-hadir').html(rank1.akumulasi.hadir);
         $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
         $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
+
+        launchConfetti();
     }
 
 </script>
