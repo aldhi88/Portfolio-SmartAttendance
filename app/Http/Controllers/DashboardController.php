@@ -63,9 +63,12 @@ class DashboardController extends Controller
             return $item;
         });
 
+        $param['jlh_karyawan'] = count($results);
+
         return response()->json([
             'status' => 'success',
             'data' => $results,
+            'param' => $param,
         ]);
 
     }

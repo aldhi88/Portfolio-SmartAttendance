@@ -19,6 +19,8 @@
 <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/dashboard.init.js') }}"></script> --}}
+<script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
+<script src="{{ asset('assets/libs/moment/locale/id.js') }}"></script>
 @endsection
 
 @push('push-script')
@@ -36,14 +38,24 @@
         }),
         success: function(response) {
             const data = response.data;
+            const param = response.param
+            console.log(data);
 
             setJuara(data);
+            setSummaryAttd(param)
             launchConfetti();
         },
         error: function(xhr) {
             console.error('Gagal:', xhr.responseText);
         }
     });
+
+    function setSummaryAttd(data){
+        moment.locale('id');
+        const todayFormatted = moment().format('D MMMM YYYY');
+        $('#today').html(todayFormatted);
+        $('#jlh_karyawan').html(data.jlh_karyawan);
+    }
 
     function setJuara(data){
         data.sort((a, b) => {

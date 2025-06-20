@@ -396,7 +396,8 @@ class PublicHelper
     public static function getAkumulasi($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
     {
         $result = PublicHelper::getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
-        // dd($result);
+
+        $akumulasi['jlh_karyawan'] = count($result);
         $akumulasi['hari_bulan'] = count($result);
 
         $akumulasi['off'] = collect($result)->filter(function ($item) {
