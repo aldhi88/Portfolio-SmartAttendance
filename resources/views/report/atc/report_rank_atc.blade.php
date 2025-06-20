@@ -91,30 +91,21 @@
             },
             dataSrc: function(json) {
                 json.data.sort((a, b) => {
-                    // Urutkan berdasarkan total_poin (desc)
                     if (b.akumulasi.total_poin !== a.akumulasi.total_poin) {
                         return b.akumulasi.total_poin - a.akumulasi.total_poin;
                     }
-
-                    // // Jika total_poin sama, urutkan berdasarkan tdk_absen (asc)
-                    // if (a.akumulasi.tdk_absen !== b.akumulasi.tdk_absen) {
-                    //     return a.akumulasi.tdk_absen - b.akumulasi.tdk_absen;
-                    // }
-
-                    // Jika masih sama, urutkan berdasarkan loyal_time (desc)
                     return b.akumulasi.loyal_time - a.akumulasi.loyal_time;
                 });
 
                 const rank1 = json.data[0];
-                console.log(rank1);
                 $('#rank1-name').html(rank1.name);
-                $('#rank1-point').text(rank1.akumulasi.total_poin);
+                $('#rank1-point').html(rank1.akumulasi.total_poin);
                 $('#rank1-org').html(rank1.master_organizations.name);
-                $('#rank1-as').text(rank1.master_positions.name);
-                $('#rank1-day-work').text(rank1.akumulasi.hari_kerja);
-                $('#rank1-hadir').text(rank1.akumulasi.hadir);
-                $('#rank1-noabsen').text(rank1.akumulasi.tdk_absen);
-                $('#rank1-loyal').text(rank1.akumulasi.loyal_time_read);
+                $('#rank1-as').html(rank1.master_positions.name);
+                $('#rank1-day-work').html(rank1.akumulasi.hari_kerja);
+                $('#rank1-hadir').html(rank1.akumulasi.hadir);
+                $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
+                $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
 
                 launchConfetti();
                 return json.data;
