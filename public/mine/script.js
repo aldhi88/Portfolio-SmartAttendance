@@ -87,127 +87,70 @@ const getHariIndo = {
     7: 'Minggu'
 };
 
+function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-function getAbsenWaktu(row, tanggalLabel, type = 'in') {
-    const tanggalYMD = moment(tanggalLabel, 'DD-MMM-YYYY').format('YYYY-MM-DD');
-    const hariKe = moment(tanggalYMD).isoWeekday();
+    const confettiCount = 150;
+    const confetti = [];
 
-    const semuaJadwal = (row.master_schedules || []).filter(sch => {
-        const eff = moment(sch.pivot.effective_at).format('YYYY-MM-DD');
-        const exp = sch.pivot.expired_at ? moment(sch.pivot.expired_at).format('YYYY-MM-DD') : null;
-        return tanggalYMD >= eff && (!exp || tanggalYMD <= exp);
-    });
-
-    if (!semuaJadwal.length) return '-';
-
-    const jadwal = semuaJadwal[0];
-
-    let isHariKerja = false;
-    let isHariKerjaRegular = false;
-    for (const sch of semuaJadwal) {
-        if (sch.type === 'Tetap') {
-            if (sch.day_work.regular[hariKe]) isHariKerjaRegular = true;
-            const aktif = sch.day_work.regular[hariKe] || sch.day_work.lembur[hariKe];
-            if (aktif) isHariKerja = true;
-        }
-        if (sch.type === 'Rotasi') {
-            const startDate = moment(sch.day_work.start_date, 'YYYY-MM-DD');
-            const selisihHari = moment(tanggalYMD).diff(startDate, 'days');
-            const totalSiklus = parseInt(sch.day_work.work_day) + parseInt(sch.day_work.off_day);
-            const posisi = selisihHari % totalSiklus;
-            const aktif = posisi < parseInt(sch.day_work.work_day);
-            if (aktif) isHariKerja = true;
-        }
+    for (let i = 0; i < confettiCount; i++) {
+        confetti.push({
+            x: canvas.width - Math.random() * 1000, // sudut kanan atas
+            y: -Math.random() * canvas.height,
+            r: Math.random() * 6 + 4,
+            d: Math.random() * confettiCount,
+            color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
+            tilt: Math.floor(Math.random() * 10) - 10,
+            tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
+            tiltAngle: 0
+        });
     }
 
-    if (!isHariKerja) {
-        const isRotasi = semuaJadwal.some(j => j.type === 'Rotasi');
-        if (isRotasi) {
-            return `
-                <span style="display:flex; flex-direction:column; line-height:1">
-                    -
-                    <small class="text-muted">Off</small>
-                </span>
-            `;
-        }
-        return '-';
-    }
+    let animationId;
+    const start = performance.now();
+    const duration = 5000; // ms
 
-    const checkinStart = moment(`${tanggalYMD} ${jadwal.checkin_time}`);
-    let workTime = moment(`${tanggalYMD} ${jadwal.work_time}`);
-    if (jadwal.work_time < jadwal.checkin_time) workTime.add(1, 'day');
+    function draw(progress) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1 - progress; // efek fade out
 
-    let checkinEnd = moment(`${tanggalYMD} ${jadwal.checkin_deadline_time}`);
-    if (jadwal.checkin_deadline_time < jadwal.checkin_time) checkinEnd.add(1, 'day');
-
-    let checkoutTime = moment(`${tanggalYMD} ${jadwal.checkout_time}`);
-    if (jadwal.checkout_time < jadwal.checkin_time) checkoutTime.add(1, 'day');
-
-    const logs = (row.log_attendances || [])
-        .map(log => moment(log.time))
-        .filter(time => {
-            const logDate = time.format('YYYY-MM-DD');
-            return logDate === tanggalYMD || logDate === moment(tanggalYMD).add(1, 'day').format('YYYY-MM-DD');
+        confetti.forEach((confetto, i) => {
+            ctx.beginPath();
+            ctx.lineWidth = confetto.r;
+            ctx.strokeStyle = confetto.color;
+            ctx.moveTo(confetto.x + confetto.tilt + (confetto.r / 2), confetto.y);
+            ctx.lineTo(confetto.x + confetto.tilt, confetto.y + confetto.tilt + (confetto.r / 2));
+            ctx.stroke();
         });
 
-    const logMasuk = logs
-        .filter(time => time.isBetween(checkinStart, checkinEnd, null, '[]'))
-        .sort((a, b) => a - b)[0];
-
-    const logKeluar = logs
-        .filter(time => time.isAfter(checkinEnd))
-        .sort((a, b) => b - a)[0];
-
-    const tidakAdaLog = !logMasuk && !logKeluar;
-
-    if (tidakAdaLog && isHariKerjaRegular) {
-        return `
-            <span style="display:flex; flex-direction:column; line-height:1">
-                -
-                <small class="text-danger">Alpha</small>
-            </span>
-        `;
+        ctx.globalAlpha = 1; // reset untuk keamanan render selanjutnya
     }
 
-    if (type === 'in') {
-        if (!logMasuk) return '-';
+    function update() {
+        confetti.forEach((confetto, i) => {
+            confetto.tiltAngle += confetto.tiltAngleIncremental;
+            confetto.y += (Math.cos(confetto.d) + 3 + confetto.r / 2) / 2;
+            confetto.tilt = Math.sin(confetto.tiltAngle - (i / 3)) * 15;
+        });
+    }
 
-        const jam = logMasuk.format('HH:mm');
-        let warna = 'text-success';
-        let label = 'on time';
+    function animate(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
 
-        if (logMasuk.isAfter(workTime) && logMasuk.isSameOrBefore(checkinEnd)) {
-            warna = 'text-danger';
-            label = 'terlambat';
+        update();
+        draw(progress);
+
+        if (progress < 1) {
+            animationId = requestAnimationFrame(animate);
+        } else {
+            cancelAnimationFrame(animationId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-
-        return `
-            <span style="display:flex; flex-direction:column; line-height:1">
-                ${jam}
-                <small class="${warna}">(${label})</small>
-            </span>
-        `;
     }
 
-    if (type === 'out') {
-        if (!logKeluar) return '-';
-
-        const jam = logKeluar.format('HH:mm');
-        let warna = 'text-danger';
-        let label = 'Plg Cepat';
-
-        if (logKeluar.isSameOrAfter(checkoutTime)) {
-            warna = 'text-success';
-            label = 'on time';
-        }
-
-        return `
-            <span style="display:flex; flex-direction:column; line-height:1">
-                ${jam}
-                <small class="${warna}">(${label})</small>
-            </span>
-        `;
-    }
-
-    return '-';
+    animationId = requestAnimationFrame(animate);
 }

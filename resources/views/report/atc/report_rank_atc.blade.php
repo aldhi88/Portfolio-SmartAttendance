@@ -107,7 +107,7 @@
                 $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
                 $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
 
-                launchConfetti();
+                // launchConfetti();
                 return json.data;
             }
         },
@@ -119,73 +119,7 @@
         }
     });
 
-    function launchConfetti() {
-        const canvas = document.getElementById('confetti-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
 
-        const confettiCount = 150;
-        const confetti = [];
-
-        for (let i = 0; i < confettiCount; i++) {
-            confetti.push({
-                x: canvas.width - Math.random() * 1000, // sudut kanan atas
-                y: -Math.random() * canvas.height,
-                r: Math.random() * 6 + 4,
-                d: Math.random() * confettiCount,
-                color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
-                tilt: Math.floor(Math.random() * 10) - 10,
-                tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
-                tiltAngle: 0
-            });
-        }
-
-        let animationId;
-        const start = performance.now();
-        const duration = 5000; // ms
-
-        function draw(progress) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.globalAlpha = 1 - progress; // efek fade out
-
-            confetti.forEach((confetto, i) => {
-                ctx.beginPath();
-                ctx.lineWidth = confetto.r;
-                ctx.strokeStyle = confetto.color;
-                ctx.moveTo(confetto.x + confetto.tilt + (confetto.r / 2), confetto.y);
-                ctx.lineTo(confetto.x + confetto.tilt, confetto.y + confetto.tilt + (confetto.r / 2));
-                ctx.stroke();
-            });
-
-            ctx.globalAlpha = 1; // reset untuk keamanan render selanjutnya
-        }
-
-        function update() {
-            confetti.forEach((confetto, i) => {
-                confetto.tiltAngle += confetto.tiltAngleIncremental;
-                confetto.y += (Math.cos(confetto.d) + 3 + confetto.r / 2) / 2;
-                confetto.tilt = Math.sin(confetto.tiltAngle - (i / 3)) * 15;
-            });
-        }
-
-        function animate(now) {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-
-            update();
-            draw(progress);
-
-            if (progress < 1) {
-                animationId = requestAnimationFrame(animate);
-            } else {
-                cancelAnimationFrame(animationId);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        animationId = requestAnimationFrame(animate);
-    }
 
 
 </script>

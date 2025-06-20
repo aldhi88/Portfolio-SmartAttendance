@@ -52,6 +52,7 @@
         });
 
         const rank1 = data[0];
+        launchConfetti();
 
         // Tampilkan ke elemen HTML
         $('#rank1-name').html(rank1.name);
