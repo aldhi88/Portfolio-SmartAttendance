@@ -111,7 +111,7 @@ function launchConfetti() {
 
     let animationId;
     const start = performance.now();
-    const duration = 3000; // ms
+    const duration = 2000; // ms
 
     function draw(progress) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
