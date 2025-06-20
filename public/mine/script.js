@@ -88,8 +88,18 @@ const getHariIndo = {
 };
 
 function launchConfetti() {
+
     const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) {
+        console.warn('Canvas confetti tidak ditemukan.');
+        return;
+    }
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.warn('Canvas context tidak tersedia.');
+        return;
+    }
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 

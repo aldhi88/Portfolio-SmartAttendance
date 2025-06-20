@@ -36,6 +36,8 @@
         }),
         success: function(response) {
             const data = response.data;
+            console.log(data);
+
             setJuara(data);
         },
         error: function(xhr) {
