@@ -112,11 +112,18 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
             return $row;
         })->toArray();
 
+        $manajer = DataEmployee::whereHas('user_logins', function ($query) {
+                $query->where('user_role_id', 500);
+            })
+            ->pluck('name')
+            ->first()?? 'Manajer belum dipilih';
+
         return view('report.export.report_export_excel', [
             'data' => $data,
             'tglCol' => $tglCol,
             'year' => $this->year,
-            'month' => $this->month
+            'month' => $this->month,
+            'manajer' => $manajer
         ]);
     }
 }

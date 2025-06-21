@@ -71,5 +71,101 @@
                 @endforeach
             </tr>
         @endforeach
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                @if ($index+1 == count($tglCol))
+                    <td colspan="2">ttd</td>
+                @else
+                    <td></td>
+                    <td></td>
+                @endif
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                <td></td>
+                <td></td>
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                <td></td>
+                <td></td>
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                <td></td>
+                <td></td>
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                <td></td>
+                <td></td>
+            @endforeach
+        </tr>
+
+        <tr>
+            <td colspan="3">*dokumen ini dinyatakan sah tanpa ttd basah</td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                @if ($index+1 == count($tglCol)-1)
+                    <td colspan="4">Diketahui, Dumai {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</td>
+                @else
+                    <td></td>
+                    <td></td>
+                @endif
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                @if ($index+1 == count($tglCol)-1)
+                    <td colspan="4">ttd</td>
+                @else
+                    <td></td>
+                    <td></td>
+                @endif
+            @endforeach
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            @foreach ($tglCol as $index => $tgl)
+                @if ($index+1 == count($tglCol)-1)
+                    <td colspan="4">{{ $manajer }}</td>
+                @else
+                    <td></td>
+                    <td></td>
+                @endif
+            @endforeach
+        </tr>
     </tbody>
 </table>

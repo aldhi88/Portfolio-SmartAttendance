@@ -114,3 +114,20 @@
         <div class="page-break"></div>
     @endif
 @endforeach
+
+<table style="width: 100%; font-size: 10px; margin-top: 30px; border: none; border-collapse: collapse;">
+    <tr>
+        <td style="text-align: left; border: none; vertical-align: top;">
+            *Dokumen ini dinyatakan sah tanpa tanda tangan basah
+        </td>
+        <td style="text-align: right; border: none; white-space: nowrap;">
+            Dumai, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}<br><br>
+            <strong>Ttd</strong><br><br><br>
+            <strong>{{ $manajer }}</strong>
+        </td>
+    </tr>
+</table>
+
+
+
+

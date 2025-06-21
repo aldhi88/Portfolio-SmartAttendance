@@ -179,7 +179,6 @@ class ReportController extends Controller
                 $request->filter_month,
                 $request->filter_master_organization_id,
                 $request->filter_master_position_id,
-                // $request->filter_name,
                 $dataLiburRepo,
             ),
             $filename
@@ -262,11 +261,18 @@ class ReportController extends Controller
             return $row;
         })->toArray();
 
+        $manajer = DataEmployee::whereHas('user_logins', function ($query) {
+                $query->where('user_role_id', 500);
+            })
+            ->pluck('name')
+            ->first()?? 'Manajer belum dipilih';
+
         $pdf = Pdf::loadView('report.export.report_export_pdf', [
             'data' => $data,
             'tglCol' => $tglCol,
             'year' => $year,
-            'month' => $month
+            'month' => $month,
+            'manajer' => $manajer
         ])->setPaper('A4', 'landscape');
 
         $timestamp = now()->format('Hisv'); // jammenitdetikmilisecond
