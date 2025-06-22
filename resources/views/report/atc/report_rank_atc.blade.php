@@ -77,11 +77,11 @@
                 return row.akumulasi.terlambat_plgcepat+' hari';
             }
         },
-        { name: 'id', orderable: false, searchable:false,
-            render: function(data, type, row, meta){
-                return row.akumulasi.tdk_absen+' hari';
-            }
-        },
+        // { name: 'id', orderable: false, searchable:false,
+        //     render: function(data, type, row, meta){
+        //         return row.akumulasi.tdk_absen+' hari';
+        //     }
+        // },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
                 return formatAngka(row.akumulasi.rank.keterlambatan) + ' poin';

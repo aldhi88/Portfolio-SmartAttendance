@@ -318,7 +318,7 @@
                                             <th rowspan="2" class="text-center">Loyal <br> Time</th> --}}
                                             <th rowspan="2" class="text-center bg-soft-danger">LOYAL <br> TIME</th>
                                             <th rowspan="2" class="text-center bg-soft-danger">TOTAL <br> POIN <br> (1+2+3)</th>
-                                            <th colspan="5" class="text-center bg-soft-success">ASPEK KETERLAMBATAN <br> (50%)</th>
+                                            <th colspan="4" class="text-center bg-soft-success">ASPEK KETERLAMBATAN <br> (50%)</th>
                                             <th colspan="3" class="text-center bg-soft-warning">ASPEK IZIN <br> (30%)</th>
                                             <th colspan="2" class="text-center bg-soft-info">ASPEK KELUAR <br> (20%)</th>
                                         </tr>
@@ -326,7 +326,7 @@
                                             <th class="text-center bg-soft-secondary">Datang <br> Terlambat <br> Saja</th>
                                             <th class="text-center bg-soft-secondary">Pulang <br> Cepat <br> Saja</th>
                                             <th class="text-center bg-soft-secondary">Terlambat <br> dan <br> Plg Cepat</th>
-                                            <th class="text-center bg-soft-secondary">Tidak <br> Absen</th>
+                                            {{-- <th class="text-center bg-soft-secondary">Tidak <br> Absen</th> --}}
                                             <th class="text-center bg-soft-success">POIN <br> 1</th>
 
                                             <th class="text-center bg-soft-secondary">Izin <br> Sakit</th>
