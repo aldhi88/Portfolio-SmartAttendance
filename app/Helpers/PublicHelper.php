@@ -311,13 +311,13 @@ class PublicHelper
 
                         if ($shift === 'pagi') {
                             $start = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut)->endOfDay();
+                            $end = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkout_time'])->addHours(3);
                         } elseif ($shift === 'sore') {
                             $start = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut)->addDay()->endOfDay();
+                            $end = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkout_time'])->addHours(3);
                         } elseif ($shift === 'malam') {
                             $start = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut)->addDay()->endOfDay();
+                            $end = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkout_time'])->addHours(3);
                         } else {
                             return false;
                         }
