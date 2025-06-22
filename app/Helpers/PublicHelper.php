@@ -501,13 +501,13 @@ class PublicHelper
             ($akumulasi['time_detail']['total_dtg_cpt'] + $akumulasi['time_detail']['total_plg_lama']) -
             ($akumulasi['time_detail']['total_dtg_lama'] + $akumulasi['time_detail']['total_plg_cpt']);
 
-        $akumulasi['time_detail']['total_dtg_cpt_read'] = abs($akumulasi['time_detail']['total_dtg_cpt'] / 60);
-        $akumulasi['time_detail']['total_dtg_lama_read'] = abs($akumulasi['time_detail']['total_dtg_lama'] / 60);
-        $akumulasi['time_detail']['total_plg_cpt_read'] = abs($akumulasi['time_detail']['total_plg_cpt'] / 60);
-        $akumulasi['time_detail']['total_plg_lama_read'] = abs($akumulasi['time_detail']['total_plg_lama'] / 60);
+        $akumulasi['time_detail']['total_dtg_cpt_read'] = abs($akumulasi['time_detail']['total_dtg_cpt'] / 3600);
+        $akumulasi['time_detail']['total_dtg_lama_read'] = abs($akumulasi['time_detail']['total_dtg_lama'] / 3600);
+        $akumulasi['time_detail']['total_plg_cpt_read'] = abs($akumulasi['time_detail']['total_plg_cpt'] / 3600);
+        $akumulasi['time_detail']['total_plg_lama_read'] = abs($akumulasi['time_detail']['total_plg_lama'] / 3600);
         $akumulasi['time_detail']['loyal_time_read'] =
             ($akumulasi['time_detail']['loyal_time'] >= 0 ? 1 : -1) *
-            abs($akumulasi['time_detail']['loyal_time'] / 60);
+            abs($akumulasi['time_detail']['loyal_time'] / 3600);
 
 
         if ($akumulasi['alpa'] > 0) {

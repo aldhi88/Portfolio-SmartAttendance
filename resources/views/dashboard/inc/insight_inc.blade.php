@@ -82,7 +82,7 @@
                 <tr>
                     <td>${index + 1}</td>
                     <td><h5 class="font-size-14 mb-0">${item.name}</h5></td>
-                    <td><p class="text-muted mb-0">${formatAngka(item.akumulasi.time_detail[attr])} menit</p></td>
+                    <td><p class="text-muted mb-0">${formatAngka(item.akumulasi.time_detail[attr])} jam</p></td>
                 </tr>
             `;
         });

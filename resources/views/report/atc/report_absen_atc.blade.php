@@ -55,22 +55,22 @@
         },
         { data: null, name: 'id', orderable: true, searchable:true,
             render: function(data, type, row, meta){
-                return formatAngka(row.akumulasi.time_detail.total_dtg_cpt_read)+'<br><small>menit</small>';
+                return formatAngka(row.akumulasi.time_detail.total_dtg_cpt_read)+'<br><small>jam</small>';
             }
         },
         { data: null, name: 'id', orderable: true, searchable:true,
             render: function(data, type, row, meta){
-                return formatAngka(row.akumulasi.time_detail.total_dtg_lama_read)+'<br><small>menit</small>';
+                return formatAngka(row.akumulasi.time_detail.total_dtg_lama_read)+'<br><small>jam</small>';
             }
         },
         { data: null, name: 'id', orderable: true, searchable:true,
             render: function(data, type, row, meta){
-                return formatAngka(row.akumulasi.time_detail.total_plg_cpt_read)+'<br><small>menit</small>';
+                return formatAngka(row.akumulasi.time_detail.total_plg_cpt_read)+'<br><small>jam</small>';
             }
         },
         { data: null, name: 'id', orderable: true, searchable:true,
             render: function(data, type, row, meta){
-                return formatAngka(row.akumulasi.time_detail.total_plg_lama_read)+'<br><small>menit</small>';
+                return formatAngka(row.akumulasi.time_detail.total_plg_lama_read)+'<br><small>jam</small>';
             }
         }
 
