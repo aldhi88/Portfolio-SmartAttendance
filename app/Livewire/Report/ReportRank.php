@@ -42,14 +42,71 @@ class ReportRank extends Component
     }
 
 
+    public function updated($property)
+    {
+        if($property=='filter.thisMonth' || $property=='filter.thisYear'){
+            $this->setRangeDefault();
+        }
+
+        if($property=='filter.start_value' || $property=='filter.end_value'){
+            $this->setRangeOnChange();
+        }
+    }
+
+    public function setRangeDefault()
+    {
+        // set min max input date range default
+        $this->filter['min_start'] = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->startOfMonth()->format('Y-m-d');
+        $this->filter['max_start'] = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->endOfMonth()->format('Y-m-d');
+        $this->filter['min_end'] = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->startOfMonth()->format('Y-m-d');
+        $this->filter['max_end'] = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->endOfMonth()->format('Y-m-d');
+
+        // jika bulan dan tahun sekarang, set date end nya sampai tanggal sekarang
+        if ($this->filter['thisMonth'] == date('m') && $this->filter['thisYear'] == date('Y')) {
+            $this->filter['max_start'] = Carbon::now()->format('Y-m-d');
+            $this->filter['max_end'] = Carbon::now()->format('Y-m-d');
+        }
+
+        $this->filter['start_value'] = $this->filter['min_start'];
+        $this->filter['end_value'] = $this->filter['max_end'];
+    }
+
+    public function setRangeOnChange()
+    {
+        $this->filter['min_end'] = $this->filter['start_value'];
+        $this->filter['max_start'] = $this->filter['end_value'];
+
+    }
+
+    public function setRangeOnReload()
+    {
+        $this->setRangeDefault();
+        // jika ada url val start
+        if(request()->query('start')){
+            $this->filter['min_end'] = request()->query('start');
+        }
+
+        // jika ada url val end
+        if(request()->query('end')){
+            $this->filter['max_start'] = request()->query('end');
+        }
+
+        if(request()->query('start') && request()->query('end')){
+            $this->filter['start_value'] = request()->query('start');
+            $this->filter['end_value'] = request()->query('end');
+        }
+    }
+
     public function getTglCol()
     {
-        if ($this->filter['thisMonth'] == date('m') && $this->filter['thisYear'] == date('Y')) {
-            $start = Carbon::now()->startOfMonth();
-            $end = Carbon::now();
-        } else {
-            $start = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->startOfMonth();
-            $end = Carbon::create($this->filter['thisYear'], $this->filter['thisMonth'], 1)->endOfMonth();
+        $start = Carbon::parse($this->filter['start_value']);
+        $end = Carbon::parse($this->filter['end_value']);
+
+        if(request()->query('start') && request()->query('end')){
+            $this->filter['start_value'] = request()->query('start');
+            $this->filter['end_value'] = request()->query('end');
+            $start = Carbon::parse(request()->query('start'));
+            $end = Carbon::parse(request()->query('end'));
         }
 
         $dates = collect();
@@ -61,6 +118,7 @@ class ReportRank extends Component
 
             $start->addDay();
         }
+
 
         $this->dt['tglCol'] = $dates->toArray();
         $this->thisMonthLabel = $this->dt['indoMonthList'][$this->filter['thisMonth']];
@@ -74,15 +132,19 @@ class ReportRank extends Component
         $this->dt['organization'] = $this->masterOrganizationRepo->getAll()->toArray();
         $this->dt['position'] = $this->masterPositionRepo->getAll()->toArray();
         $this->dt['indoMonthList'] = PublicHelper::indoMonthList();
-        $this->filter['thisMonth'] = request()->query('month', date('m'));
-        $this->filter['thisYear'] = request()->query('year', date('Y'));
+        $this->dt['orderList'] = PublicHelper::orderList();
+
         $this->filter['master_organization_id'] = request()->query('master_organization_id', null);
+        $this->filter['order'] = request()->query('order', 0);
         $this->filter['master_position_id'] = request()->query('master_position_id', null);
         $this->filter['name'] = request()->query('name', null);
         $this->filter['org_label'] = collect($this->dt['organization'])->firstWhere('id', $this->filter['master_organization_id'])['name'] ?? null;
         $this->filter['pos_label'] = collect($this->dt['position'])->firstWhere('id', $this->filter['master_position_id'])['name'] ?? null;
+        $this->filter['order_label'] = $this->dt['orderList'][$this->filter['order']];
+        $this->filter['thisMonth'] = request()->query('month', date('m'));
+        $this->filter['thisYear'] = request()->query('year', date('Y'));
 
-
+        $this->setRangeOnReload();
         $this->getTglCol();
         // dd($this->all());
     }

@@ -20,12 +20,14 @@
             <div class="card">
                 <div class="card-body">
                     <form class="rounded" method="get">
+                        <input wire:model.live="filter.start_value" min="{{ $filter['min_start'] }}" max="{{ $filter['max_start'] }}" value="{{ $filter['start_value'] }}" type="hidden" name="start" />
+                        <input wire:model.live="filter.end_value" min="{{ $filter['min_end'] }}" max="{{ $filter['max_end'] }}" value="{{ $filter['end_value'] }}" type="hidden" name="end" />
 
                         <div class="row">
                             <div class="col-2">
                                 <div class="form-group">
                                     <label>Bulan</label>
-                                    <select name="month" wire:model="filter.thisMonth" class="form-control ex-filter">
+                                    <select wire:model.live="filter.thisMonth" name="month" class="form-control ex-filter">
                                         @foreach ($dt['indoMonthList'] as $key=>$item)
                                         <option value="{{ $key }}">{{ $item }}</option>
                                         @endforeach
@@ -35,7 +37,7 @@
                             <div class="col-2">
                                 <div class="form-group">
                                     <label>Tahun</label>
-                                    <select name="year" wire:model="filter.thisYear" class="form-control ex-filter">
+                                    <select wire:model.live="filter.thisYear" name="year" wire:model="filter.thisYear" class="form-control ex-filter">
                                         @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
                                             <option value="{{ $i }}">
                                                 {{ $i }}
@@ -77,7 +79,7 @@
                                                 <button type="submit" class="btn btn-info btn-block">Filter</button>
                                             </div>
                                             <div class="col">
-                                                <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                                <a href="{{ route('report.rank') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -91,7 +93,122 @@
         </div>
     </div>
 
-    <div class="row">
+    {{-- <div class="row">
+        <div class="col">
+            <h4 class="lead">Form Filter</h4>
+            <div class="card">
+                <div class="card-body">
+                    <form class="rounded" method="get">
+
+                        <div class="row">
+                            <div class="col-12 col-md-2">
+                                <div class="form-group">
+                                    <label>Bulan</label>
+                                    <select wire:model.live="filter.thisMonth" name="month" class="form-control ex-filter">
+                                        @foreach ($dt['indoMonthList'] as $key=>$item)
+                                        <option value="{{ $key }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <div class="form-group">
+                                    <label>Tahun</label>
+                                    <select wire:model.live="filter.thisYear" name="year" wire:model="filter.thisYear" class="form-control ex-filter">
+                                        @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
+                                            <option value="{{ $i }}">
+                                                {{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Perusahaan</label>
+                                    <select name="master_organization_id" wire:model="filter.master_organization_id" class="form-control ex-filter">
+                                        <option value="">Semua</option>
+                                        @foreach ($dt['organization'] as $item)
+                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Jabatan</label>
+                                    <select name="master_position_id" wire:model="filter.master_position_id" class="form-control ex-filter">
+                                        <option value="">Semua</option>
+                                        @foreach ($dt['position'] as $item)
+                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Filter Range Tanggal (start - end)</label>
+                                    <div>
+                                        <div class="input-group">
+                                            <input wire:model.live="filter.start_value" min="{{ $filter['min_start'] }}" max="{{ $filter['max_start'] }}" value="{{ $filter['start_value'] }}" type="date" class="form-control" name="start" />
+                                            <span class="px-1 pt-2">-</span>
+                                            <input wire:model.live="filter.end_value" min="{{ $filter['min_end'] }}" max="{{ $filter['max_end'] }}" value="{{ $filter['end_value'] }}" type="date" class="form-control" name="end" />
+                                        </div>
+                                        @if ($errors->has('form.from') || $errors->has('form.to'))
+                                            <div class="text-danger">
+                                                <small>{{ $errors->first('form.from') ?: $errors->first('form.to') }}</small>
+                                            </div>
+                                        @endif
+
+                                        @error('tgl_range_invalid')
+                                            <div class="text-danger">
+                                                <small>{{ $message }}</small>
+                                            </div>
+                                        @enderror
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <div class="form-group">
+                                    <label>Urutan Data Berdasarkan</label>
+                                    <select name="order" wire:model="filter.order" class="form-control">
+                                        @foreach ($dt['orderList'] as $key => $item)
+                                        <option value="{{$key}}">{{$item}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0 pb-0">
+                                            <label style="visibility: hidden">Action</label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <button type="submit" class="btn btn-info btn-block">Tampilkan Data</button>
+                                            </div>
+                                            <div class="col">
+                                                <a href="{{ route('report.absen') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    <div class="row" wire:ignore>
         <div class="col-md-4">
             <div class="card border border-danger">
                 <div class="card-body p-3">
@@ -178,7 +295,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" wire:ignore>
         <div class="col">
             <div class="card">
                 <div class="card-body">
@@ -196,15 +313,28 @@
                                                 <input type="text" placeholder="cari nama karyawan" class="form-control form-control-sm text-center search-col-dt">
                                             </th>
                                             <th rowspan="2" class="text-center">Jumlah <br> Hari <br> Kerja</th>
-                                            <th rowspan="2" class="text-center">Tidak <br> Absen</th>
-                                            <th rowspan="2" class="text-center">Loyal <br> Time</th>
-                                            <th colspan="3" class="text-center">Akumulasi</th>
-                                            <th rowspan="2" class="text-center">Total <br> Poin</th>
+                                            <th rowspan="2" class="text-center">Alpha</th>
+                                            {{-- <th rowspan="2" class="text-center">Tidak <br> Absen</th>
+                                            <th rowspan="2" class="text-center">Loyal <br> Time</th> --}}
+                                            <th rowspan="2" class="text-center bg-soft-danger">LOYAL <br> TIME</th>
+                                            <th rowspan="2" class="text-center bg-soft-danger">TOTAL <br> POIN <br> (1+2+3)</th>
+                                            <th colspan="5" class="text-center bg-soft-success">ASPEK KETERLAMBATAN <br> (50%)</th>
+                                            <th colspan="3" class="text-center bg-soft-warning">ASPEK IZIN <br> (30%)</th>
+                                            <th colspan="2" class="text-center bg-soft-info">ASPEK KELUAR <br> (20%)</th>
                                         </tr>
                                         <tr>
-                                            <th class="text-center">Kehadiran</th>
-                                            <th class="text-center">Izin</th>
-                                            <th class="text-center">Alpa</th>
+                                            <th class="text-center bg-soft-secondary">Datang <br> Terlambat <br> Saja</th>
+                                            <th class="text-center bg-soft-secondary">Pulang <br> Cepat <br> Saja</th>
+                                            <th class="text-center bg-soft-secondary">Terlambat <br> dan <br> Plg Cepat</th>
+                                            <th class="text-center bg-soft-secondary">Tidak <br> Absen</th>
+                                            <th class="text-center bg-soft-success">POIN <br> 1</th>
+
+                                            <th class="text-center bg-soft-secondary">Izin <br> Sakit</th>
+                                            <th class="text-center bg-soft-secondary">Izin <br> Pulang</th>
+                                            <th class="text-center bg-soft-warning">POIN <br> 2</th>
+
+                                            <th class="text-center bg-soft-secondary">Keluar <br> Urusan <br> Pribadi</th>
+                                            <th class="text-center bg-soft-info">POIN <br> 3</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>

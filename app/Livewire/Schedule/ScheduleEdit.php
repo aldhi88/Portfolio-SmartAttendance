@@ -4,6 +4,7 @@ namespace App\Livewire\Schedule;
 
 use App\Helpers\PublicHelper;
 use App\Repositories\Interfaces\MasterScheduleFace;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class ScheduleEdit extends Component
@@ -37,6 +38,7 @@ class ScheduleEdit extends Component
             "dtRotasi.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtRotasi.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtRotasi.checkout_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
+
             "dtRotasi.type" => "",
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
@@ -166,6 +168,10 @@ class ScheduleEdit extends Component
     public function genDataEditRotasi()
     {
         $this->dtRotasi = $this->masterScheduleRepo->getByKey($this->pass['editId'])->toArray();
+        $this->dtRotasi['checkin_time'] = Carbon::parse($this->dtRotasi['checkin_time'])->format('H:i');
+        $this->dtRotasi['work_time'] = Carbon::parse($this->dtRotasi['work_time'])->format('H:i');
+        $this->dtRotasi['checkin_deadline_time'] = Carbon::parse($this->dtRotasi['checkin_deadline_time'])->format('H:i');
+        $this->dtRotasi['checkout_time'] = Carbon::parse($this->dtRotasi['checkout_time'])->format('H:i');
         unset(
             $this->dtRotasi['id'],
             $this->dtRotasi['created_at'],

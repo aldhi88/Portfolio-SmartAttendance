@@ -5,6 +5,9 @@
         .text-rapat {
             line-height: 16px;
         }
+        /* .fit-content {
+            width: 1%;
+        } */
     </style>
 @endsection
 
@@ -19,7 +22,7 @@
 <script>
 
     let pushCols = [
-        { data: null, name: 'id', orderable: false, searchable: false,
+        { data: null, name: 'id', orderable: true, searchable: false,
             render: function (data, type, row, meta) {
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
@@ -36,47 +39,87 @@
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.hari_kerja+' hari';
+                return formatAngka(row.akumulasi.hari_kerja)+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.tdk_absen+' kali';
+                return formatAngka(row.akumulasi.alpa)+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.loyal_time_read+' jam';
+                if(row.akumulasi.time_detail.loyal_time_read >= 0){
+                    return '+'+formatAngka(row.akumulasi.time_detail.loyal_time_read)+' jam';
+                }else{
+                    return formatAngka(row.akumulasi.time_detail.loyal_time_read)+' jam';
+                }
+                //
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.hadir+' hari';
+                return formatAngka(row.akumulasi.rank.total_poin) + ' poin';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.izin+' hari';
+                return row.akumulasi.terlambat+' hari';
             }
         },
         { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.alpa+' hari';
+                return row.akumulasi.plg_cepat+' hari';
             }
         },
-        { name: 'id', orderable: true, searchable:false,
+        { name: 'id', orderable: false, searchable:false,
             render: function(data, type, row, meta){
-                return row.akumulasi.total_poin;
+                return row.akumulasi.terlambat_plgcepat+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.tdk_absen+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.rank.keterlambatan) + ' poin';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.izin.izin_sakit+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.izin.izin_pulang+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.rank.izin) + ' poin';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return row.akumulasi.izin.izin_keluar_pribadi+' hari';
+            }
+        },
+        { name: 'id', orderable: false, searchable:false,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.rank.keluar) + ' poin';
             }
         },
     ];
 
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: -1,dom: 'rtip',
-        order: [[8, 'desc']],
+        order: [[0, 'desc']],
         columnDefs: [
             { className: 'text-left text-nowrap', targets: [1] },
-            { className: 'text-center text-nowrap', targets: ['_all'] },
+            { className: 'text-center text-nowrap fit-content', targets: ['_all'] },
         ],
         ajax: {
             url: '{{ route("report.rankDT") }}',
@@ -85,29 +128,36 @@
             data: function (d) {
                 d.filter_year = "{{ $filter['thisYear'] }}";
                 d.filter_month = "{{ $filter['thisMonth'] }}";
+                d.filter_start = "{{ $filter['start_value'] }}";
+                d.filter_end = "{{ $filter['end_value'] }}";
                 d.filter_master_organization_id = "{{ $filter['master_organization_id'] }}";
                 d.filter_master_position_id = "{{ $filter['master_position_id'] }}";
                 d.filter_name = "{{ $filter['name'] }}";
             },
             dataSrc: function(json) {
                 json.data.sort((a, b) => {
-                    if (b.akumulasi.total_poin !== a.akumulasi.total_poin) {
-                        return b.akumulasi.total_poin - a.akumulasi.total_poin;
+                    if (b.akumulasi.rank.total_poin !== a.akumulasi.rank.total_poin) {
+                        return b.akumulasi.rank.total_poin - a.akumulasi.rank.total_poin;
                     }
-                    return b.akumulasi.loyal_time - a.akumulasi.loyal_time;
+                    return b.akumulasi.time_detail.loyal_time - a.akumulasi.time_detail.loyal_time;
                 });
 
                 const rank1 = json.data[0];
                 $('#rank1-name').html(rank1.name);
-                $('#rank1-point').html(rank1.akumulasi.total_poin);
+                $('#rank1-point').html(formatAngka(rank1.akumulasi.rank.total_poin));
                 $('#rank1-org').html(rank1.master_organizations.name);
                 $('#rank1-as').html(rank1.master_positions.name);
                 $('#rank1-day-work').html(rank1.akumulasi.hari_kerja);
                 $('#rank1-hadir').html(rank1.akumulasi.hadir);
                 $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
-                $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
+                if(rank1.akumulasi.time_detail.loyal_time_read >= 0){
+                    $('#rank1-loyal').html('+'+formatAngka(rank1.akumulasi.time_detail.loyal_time_read));
+                }else{
+                    $('#rank1-loyal').html(formatAngka(rank1.akumulasi.time_detail.loyal_time_read));
+                }
 
-                // launchConfetti();
+
+                launchConfetti();
                 return json.data;
             }
         },

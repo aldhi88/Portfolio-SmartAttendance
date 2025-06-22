@@ -42,18 +42,23 @@ class ReportController extends Controller
         ])
             ->where('status', 'Aktif')
             ->has('master_schedules')
-            ->with([
+        ;
+
+        $data->with([
                 'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('data_employee_id', 'time')
-                    ->whereYear('time', $request->filter_year)
-                    ->whereMonth('time', $request->filter_month);
+                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
+                        // ->whereYear('time', $request->filter_year)
+                        // ->whereMonth('time', $request->filter_month)
+                    ;
                 },
                 'data_izins' => function ($q) use ($request) {
                     $q->select('id','data_employee_id','jenis','from','to','desc')
                         ->where('status', 'Disetujui');
                 },
             ])
+
         ;
 
         if($request->filter_master_organization_id){
@@ -62,17 +67,14 @@ class ReportController extends Controller
         if($request->filter_master_position_id){
             $data->where('master_position_id', $request->filter_master_position_id);
         }
-        // if($request->filter_name){
-        //     $data->where('name', 'like', "%{$request->filter_name}%");
-        // }
 
-        $dateInMonth = PublicHelper::dateInMonth($request->filter_month, $request->filter_year);
+        $dateInMonth = PublicHelper::dateInMonth($request->filter_start, $request->filter_end);
         // dd($dateInMonth);
 
         $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
         // dd($dataLibur);
 
-        // dd($data->get()->toArray());
+        // dd($data->get()->toJson());
 
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
@@ -80,6 +82,15 @@ class ReportController extends Controller
             })
             ->addColumn('absensi', function ($data) use($dateInMonth, $tglMerah) {
                 return PublicHelper::getDtAbsen(
+                    $dateInMonth,
+                    $data->log_attendances->toArray(),
+                    $data->master_schedules->toArray(),
+                    $data->data_izins->toArray(),
+                    $tglMerah,
+                );
+            })
+            ->addColumn('akumulasi', function ($data) use($dateInMonth, $tglMerah) {
+                return PublicHelper::getAkumulasi(
                     $dateInMonth,
                     $data->log_attendances->toArray(),
                     $data->master_schedules->toArray(),
@@ -123,8 +134,10 @@ class ReportController extends Controller
                 'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('data_employee_id', 'time')
-                    ->whereYear('time', $request->filter_year)
-                    ->whereMonth('time', $request->filter_month);
+                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
+                            // ->whereYear('time', $request->filter_year)
+                            // ->whereMonth('time', $request->filter_month)
+                        ;
                 },
                 'data_izins' => function ($q) use ($request) {
                     $q->select('id','data_employee_id','jenis','from','to','desc')
@@ -140,13 +153,11 @@ class ReportController extends Controller
             $data->where('master_position_id', $request->filter_master_position_id);
         }
 
-        $dateInMonth = PublicHelper::dateInMonth($request->filter_month, $request->filter_year);
+        $dateInMonth = PublicHelper::dateInMonth($request->filter_start, $request->filter_end);
         // dd($dateInMonth);
 
         $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
         // dd($dataLibur);
-
-        // dd($data->get()->toArray());
 
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
@@ -177,6 +188,8 @@ class ReportController extends Controller
             new ReportAbsenExport(
                 $request->filter_year,
                 $request->filter_month,
+                $request->filter_start,
+                $request->filter_end,
                 $request->filter_master_organization_id,
                 $request->filter_master_position_id,
                 $dataLiburRepo,
@@ -223,10 +236,12 @@ class ReportController extends Controller
                 'master_locations:id,name',
                 'master_functions:id,name',
                 'master_positions:id,name',
-                'log_attendances' => function ($q) use ($year, $month) {
+                'log_attendances' => function ($q) use ($year, $month, $request)  {
                     $q->select('data_employee_id', 'time')
-                        ->whereYear('time', $year)
-                        ->whereMonth('time', $month);
+                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
+                        // ->whereYear('time', $year)
+                        // ->whereMonth('time', $month)
+                        ;
                 },
                 'data_izins' => function ($q) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -235,7 +250,7 @@ class ReportController extends Controller
             ])
             ->where('status', 'Aktif')
             ->has('master_schedules')
-            ->orderBy('id');
+            ->orderBy('name');
 
         if ($org) {
             $query->where('master_organization_id', $org);
@@ -248,7 +263,7 @@ class ReportController extends Controller
         // }
 
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
-        $dateInMonth = PublicHelper::dateInMonth($month, $year);
+        $dateInMonth = PublicHelper::dateInMonth($request->filter_start, $request->filter_end);
 
         $data = $query->get()->map(function ($row) use ($dateInMonth, $tglMerah) {
             $row->absensi = PublicHelper::getDtAbsen(

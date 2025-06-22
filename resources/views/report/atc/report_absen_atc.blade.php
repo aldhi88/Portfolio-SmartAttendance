@@ -38,7 +38,7 @@
     const tglCol = @json($dt['tglCol']);
 
     let pushCols = [
-        { data: 'name', name: 'id', orderable: false, searchable: false,
+        { data: 'name', name: 'name', orderable: true, searchable: false,
             render: function (data, type, row, meta) {
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
@@ -52,7 +52,28 @@
 
                 return html;
             }
+        },
+        { data: null, name: 'id', orderable: true, searchable:true,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.time_detail.total_dtg_cpt_read)+'<br><small>menit</small>';
+            }
+        },
+        { data: null, name: 'id', orderable: true, searchable:true,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.time_detail.total_dtg_lama_read)+'<br><small>menit</small>';
+            }
+        },
+        { data: null, name: 'id', orderable: true, searchable:true,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.time_detail.total_plg_cpt_read)+'<br><small>menit</small>';
+            }
+        },
+        { data: null, name: 'id', orderable: true, searchable:true,
+            render: function(data, type, row, meta){
+                return formatAngka(row.akumulasi.time_detail.total_plg_lama_read)+'<br><small>menit</small>';
+            }
         }
+
     ];
 
     tglCol.forEach(function(item) {
@@ -144,7 +165,8 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 100,dom: 'lrtip',
+        processing: true,serverSide: true,dom: 'lrtip', pageLength: 100,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
         order: [[0, 'asc']],
         fixedColumns: {
             leftColumns: 2 // <- jumlah kolom dari kiri yang ingin fix
@@ -160,9 +182,29 @@
             data: function (d) {
                 d.filter_year = "{{ $filter['thisYear'] }}";
                 d.filter_month = "{{ $filter['thisMonth'] }}";
+                d.filter_start = "{{ $filter['start_value'] }}";
+                d.filter_end = "{{ $filter['end_value'] }}";
                 d.filter_master_organization_id = "{{ $filter['master_organization_id'] }}";
                 d.filter_master_position_id = "{{ $filter['master_position_id'] }}";
                 d.filter_name = "{{ $filter['name'] }}";
+            },
+            dataSrc: function(json) {
+                let order = "{{ $filter['order'] }}";
+                json.data.sort((a, b) => {
+                    if(order==1){
+                        return b.akumulasi.time_detail.total_dtg_cpt - a.akumulasi.time_detail.total_dtg_cpt;
+                    }
+                    if(order==2){
+                        return b.akumulasi.time_detail.total_dtg_lama - a.akumulasi.time_detail.total_dtg_lama;
+                    }
+                    if(order==3){
+                        return b.akumulasi.time_detail.total_plg_cpt - a.akumulasi.time_detail.total_plg_cpt;
+                    }
+                    if(order==4){
+                        return b.akumulasi.time_detail.total_plg_lama - a.akumulasi.time_detail.total_plg_lama;
+                    }
+                });
+                return json.data;
             }
         },
         columns: pushCols,
@@ -178,6 +220,8 @@
         const data = {
             filter_year: "{{ $filter['thisYear'] }}",
             filter_month: "{{ $filter['thisMonth'] }}",
+            filter_start : "{{ $filter['start_value'] }}",
+            filter_end : "{{ $filter['end_value'] }}",
             filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
             filter_master_position_id: "{{ $filter['master_position_id'] }}",
             filter_name: "{{ $filter['name'] }}"
@@ -219,6 +263,8 @@
         const data = {
             filter_year: "{{ $filter['thisYear'] }}",
             filter_month: "{{ $filter['thisMonth'] }}",
+            filter_start : "{{ $filter['start_value'] }}",
+            filter_end : "{{ $filter['end_value'] }}",
             filter_master_organization_id: "{{ $filter['master_organization_id'] }}",
             filter_master_position_id: "{{ $filter['master_position_id'] }}",
             filter_name: "{{ $filter['name'] }}"

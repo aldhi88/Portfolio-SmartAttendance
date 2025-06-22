@@ -45,20 +45,25 @@ class PublicHelper
         ];
     }
 
-    public static function dateInMonth($thisMonth, $thisYear)
+    public static function orderList()
     {
-        if ($thisMonth == date('m') && $thisYear == date('Y')) {
-            $start = Carbon::now()->startOfMonth();
-            $end = Carbon::now();
-        } else {
-            $start = Carbon::create($thisYear, $thisMonth, 1)->startOfMonth();
-            $end = Carbon::create($thisYear, $thisMonth, 1)->endOfMonth();
-        }
+        return [
+            'Nama',
+            'Datang paling cepat',
+            'Datang paling lama',
+            'Pulang paling cepat',
+            'Pulang paling lama',
+        ];
+    }
+
+    public static function dateInMonth($startDate, $endDate)
+    {
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
 
         $dates = collect();
         while ($start->lte($end)) {
             $dates->push($start->format('Y-m-d'));
-
             $start->addDay();
         }
 
@@ -77,7 +82,8 @@ class PublicHelper
         return $h * 3600 + $m * 60 + $s;
     }
 
-    public static function safeDivide($a, $b, $default = 0) {
+    public static function safeDivide($a, $b, $default = 0)
+    {
         return $b == 0 ? $default : $a / $b;
     }
 
@@ -99,8 +105,9 @@ class PublicHelper
                 'type' => '-',
                 'shift' => '-',
                 'time_dtg_cpt' => 0,
-                'time_terlambat' => 0,
+                'time_dtg_lama' => 0,
                 'time_plg_cpt' => 0,
+                'time_plg_lama' => 0,
             ];
 
             $tglCek = Carbon::parse($value);
@@ -192,6 +199,7 @@ class PublicHelper
 
                 if (!$kenaIzinMasuk) {
                     $return['label_in'] = 'tdk absen';
+                    // $return['time_dtg_cpt'] = $workTime->diff($waktuMasuk)->format('%H:%I:%S');
                     if ($logIn) {
                         $waktuMasuk = Carbon::parse($logIn['time']);
                         $return['status'] = 'hadir';
@@ -203,7 +211,7 @@ class PublicHelper
                         } elseif ($waktuMasuk->between($workTime->copy()->addSecond(), $checkinDeadline)) {
                             $return['label_in'] = 'terlambat';
                             $return['time_in'] = $waktuMasuk->format('H:i:s');
-                            $return['time_terlambat'] = $waktuMasuk->diff($workTime)->format('%H:%I:%S');
+                            $return['time_dtg_lama'] = $waktuMasuk->diff($workTime)->format('%H:%I:%S');
                         }
                     }
                 }
@@ -222,6 +230,7 @@ class PublicHelper
                         if ($waktuPulang->gte($checkoutTime)) {
                             $return['label_out'] = 'plg ontime';
                             $return['time_out'] = $waktuPulang->format('H:i:s');
+                            $return['time_plg_lama'] = $checkoutTime->diff($waktuPulang)->format('%H:%I:%S');
                         } elseif ($waktuPulang->between($checkinDeadline, $checkoutTime->copy()->subSecond())) {
                             $return['label_out'] = 'plg cepat';
                             $return['time_out'] = $waktuPulang->format('H:i:s');
@@ -339,7 +348,7 @@ class PublicHelper
                     } elseif ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
                         $return['label_in'] = 'terlambat';
                         $return['time_in'] = $waktuMasuk->format('H:i:s');
-                        $return['time_terlambat'] = $waktuMasuk->diff($batasOntime)->format('%H:%I:%S');
+                        $return['time_dtg_lama'] = $waktuMasuk->diff($batasOntime)->format('%H:%I:%S');
                     }
                 } else {
                     $return['label_in'] = 'tdk absen';
@@ -367,6 +376,7 @@ class PublicHelper
                     if ($waktuPulang->gte($batasPulang)) {
                         $return['label_out'] = 'plg ontime';
                         $return['time_out'] = $waktuPulang->format('H:i:s');
+                        $return['time_plg_lama'] = $batasPulang->diff($waktuPulang)->format('%H:%I:%S');
                     } else if ($waktuPulang->between($batasPulangCepat, $batasPulang->copy()->subSecond())) {
                         $return['label_out'] = 'plg cepat';
                         $return['time_out'] = $waktuPulang->format('H:i:s');
@@ -389,6 +399,7 @@ class PublicHelper
 
             $result[$tglIndex] = $return;
         }
+        // dd(json_encode($result));
 
         return $result;
     }
@@ -397,7 +408,6 @@ class PublicHelper
     {
         $result = PublicHelper::getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
 
-        $akumulasi['jlh_karyawan'] = count($result);
         $akumulasi['hari_bulan'] = count($result);
 
         $akumulasi['off'] = collect($result)->filter(function ($item) {
@@ -408,50 +418,104 @@ class PublicHelper
             return in_array($item['status'] ?? '', ['tgl merah']);
         })->count();
 
+        $akumulasi['hari_kerja'] = $akumulasi['hari_bulan'] - $akumulasi['off'] - $akumulasi['merah'];
+
         $akumulasi['hadir'] = collect($result)->filter(function ($item) {
             return in_array($item['status'] ?? '', ['hadir']);
         })->count();
-
-        $akumulasi['hari_kerja'] = $akumulasi['hari_bulan'] - $akumulasi['off'] - $akumulasi['merah'];
 
         $akumulasi['alpa'] = collect($result)->filter(function ($item) {
             return in_array($item['label_in'] ?? '', ['alpha', 'Sakit', 'Keluar Urusan Pribadi', 'Pulang']) ||
                 in_array($item['label_out'] ?? '', ['Sakit', 'Keluar Urusan Pribadi', 'Pulang']);
         })->count();
 
-        $akumulasi['izin'] = collect($result)->filter(function ($item) {
-            return in_array($item['label_in'] ?? '', ['Keluar Urusan Kerja', 'Dinas', 'Cuti']) ||
-                in_array($item['label_out'] ?? '', ['Keluar Urusan Kerja', 'Dinas', 'Cuti']);
-        })->count();
-
         $akumulasi['tdk_absen'] = collect($result)->filter(function ($item) {
             return ($item['label_in'] ?? '') === 'tdk absen' || ($item['label_out'] ?? '') === 'tdk absen';
         })->count();
 
-        $akumulasi['loyal_time'] = collect($result)->reduce(function ($carry, $item) {
-            $terlambat = PublicHelper::toSeconds($item['time_terlambat'] ?? 0);
-            $plgCepat = PublicHelper::toSeconds($item['time_plg_cpt'] ?? 0);
-            $dtgCepat = PublicHelper::toSeconds($item['time_dtg_cpt'] ?? 0);
+        $akumulasi['terlambat'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['terlambat']) &&
+                !in_array($item['label_out'] ?? '', ['plg cepat']);
+        })->count();
+        $akumulasi['plg_cepat'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_out'] ?? '', ['plg cepat']) &&
+                !in_array($item['label_in'] ?? '', ['terlambat']);
+        })->count();
+        $akumulasi['terlambat_plgcepat'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['terlambat']) &&
+                in_array($item['label_out'] ?? '', ['plg cepat']);
+        })->count();
 
-            return $carry + ($dtgCepat - ($terlambat + $plgCepat));
-        }, 0);
+        $akumulasi['izin']['izin_sakit'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Sakit']) ||
+                in_array($item['label_out'] ?? '', ['Sakit']);
+        })->count();
+        $akumulasi['izin']['izin_keluar_pribadi'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Keluar Urusan Pribadi']) ||
+                in_array($item['label_out'] ?? '', ['Keluar Urusan Pribadi']);
+        })->count();
+        $akumulasi['izin']['izin_pulang'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Pulang']) ||
+                in_array($item['label_out'] ?? '', ['Pulang']);
+        })->count();
 
-        $akumulasi['loyal_time_read'] =
-            ($akumulasi['loyal_time'] >= 0 ? '+' : '-') . // kasih tanda + atau -
-            number_format(abs($akumulasi['loyal_time'] / 3600), 3, ',', '');
+        $akumulasi['izin']['izin_dinas'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Dinas']) ||
+                in_array($item['label_out'] ?? '', ['Dinas']);
+        })->count();
+        $akumulasi['izin']['izin_keluar_kerja'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Keluar Urusan Kerja']) ||
+                in_array($item['label_out'] ?? '', ['Keluar Urusan Kerja']);
+        })->count();
+        $akumulasi['izin']['izin_cuti'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['Cuti']) ||
+                in_array($item['label_out'] ?? '', ['Cuti']);
+        })->count();
 
-        // Nilai poin maksimal dan faktor
-        $totalPoin = 0;
-        $poin_maksimal = 100;
-        $alpa = PublicHelper::safeDivide($akumulasi['alpa'], $akumulasi['hari_kerja']) * 100;
-        $izin = PublicHelper::safeDivide($akumulasi['izin'], $akumulasi['hari_kerja']) * 100 / 2;
-        $tdkAbsen = PublicHelper::safeDivide($akumulasi['tdk_absen'], $akumulasi['hari_kerja']) * 100;
+        $akumulasi['time_detail'] = collect($result)->reduce(function ($carry, $item) {
+            $carry['total_dtg_cpt']  += PublicHelper::toSeconds($item['time_dtg_cpt']  ?? '00:00:00');
+            $carry['total_dtg_lama'] += PublicHelper::toSeconds($item['time_dtg_lama'] ?? '00:00:00');
+            $carry['total_plg_cpt']  += PublicHelper::toSeconds($item['time_plg_cpt']  ?? '00:00:00');
+            $carry['total_plg_lama'] += PublicHelper::toSeconds($item['time_plg_lama'] ?? '00:00:00');
+            return $carry;
+        }, [
+            'total_dtg_cpt'  => 0,
+            'total_dtg_lama' => 0,
+            'total_plg_cpt'  => 0,
+            'total_plg_lama' => 0,
+        ]);
 
-        if($akumulasi['hari_kerja']>0){
-            $totalPoin = $poin_maksimal - $alpa - $izin - $tdkAbsen;
+        $akumulasi['time_detail']['loyal_time'] =
+            ($akumulasi['time_detail']['total_dtg_cpt'] + $akumulasi['time_detail']['total_plg_lama']) -
+            ($akumulasi['time_detail']['total_dtg_lama'] + $akumulasi['time_detail']['total_plg_cpt']);
+
+        $akumulasi['time_detail']['total_dtg_cpt_read'] = abs($akumulasi['time_detail']['total_dtg_cpt'] / 60);
+        $akumulasi['time_detail']['total_dtg_lama_read'] = abs($akumulasi['time_detail']['total_dtg_lama'] / 60);
+        $akumulasi['time_detail']['total_plg_cpt_read'] = abs($akumulasi['time_detail']['total_plg_cpt'] / 60);
+        $akumulasi['time_detail']['total_plg_lama_read'] = abs($akumulasi['time_detail']['total_plg_lama'] / 60);
+        $akumulasi['time_detail']['loyal_time_read'] =
+            ($akumulasi['time_detail']['loyal_time'] >= 0 ? 1 : -1) *
+            abs($akumulasi['time_detail']['loyal_time'] / 60);
+
+
+        if ($akumulasi['alpa'] > 0) {
+            $akumulasi['rank']['keterlambatan'] = 0;
+        } else {
+            $hariKeterlambatan = $akumulasi['terlambat'] + $akumulasi['tdk_absen'];
+            $akumulasi['rank']['keterlambatan'] = 50 * (1 - (PublicHelper::safeDivide($hariKeterlambatan, $akumulasi['hari_kerja'])));
         }
 
-        $akumulasi['total_poin'] = floor($totalPoin * 100) / 100;
+        $hariIzin = $akumulasi['izin']['izin_sakit'] + $akumulasi['izin']['izin_pulang'];
+        $akumulasi['rank']['izin'] = 30 * (1 - (PublicHelper::safeDivide($hariIzin, $akumulasi['hari_kerja'])));
+
+        $hariKeluar = $akumulasi['izin']['izin_keluar_pribadi'];
+        $akumulasi['rank']['keluar'] = 20 * (1 - (PublicHelper::safeDivide($hariKeluar, $akumulasi['hari_kerja'])));
+
+        $akumulasi['rank']['total_poin'] =
+            $akumulasi['rank']['keterlambatan'] +
+            $akumulasi['rank']['izin'] +
+            $akumulasi['rank']['keluar'];
+
 
         return $akumulasi;
     }

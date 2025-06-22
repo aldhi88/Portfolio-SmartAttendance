@@ -164,3 +164,7 @@ function launchConfetti() {
 
     animationId = requestAnimationFrame(animate);
 }
+
+function formatAngka(angka) {
+    return Number(angka) % 1 === 0 ? angka : Number(angka).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}

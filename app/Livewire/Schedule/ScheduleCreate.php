@@ -42,6 +42,7 @@ class ScheduleCreate extends Component
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
             "dtRotasi.day_work.off_day" => "required|numeric|min:1",
+
             "dtRotasi.day_work.rotasi.sore.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtRotasi.day_work.rotasi.sore.work_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],
             "dtRotasi.day_work.rotasi.sore.checkin_deadline_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d$/'],

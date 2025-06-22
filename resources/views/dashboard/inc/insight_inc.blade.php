@@ -59,23 +59,27 @@
 
     function setJuara(data){
         data.sort((a, b) => {
-            if (b.akumulasi.total_poin !== a.akumulasi.total_poin) {
-                return b.akumulasi.total_poin - a.akumulasi.total_poin;
+            if (b.akumulasi.rank.total_poin !== a.akumulasi.rank.total_poin) {
+                return b.akumulasi.rank.total_poin - a.akumulasi.rank.total_poin;
             }
-            return b.akumulasi.loyal_time - a.akumulasi.loyal_time;
+            return b.akumulasi.time_detail.loyal_time - a.akumulasi.time_detail.loyal_time;
         });
 
         const rank1 = data[0];
 
         // Tampilkan ke elemen HTML
         $('#rank1-name').html(rank1.name);
-        $('#rank1-point').html(rank1.akumulasi.total_poin);
+        $('#rank1-point').html(rank1.akumulasi.rank.total_poin);
         $('#rank1-org').html(rank1.master_organizations.name);
         $('#rank1-as').html(rank1.master_positions.name);
         $('#rank1-day-work').html(rank1.akumulasi.hari_kerja);
         $('#rank1-hadir').html(rank1.akumulasi.hadir);
         $('#rank1-noabsen').html(rank1.akumulasi.tdk_absen);
-        $('#rank1-loyal').html(rank1.akumulasi.loyal_time_read);
+        if(rank1.akumulasi.time_detail.loyal_time_read >= 0){
+            $('#rank1-loyal').html('+'+formatAngka(rank1.akumulasi.time_detail.loyal_time_read));
+        }else{
+            $('#rank1-loyal').html(formatAngka(rank1.akumulasi.time_detail.loyal_time_read));
+        }
     }
 
 </script>

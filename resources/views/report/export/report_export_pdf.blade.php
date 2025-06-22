@@ -17,7 +17,7 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed;
+        table-layout: auto;
         font-size: 8px;
     }
     table, th, td {
@@ -37,7 +37,7 @@
 @php
     use Carbon\Carbon;
 
-    $chunks = array_chunk($tglCol, 10);
+    $chunks = array_chunk($tglCol, 5);
 @endphp
 
 @foreach ($chunks as $chunkIndex => $tglChunk)
@@ -76,9 +76,9 @@
                 @foreach ($data as $i => $item)
                     <tr>
                         <td>{{ $i + 1 }}</td>
-                        <td>{{ $item['name'] }}</td>
-                        <td>{{ $item['master_organizations']['name'] ?? '' }}</td>
-                        <td>{{ $item['master_positions']['name'] ?? '' }}</td>
+                        <td style="text-align: left">{{ $item['name'] }}</td>
+                        <td style="text-align: left">{{ $item['master_organizations']['name'] ?? '' }}</td>
+                        <td style="text-align: left">{{ $item['master_positions']['name'] ?? '' }}</td>
 
                         @foreach ($tglChunk as $tgl)
                             @php

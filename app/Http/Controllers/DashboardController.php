@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\PublicHelper;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLiburFace;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -49,7 +50,10 @@ class DashboardController extends Controller
             ])
         ;
 
-        $dateInMonth = PublicHelper::dateInMonth(date('m'), date('Y'));
+        $start = Carbon::create(date('Y'), date('m'), 1)->startOfMonth()->format('Y-m-d');
+        $end = Carbon::now()->format('Y-m-d');
+
+        $dateInMonth = PublicHelper::dateInMonth($start, $end);
         $tglMerah = $dataLiburRepo->getByDate(date('m'), date('Y'));
 
         $results = $data->get()->map(function ($item) use ($dateInMonth, $tglMerah) {

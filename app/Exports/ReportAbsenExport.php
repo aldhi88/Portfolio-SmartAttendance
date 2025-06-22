@@ -14,13 +14,15 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
 {
-    protected $year, $month, $org, $pos;
+    protected $year, $month, $start, $end, $org, $pos;
     protected $dataLiburRepo;
 
-    public function __construct($year, $month, $org, $pos, DataLiburFace $dataLiburRepo)
+    public function __construct($year, $month, $start, $end, $org, $pos, DataLiburFace $dataLiburRepo)
     {
         $this->year = $year;
         $this->month = $month;
+        $this->start = $start;
+        $this->end = $end;
         $this->org = $org;
         $this->pos = $pos;
         $this->dataLiburRepo = $dataLiburRepo;
@@ -59,7 +61,8 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
             ];
             $start->addDay();
         }
-
+        $filter['start'] = $this->start;
+        $filter['end'] = $this->end;
         $data = DataEmployee::query()
             ->select([
                 'data_employees.id',
@@ -75,10 +78,12 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
                 'master_locations:id,name',
                 'master_functions:id,name',
                 'master_positions:id,name',
-                'log_attendances' => function ($q) {
+                'log_attendances' => function ($q) use($filter) {
                     $q->select('data_employee_id', 'time')
-                        ->whereYear('time', $this->year)
-                        ->whereMonth('time', $this->month);
+                        ->whereBetween('time', [$filter['start'], Carbon::parse($filter['end'])->addDay()->format('Y-m-d')])
+                            // ->whereYear('time', $this->year)
+                            // ->whereMonth('time', $this->month)
+                    ;
                 },
                 'data_izins' => function ($q) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -97,7 +102,7 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
             $data->where('master_position_id', $this->pos);
         }
 
-        $dateInMonth = PublicHelper::dateInMonth($this->month, $this->year);
+        $dateInMonth = PublicHelper::dateInMonth($this->start, $this->end);
         $tglMerah = $this->dataLiburRepo->getByDate($this->month, $this->year);
 
         // Isi absensi ke setiap row
