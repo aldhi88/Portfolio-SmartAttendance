@@ -423,6 +423,12 @@ class PublicHelper
         $akumulasi['hadir'] = collect($result)->filter(function ($item) {
             return in_array($item['status'] ?? '', ['hadir']);
         })->count();
+        $akumulasi['dtg_ontime'] = collect($result)->filter(function ($item) {
+            return in_array($item['status'] ?? '', ['dtg ontime']);
+        })->count();
+        $akumulasi['plg_ontime'] = collect($result)->filter(function ($item) {
+            return in_array($item['status'] ?? '', ['plg ontime']);
+        })->count();
 
         $akumulasi['alpa'] = collect($result)->filter(function ($item) {
             return in_array($item['label_in'] ?? '', ['alpha', 'Sakit', 'Keluar Urusan Pribadi', 'Pulang']) ||
@@ -431,6 +437,12 @@ class PublicHelper
 
         $akumulasi['tdk_absen'] = collect($result)->filter(function ($item) {
             return ($item['label_in'] ?? '') === 'tdk absen' || ($item['label_out'] ?? '') === 'tdk absen';
+        })->count();
+        $akumulasi['tdk_absen_dtg'] = collect($result)->filter(function ($item) {
+            return ($item['label_in'] ?? '') === 'tdk absen';
+        })->count();
+        $akumulasi['tdk_absen_plg'] = collect($result)->filter(function ($item) {
+            return ($item['label_out'] ?? '') === 'tdk absen';
         })->count();
 
         $akumulasi['terlambat'] = collect($result)->filter(function ($item) {

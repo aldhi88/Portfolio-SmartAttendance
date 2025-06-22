@@ -60,7 +60,7 @@
                             <div class="media">
                                 <div class="media-body overflow-hidden">
                                     <p class="text-truncate font-size-14 mb-2">Datang Terlambat</p>
-                                    <h4 class="mb-0">1452</h4>
+                                    <h4 class="mb-0" id="dtg-terlambat">0</h4>
                                 </div>
                                 <div class="text-info">
                                     <i class="ri-stack-line font-size-24"></i>
@@ -75,7 +75,7 @@
                             <div class="media">
                                 <div class="media-body overflow-hidden">
                                     <p class="text-truncate font-size-14 mb-2">Tidak Absen Datang</p>
-                                    <h4 class="mb-0">1452</h4>
+                                    <h4 class="mb-0" id="dtg-noabsen">0</h4>
                                 </div>
                                 <div class="text-info">
                                     <i class="ri-stack-line font-size-24"></i>
@@ -94,7 +94,7 @@
                             <div class="media">
                                 <div class="media-body overflow-hidden">
                                     <p class="text-truncate font-size-14 mb-2">Pulang Ontime</p>
-                                    <h4 class="mb-0">1452</h4>
+                                    <h4 class="mb-0" id="plg-ontime">0</h4>
                                 </div>
                                 <div class="text-info">
                                     <i class="ri-stack-line font-size-24"></i>
@@ -109,7 +109,7 @@
                             <div class="media">
                                 <div class="media-body overflow-hidden">
                                     <p class="text-truncate font-size-14 mb-2">Pulang Cepat</p>
-                                    <h4 class="mb-0">1452</h4>
+                                    <h4 class="mb-0" id="plg-cepat">0</h4>
                                 </div>
                                 <div class="text-info">
                                     <i class="ri-stack-line font-size-24"></i>
@@ -124,7 +124,7 @@
                             <div class="media">
                                 <div class="media-body overflow-hidden">
                                     <p class="text-truncate font-size-14 mb-2">Tidak Absen Pulang</p>
-                                    <h4 class="mb-0">1452</h4>
+                                    <h4 class="mb-0" id="plg-noabsen">0</h4>
                                 </div>
                                 <div class="text-info">
                                     <i class="ri-stack-line font-size-24"></i>

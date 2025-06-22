@@ -103,8 +103,9 @@ class DashboardController extends Controller
                 'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
                 'log_attendances' => function ($q) {
                     $q->select('data_employee_id', 'time')
-                        ->whereYear('time', date('Y'))
-                        ->whereMonth('time', date('m'));
+                        ->whereDate('time', date('Y-m-d'));
+                        // ->whereYear('time', date('Y'))
+                        // ->whereMonth('time', date('m'));
                 },
                 'data_izins' => function ($q) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -113,10 +114,7 @@ class DashboardController extends Controller
             ])
         ;
 
-        $start = Carbon::create(date('Y'), date('m'), 1)->startOfMonth()->format('Y-m-d');
-        $end = Carbon::now()->format('Y-m-d');
-
-        $dateInMonth = PublicHelper::dateInMonth($start, $end);
+        $dateInMonth = PublicHelper::dateInMonth(date('Y-m-d'), date('Y-m-d'));
         $tglMerah = $dataLiburRepo->getByDate(date('m'), date('Y'));
 
         $results = $data->get()->map(function ($item) use ($dateInMonth, $tglMerah) {

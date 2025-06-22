@@ -121,7 +121,7 @@
             const data = response.data;
             const param = response.param
 
-            setSummaryAttd(param)
+            setSummaryAttd(param.jlh_karyawan, data)
             launchConfetti();
         },
         error: function(xhr) {
@@ -129,11 +129,26 @@
         }
     });
 
-    function setSummaryAttd(data){
+    function setSummaryAttd(totalEmploye, data){
         moment.locale('id');
         const todayFormatted = moment().format('D MMMM YYYY');
         $('#today').html(todayFormatted);
-        $('#jlh_karyawan').html(data.jlh_karyawan);
+        $('#jlh_karyawan').html(totalEmploye);
+
+        // console.log(data);
+        const totalDtgOntime = data.reduce((sum, item) => sum + (item.akumulasi?.dtg_ontime || 0), 0);
+        $('#dtg-ontime').html(totalDtgOntime);
+        const totalDtgTerlambat = data.reduce((sum, item) => sum + (item.akumulasi?.terlambat || 0), 0);
+        $('#dtg-terlambat').html(totalDtgTerlambat);
+        const totalDtgNoabsen = data.reduce((sum, item) => sum + (item.akumulasi?.tdk_absen_dtg || 0), 0);
+        $('#dtg-noabsen').html(totalDtgNoabsen);
+        const totalPlgOntime = data.reduce((sum, item) => sum + (item.akumulasi?.plg_ontime || 0), 0);
+        $('#plg-ontime').html(totalPlgOntime);
+        const totalPlgCepat = data.reduce((sum, item) => sum + (item.akumulasi?.plg_cepat || 0), 0);
+        $('#plg-cepat').html(totalPlgCepat);
+        const totalPlgNoabsen = data.reduce((sum, item) => sum + (item.akumulasi?.tdk_absen_plg || 0), 0);
+        $('#plg-noabsen').html(totalPlgNoabsen);
+
     }
 
 
