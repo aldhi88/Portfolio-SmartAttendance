@@ -229,6 +229,19 @@ class DataEmployeeRepo implements DataEmployeeFace
         ;
     }
 
+    public function getReportDashboardDT($data)
+    {
+        return DataEmployee::query()
+            ->with([
+                'master_organizations:id,name',
+                // 'master_locations:id,name',
+                // 'master_functions:id,name',
+                'master_positions:id,name',
+            ])
+        ;
+    }
+
+
     public function isExistByCol($col, $val)
     {
         return DataEmployee::where($col, $val)->exists();

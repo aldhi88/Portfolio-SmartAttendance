@@ -517,6 +517,9 @@ class PublicHelper
             $akumulasi['rank']['keluar'];
 
 
+        $akumulasi['insight']['dtg_ontime'] = collect($result)->filter(function ($item) {
+            return in_array($item['label_in'] ?? '', ['dtg ontime']);
+        })->count();
         return $akumulasi;
     }
 }

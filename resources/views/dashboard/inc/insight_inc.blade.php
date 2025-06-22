@@ -27,7 +27,7 @@
 
 <script>
     $.ajax({
-        url: '{{ route("dashboard.getSummary") }}',
+        url: '{{ route("dashboard.getSummaryRank") }}',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -39,23 +39,15 @@
         success: function(response) {
             const data = response.data;
             const param = response.param
-            console.log(data);
 
             setJuara(data);
-            setSummaryAttd(param)
             launchConfetti();
+            setTop(data);
         },
         error: function(xhr) {
             console.error('Gagal:', xhr.responseText);
         }
     });
-
-    function setSummaryAttd(data){
-        moment.locale('id');
-        const todayFormatted = moment().format('D MMMM YYYY');
-        $('#today').html(todayFormatted);
-        $('#jlh_karyawan').html(data.jlh_karyawan);
-    }
 
     function setJuara(data){
         data.sort((a, b) => {
@@ -80,7 +72,70 @@
         }else{
             $('#rank1-loyal').html(formatAngka(rank1.akumulasi.time_detail.loyal_time_read));
         }
+
     }
+
+    function parsingRowTop(data, tableId, attr){
+        var html = '';
+        data.forEach((item, index) => {
+            html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><h5 class="font-size-14 mb-0">${item.name}</h5></td>
+                    <td><p class="text-muted mb-0">${formatAngka(item.akumulasi.time_detail[attr])} m</p></td>
+                </tr>
+            `;
+        });
+        document.querySelector(`#${tableId} tbody`).innerHTML = html;
+    }
+
+
+    function setTop(data){
+        let order1 = data.slice();
+        let order2 = data.slice();
+        let order3 = data.slice();
+        let order4 = data.slice();
+
+        order1.sort((a, b) => b.akumulasi.time_detail.total_dtg_cpt - a.akumulasi.time_detail.total_dtg_cpt);
+        order2.sort((a, b) => b.akumulasi.time_detail.total_dtg_lama - a.akumulasi.time_detail.total_dtg_lama);
+        order3.sort((a, b) => b.akumulasi.time_detail.total_plg_cpt - a.akumulasi.time_detail.total_plg_cpt);
+        order4.sort((a, b) => b.akumulasi.time_detail.total_plg_lama - a.akumulasi.time_detail.total_plg_lama);
+
+        parsingRowTop(order1.slice(0, 5), 'order1', 'total_dtg_cpt_read');
+        parsingRowTop(order2.slice(0, 5), 'order2', 'total_dtg_lama_read');
+        parsingRowTop(order3.slice(0, 5), 'order3', 'total_plg_cpt_read');
+        parsingRowTop(order4.slice(0, 5), 'order4', 'total_plg_lama_read');
+    }
+
+    $.ajax({
+        url: '{{ route("dashboard.getSummaryAttd") }}',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data: JSON.stringify({
+            // _token: '{{ csrf_token() }}'
+        }),
+        success: function(response) {
+            const data = response.data;
+            const param = response.param
+
+            setSummaryAttd(param)
+            launchConfetti();
+        },
+        error: function(xhr) {
+            console.error('Gagal:', xhr.responseText);
+        }
+    });
+
+    function setSummaryAttd(data){
+        moment.locale('id');
+        const todayFormatted = moment().format('D MMMM YYYY');
+        $('#today').html(todayFormatted);
+        $('#jlh_karyawan').html(data.jlh_karyawan);
+    }
+
 
 </script>
 

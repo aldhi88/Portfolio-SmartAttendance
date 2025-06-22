@@ -43,7 +43,8 @@ Route::middleware('auth:web')->group(function(){
         Route::name('dashboard.')->group(function () {
             Route::controller(DashboardController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
-                Route::post('get-summary', 'getSummary')->name('getSummary');
+                Route::post('get-summary-rank', 'getSummaryRank')->name('getSummaryRank');
+                Route::post('get-summary-attd', 'getSummaryAttd')->name('getSummaryAttd');
             });
         });
     });
