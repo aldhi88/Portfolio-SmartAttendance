@@ -146,7 +146,7 @@
                 <div class="card-body">
                     <div>
                         <div class="text-center">
-                            <p class="mb-0">Top 5</p>
+                            <p class="mb-0">Top 5 bulan ini</p>
                             <h6>Datang Paling Cepat</h6>
                         </div>
 
@@ -165,7 +165,7 @@
                 <div class="card-body">
                     <div>
                         <div class="text-center">
-                            <p class="mb-0">Top 5</p>
+                            <p class="mb-0">Top 5 bulan ini</p>
                             <h6>Datang Paling Lama</h6>
                         </div>
 
@@ -184,7 +184,7 @@
                 <div class="card-body">
                     <div>
                         <div class="text-center">
-                            <p class="mb-0">Top 5</p>
+                            <p class="mb-0">Top 5 bulan ini</p>
                             <h6>Pulang Paling Cepat</h6>
                         </div>
 
@@ -203,7 +203,7 @@
                 <div class="card-body">
                     <div>
                         <div class="text-center">
-                            <p class="mb-0">Top 5</p>
+                            <p class="mb-0">Top 5 bulan ini</p>
                             <h6>Pulang Paling Lama</h6>
                         </div>
 
