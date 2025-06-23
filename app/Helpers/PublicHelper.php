@@ -424,10 +424,10 @@ class PublicHelper
             return in_array($item['status'] ?? '', ['hadir']);
         })->count();
         $akumulasi['dtg_ontime'] = collect($result)->filter(function ($item) {
-            return in_array($item['status'] ?? '', ['dtg ontime']);
+            return in_array($item['label_in'] ?? '', ['dtg ontime']);
         })->count();
         $akumulasi['plg_ontime'] = collect($result)->filter(function ($item) {
-            return in_array($item['status'] ?? '', ['plg ontime']);
+            return in_array($item['label_in'] ?? '', ['plg ontime']);
         })->count();
 
         $akumulasi['alpa'] = collect($result)->filter(function ($item) {
@@ -514,6 +514,7 @@ class PublicHelper
             $akumulasi['rank']['keterlambatan'] = 0;
         } else {
             $hariKeterlambatan = $akumulasi['terlambat'];
+            // $hariKeterlambatan = $akumulasi['terlambat'] + $akumulasi['tdk_absen'];
             $akumulasi['rank']['keterlambatan'] = 50 * (1 - (PublicHelper::safeDivide($hariKeterlambatan, $akumulasi['hari_kerja'])));
         }
 
