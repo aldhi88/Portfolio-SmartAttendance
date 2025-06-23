@@ -513,9 +513,11 @@ class PublicHelper
         if ($akumulasi['alpa'] > 0) {
             $akumulasi['rank']['keterlambatan'] = 0;
         } else {
-            $hariKeterlambatan = $akumulasi['terlambat'] + $akumulasi['tdk_absen'];
+            $hariKeterlambatan = $akumulasi['terlambat'];
             $akumulasi['rank']['keterlambatan'] = 50 * (1 - (PublicHelper::safeDivide($hariKeterlambatan, $akumulasi['hari_kerja'])));
         }
+
+        // dd($akumulasi, $hariKeterlambatan,$akumulasi['terlambat'],$akumulasi['tdk_absen']);
 
         $hariIzin = $akumulasi['izin']['izin_sakit'] + $akumulasi['izin']['izin_pulang'];
         $akumulasi['rank']['izin'] = 30 * (1 - (PublicHelper::safeDivide($hariIzin, $akumulasi['hari_kerja'])));
