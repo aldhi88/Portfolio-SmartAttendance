@@ -48,7 +48,7 @@ class PublicHelper
     public static function orderList()
     {
         return [
-            'Nama',
+            'Nama (Asc)',
             'Datang paling cepat',
             'Datang paling lama',
             'Pulang paling cepat',

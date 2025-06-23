@@ -151,7 +151,7 @@
                         </div>
                         <div class="col-12 col-md-3 mb-2">
                             <div class="bg-soft-secondary p-2 rounded border border-secondary h-100">
-                                <i class="fas fa-sort-alpha-down mr-2"></i>Urutan Data :
+                                <i class="fas fa-sort-alpha-down mr-2"></i>Urutan Data Berdasarkan :
                                 <h6 class="py-0 my-0">{{$filter['order_label']??"-"}}</h6>
                             </div>
                         </div>
