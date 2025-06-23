@@ -427,7 +427,7 @@ class PublicHelper
             return in_array($item['label_in'] ?? '', ['dtg ontime']);
         })->count();
         $akumulasi['plg_ontime'] = collect($result)->filter(function ($item) {
-            return in_array($item['label_in'] ?? '', ['plg ontime']);
+            return in_array($item['label_out'] ?? '', ['plg ontime']);
         })->count();
 
         $akumulasi['alpa'] = collect($result)->filter(function ($item) {
