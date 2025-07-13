@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('kode', 16);
             $table->string('name', 128);
-            $table->time('checkin_time');
-            $table->time('work_time');
-            $table->time('checkin_deadline_time');
-            $table->time('checkout_time');
-            $table->enum('type', ['Tetap','Rotasi','Bebas']);
+            // $table->time('checkin_time');
+            // $table->time('work_time');
+            // $table->time('checkin_deadline_time');
+            // $table->time('checkout_time');
+            $table->enum('type', ['Tetap','Rotasi']);
             $table->json('day_work')->nullable();
             $table->timestamps();
             $table->softDeletes();

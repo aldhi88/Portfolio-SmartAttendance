@@ -40,50 +40,62 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md">
                 <div class="form-group">
-                    <label>Jam Boleh Check-In</label>
-                    <input placeholder="HH:MM" wire:model="dtTetap.checkin_time" class="form-control input-mask-time
-                        @error('dtTetap.checkin_time') is-invalid @enderror"
+                    <label>Checkin Start</label>
+                    <input placeholder="HH:mm:ss" wire:model="dtTetap.day_work.time.checkin_time" class="form-control input-mask-time
+                        @error('dtTetap.day_work.time.checkin_time') is-invalid @enderror"
                         id="checkin_time"
-                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtTetap.checkin_time')
+                        data-inputmask="'mask': '99:99:99','inputFormat': 'HH:mm:ss'">
+                    @error('dtTetap.day_work.time.checkin_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md">
                 <div class="form-group">
-                    <label>Jam Akhir Check-In Ontime</label>
-                    <input placeholder="HH:MM" wire:model="dtTetap.work_time" class="form-control input-mask-time
-                        @error('dtTetap.work_time') is-invalid @enderror"
+                    <label>Checkin Ontime</label>
+                    <input placeholder="HH:mm:ss" wire:model="dtTetap.day_work.time.work_time" class="form-control input-mask-time
+                        @error('dtTetap.day_work.time.work_time') is-invalid @enderror"
                         id="work_time"
-                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtTetap.work_time')
+                        data-inputmask="'mask': '99:99:99','inputFormat': 'HH:mm:ss'">
+                    @error('dtTetap.day_work.time.work_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md">
                 <div class="form-group">
-                    <label>Jam Akhir Check-In</label>
-                    <input placeholder="HH:MM" wire:model="dtTetap.checkin_deadline_time" class="form-control input-mask-time
-                        @error('dtTetap.checkin_deadline_time') is-invalid @enderror"
+                    <label>Check-In End</label>
+                    <input placeholder="HH:mm:ss" wire:model="dtTetap.day_work.time.checkin_deadline_time" class="form-control input-mask-time
+                        @error('dtTetap.day_work.time.checkin_deadline_time') is-invalid @enderror"
                         id="checkin_deadline_time"
-                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtTetap.checkin_deadline_time')
+                        data-inputmask="'mask': '99:99:99','inputFormat': 'HH:mm:ss'">
+                    @error('dtTetap.day_work.time.checkin_deadline_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md">
                 <div class="form-group">
-                    <label>Jam Boleh Checkout</label>
-                    <input placeholder="HH:MM" wire:model="dtTetap.checkout_time" class="form-control input-mask-time
-                        @error('dtTetap.checkout_time') is-invalid @enderror"
+                    <label>Checkout Start</label>
+                    <input placeholder="HH:mm:ss" wire:model="dtTetap.day_work.time.checkout_time" class="form-control input-mask-time
+                        @error('dtTetap.day_work.time.checkout_time') is-invalid @enderror"
                         id="checkout_time"
-                        data-inputmask="'alias': 'datetime','inputFormat': 'HH:MM'">
-                    @error('dtTetap.checkout_time')
+                        data-inputmask="'mask': '99:99:99','inputFormat': 'HH:mm:ss'">
+                    @error('dtTetap.day_work.time.checkout_time')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-12 col-md">
+                <div class="form-group">
+                    <label>Checkout End</label>
+                    <input placeholder="HH:mm:ss" wire:model="dtTetap.day_work.time.checkout_deadline_time" class="form-control input-mask-time
+                        @error('dtTetap.day_work.time.checkout_deadline_time') is-invalid @enderror"
+                        id="checkout_deadline_time"
+                        data-inputmask="'mask': '99:99:99','inputFormat': 'HH:mm:ss'">
+                    @error('dtTetap.day_work.time.checkout_deadline_time')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -91,36 +103,17 @@
         </div>
         <div class="row">
             <div class="col-md-4 mt-3">
-                <h5>Hari Kerja Regular</h5>
-                @error('dtTetap.day_work.regular')
+                <h5>Hari Kerja</h5>
+                @error('dtTetap.day_work.day')
                     <p class="text-danger my-0">{{ $message }}</p>
                 @enderror
                 @foreach ($hariIndo as $key => $item)
                 <div class="form-check mb-1">
-                    <input wire:model="dtTetap.day_work.regular.{{ $key+1 }}" type="checkbox"
+                    <input wire:model="dtTetap.day_work.day.{{ $key }}" type="checkbox"
                            class="form-check-input regular"
-                           value="{{ $key+1 }}"
-                           id="regular-{{ $key+1 }}">
-                    <label class="form-check-label" for="regular-{{ $key+1 }}" style="padding-top: 2px">
-                        {{ $item }}
-                    </label>
-                </div>
-                @endforeach
-            </div>
-
-            <div class="col col-md-4 mt-3">
-                <h5>Hari Kerja Lembur</h5>
-                @error('dtTetap.day_work.lembur')
-                    <p class="text-danger my-0">{{ $message }}</p>
-                @enderror
-
-                @foreach ($hariIndo as $key => $item)
-                <div class="form-check mb-1">
-                    <input wire:model="dtTetap.day_work.lembur.{{ $key+1 }}" type="checkbox"
-                           class="form-check-input lembur"
-                           value="{{ $key+1 }}"
-                           id="lembur-{{ $key+1 }}">
-                    <label class="form-check-label" for="lembur-{{ $key+1 }}" style="padding-top: 2px">
+                           value="{{ $key }}"
+                           id="regular-{{ $key }}">
+                    <label class="form-check-label" for="regular-{{ $key }}" style="padding-top: 2px">
                         {{ $item }}
                     </label>
                 </div>

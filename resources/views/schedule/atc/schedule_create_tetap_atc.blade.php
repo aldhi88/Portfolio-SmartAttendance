@@ -8,18 +8,18 @@
             $('.input-mask-time').inputmask();
             $('.input-mask-time').on('input', function () {
                 const val = $(this).val();
-                @this.set('dtTetap.'+$(this).attr('id'), val);
+                @this.set('dtTetap.day_work.time.'+$(this).attr('id'), val);
             });
 
-            $('.regular').on('change', function() {
-                let val = $(this).val();
-                $('.lembur[value="' + val + '"]').prop('disabled', $(this).is(':checked'));
-            });
+            // $('.regular').on('change', function() {
+            //     let val = $(this).val();
+            //     $('.lembur[value="' + val + '"]').prop('disabled', $(this).is(':checked'));
+            // });
 
-            $('.lembur').on('change', function() {
-                let val = $(this).val();
-                $('.regular[value="' + val + '"]').prop('disabled', $(this).is(':checked'));
-            });
+            // $('.lembur').on('change', function() {
+            //     let val = $(this).val();
+            //     $('.regular[value="' + val + '"]').prop('disabled', $(this).is(':checked'));
+            // });
         });
     </script>
 @endpush

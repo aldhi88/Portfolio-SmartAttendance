@@ -37,15 +37,16 @@
                                 <th rowspan="2" class="text-center">Kode Jadwal</th>
                                 <th rowspan="2" class="text-center" style="min-width: 200px">Nama Jadwal</th>
                                 <th rowspan="2" class="text-center" style="max-width: 70px">Tipe Jadwal</th>
-                                <th colspan="4" class="text-center">Ketentuan Waktu Absen</th>
+                                <th colspan="5" class="text-center">Ketentuan Waktu Absen</th>
                                 <th rowspan="2" class="text-center" style="min-width: 400px">Ketentuan Hari Kerja</th>
 
                             </tr>
                             <tr>
-                                <th class="text-center">Mulai</th>
-                                <th class="text-center">Masuk</th>
-                                <th class="text-center">Toleransi</th>
-                                <th class="text-center">Pulang</th>
+                                <th class="text-center">Mulai <br> Checkin</th>
+                                <th class="text-center">Checkin <br> Ontime</th>
+                                <th class="text-center">Batas <br> Checkin</th>
+                                <th class="text-center">Waktu <br> Checkout</th>
+                                <th class="text-center">Batas <br> Checkout</th>
                             </tr>
                             </thead>
 

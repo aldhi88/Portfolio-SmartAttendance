@@ -14,7 +14,7 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'asc']],
         columnDefs: [
-            { className: 'text-left', targets: [4,10] },
+            { className: 'text-left', targets: [4,11] },
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -73,12 +73,107 @@
             { data: 'kode', name: 'kode', orderable: false, searchable:true },
             { data: 'name', name: 'name', orderable: false, searchable:true },
             { data: 'type', name: 'type', orderable: false, searchable:true },
-            { data: 'checkin_time', name: 'checkin_time', orderable: false, searchable:false },
-            { data: 'work_time', name: 'work_time', orderable: false, searchable:false },
-            { data: 'checkin_deadline_time', name: 'checkin_deadline_time', orderable: false, searchable:false },
-            { data: 'checkout_time', name: 'checkout_time', orderable: false, searchable:false },
-            { data: 'day_work', name: 'day_work', orderable: false, searchable:false,
-                render: function (data, type, row, meta) {
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
+                    if (row.type === 'Tetap') {
+                        return data.time.checkin_time;
+                    }
+                    if (row.type === 'Rotasi') {
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            ${shift.checkin_time}
+                                    `;
+                                })
+                                .join('');
+                        }
+                        return shiftList;
+                    }
+                }
+            },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
+                    if (row.type === 'Tetap') {
+                        return data.time.work_time;
+                    }
+                    if (row.type === 'Rotasi') {
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            ${shift.work_time}
+                                    `;
+                                })
+                                .join('');
+                        }
+                        return shiftList;
+                    }
+                }
+            },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
+                    if (row.type === 'Tetap') {
+                        return data.time.checkin_deadline_time;
+                    }
+                    if (row.type === 'Rotasi') {
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            ${shift.checkin_deadline_time}
+                                    `;
+                                })
+                                .join('');
+                        }
+                        return shiftList;
+                    }
+                }
+            },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
+                    if (row.type === 'Tetap') {
+                        return data.time.checkout_time;
+                    }
+                    if (row.type === 'Rotasi') {
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            ${shift.checkout_time}
+                                    `;
+                                })
+                                .join('');
+                        }
+                        return shiftList;
+                    }
+                }
+            },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
+                    if (row.type === 'Tetap') {
+                        return data.time.checkout_deadline_time;
+                    }
+                    if (row.type === 'Rotasi') {
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            ${shift.checkout_deadline_time}
+                                    `;
+                                })
+                                .join('');
+                        }
+                        return shiftList;
+                    }
+                }
+            },
+            { data: 'day_work', name: 'day_work', orderable: false, searchable:false, render: function (data, type, row, meta) {
                     const rowStyle = 'display:flex; align-items:flex-start; margin-bottom:2px;';
                     const labelStyle = 'width:160px; font-weight:bold;';
                     const valueStyle = 'flex:1;';
@@ -90,33 +185,55 @@
                         const workDay = data.work_day ? `${data.work_day} hari kerja` : '-';
                         const offDay = data.off_day ? `${data.off_day} hari off` : '-';
 
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                        <div>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            Masuk: ${shift.checkin_time} s/d ${shift.checkin_deadline_time}<br>
+                                            Kerja: ${shift.work_time}<br>
+                                            Pulang: ${shift.checkout_time} s/d ${shift.checkout_deadline_time}
+                                        </div>
+                                    `;
+                                })
+                                .join('<hr style="margin: 4px 0;">');
+                        }
+
                         return `
                             <div style="${rowStyle}"><div style="${labelStyle}">Tanggal Mulai Rotasi:</div><div style="${valueStyle}">${startDate}</div></div>
-                            <div style="${rowStyle}"><div style="${labelStyle}">Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}">Siklus Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
                             <div style="${rowStyle}"><div style="${labelStyle}"></div><div style="${valueStyle}">${offDay}</div></div>
                         `;
                     } else if (row.type === 'Tetap') {
-                        const regularDays = data.regular && Object.keys(data.regular).length
-                            ? Object.entries(data.regular)
-                                .filter(([key, val]) => val === true)
-                                .map(([key]) => getHariIndo[parseInt(key)])
+                        const semuaHari = [0, 1, 2, 3, 4, 5, 6];
+
+                        const regularDays = Array.isArray(data.day) && data.day.length > 0
+                            ? data.day
+                                .map((key) => getHariIndo[parseInt(key)])
                                 .join(', ')
                             : '-';
 
-                        const lemburDays = data.lembur && Object.keys(data.lembur).length
-                            ? Object.entries(data.lembur)
-                                .filter(([key, val]) => val === true)
-                                .map(([key]) => getHariIndo[parseInt(key)])
+                        const lemburDays = Array.isArray(data.day) && data.day.length > 0
+                            ? semuaHari
+                                .filter((key) => !data.day.includes(key))
+                                .map((key) => getHariIndo[key])
                                 .join(', ')
                             : '-';
 
                         return `
-                            <div style="${rowStyle}"><div style="${labelStyle}">Hari Kerja:</div><div style="${valueStyle}">${regularDays}</div></div>
-                            <div style="${rowStyle}"><div style="${labelStyle}">Hari Off/Lembur:</div><div style="${valueStyle}">${lemburDays}</div></div>
+                            <div style="${rowStyle}">
+                                <div style="${labelStyle}">Hari Kerja:</div>
+                                <div style="${valueStyle}">${regularDays}</div>
+                            </div>
+                            <div style="${rowStyle}">
+                                <div style="${labelStyle}">Hari Off/Lembur:</div>
+                                <div style="${valueStyle}">${lemburDays}</div>
+                            </div>
                         `;
                     }
                 }
-
              },
         ],
         initComplete: function(settings){
