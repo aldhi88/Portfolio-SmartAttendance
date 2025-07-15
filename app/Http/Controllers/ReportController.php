@@ -45,12 +45,13 @@ class ReportController extends Controller
         ;
 
         $data->with([
-                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,kode,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('data_employee_id', 'time')
-                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
-                        // ->whereYear('time', $request->filter_year)
-                        // ->whereMonth('time', $request->filter_month)
+                        ->whereBetween('time', [
+                            $request->filter_start,
+                            Carbon::parse($request->filter_end)->addDay()->format('Y-m-d 23:59:59')
+                        ])
                     ;
                 },
                 'data_izins' => function ($q) use ($request) {
@@ -74,20 +75,19 @@ class ReportController extends Controller
         $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
         // dd($dataLibur);
 
-        // dd($data->get()->toJson());
+        // dd($data->get()->toArray());
 
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
             })
             ->addColumn('absensi', function ($data) use($dateInMonth, $tglMerah) {
-                return PublicHelper::getDtAbsen(
-                    $dateInMonth,
-                    $data->log_attendances->toArray(),
-                    $data->master_schedules->toArray(),
-                    $data->data_izins->toArray(),
-                    $tglMerah,
-                );
+                $param['dateInMonth'] = $dateInMonth;
+                $param['tglMerah'] = $tglMerah;
+                $param['izin'] = $data->data_izins->toArray();
+                $param['log'] = $data->log_attendances->toArray();
+                $param['jadwal'] = $data->master_schedules->toArray();
+                return PublicHelper::getDtAbsen($param);
             })
             ->addColumn('akumulasi', function ($data) use($dateInMonth, $tglMerah) {
                 return PublicHelper::getAkumulasi(
@@ -131,10 +131,14 @@ class ReportController extends Controller
             ->where('status', 'Aktif')
             ->has('master_schedules')
             ->with([
-                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,kode,day_work',
                 'log_attendances' => function ($q) use ($request) {
                     $q->select('data_employee_id', 'time')
-                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
+                        ->whereBetween('time', [
+                            $request->filter_start,
+                            Carbon::parse($request->filter_end)->addDay()->format('Y-m-d 23:59:59')
+                        ])
+                        // ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
                             // ->whereYear('time', $request->filter_year)
                             // ->whereMonth('time', $request->filter_month)
                         ;

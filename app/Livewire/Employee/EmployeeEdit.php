@@ -189,7 +189,7 @@ class EmployeeEdit extends Component
 
         if(isset($this->dtForm['master_schedule_id'][$id])){
             if($this->dtForm['master_schedule_id'][$id]){
-                $this->dtForm['effective_at'][$id] = date('Y-m-d');
+                $this->dtForm['effective_at'][$id] = '2025-02-01';
             }else{
                 unset(
                     $this->dtForm['master_schedule_id'][$id],

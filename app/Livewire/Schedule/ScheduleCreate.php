@@ -45,7 +45,7 @@ class ScheduleCreate extends Component
     }
 
 
-    public $jlhShift = 2;
+    public $jlhShift = 3;
     public function initRotasi()
     {
         for ($i = 0; $i < $this->jlhShift; $i++) {
@@ -104,13 +104,13 @@ class ScheduleCreate extends Component
     {
         $this->validate($this->rulesTetap());
         $this->dtTetap['type'] = $this->pass['type'];
-        $this->dtTetap['day_work']['day'] = array_keys(array_filter($this->dtTetap['day_work']['day'] ?? []));
-        // dd($this->all());
+        $dayWork = array_keys(array_filter($this->dtTetap['day_work']['day'] ?? []));
+        sort($dayWork);
+        $this->dtTetap['day_work']['day'] = $dayWork;
 
         if ($this->masterScheduleRepo->create($this->dtTetap)) {
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->reset('dtTetap');
-            $this->setDtCreateTetap();
             return;
         }
 
@@ -184,10 +184,8 @@ class ScheduleCreate extends Component
     public function mount()
     {
         $this->hariIndo = PublicHelper::getHariIndo();
-        // $this->setDtCreateTetap();
         if($this->pass['type'] == "rotasi"){
             $this->initRotasi();
-            // dd($this->all());
         }
 
     }

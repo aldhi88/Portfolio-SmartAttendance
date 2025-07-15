@@ -3,13 +3,14 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Carbon;
+use phpDocumentor\Reflection\Types\Self_;
 
 class PublicHelper
 {
 
     public static function getHariIndo(): array
     {
-        return ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        return ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     }
 
     public static function hariIndoByEng($day)
@@ -70,32 +71,11 @@ class PublicHelper
         return $dates->toArray();
     }
 
-    public static function toSeconds($time)
+    public static function getDtAbsen($param)
     {
-        if (is_numeric($time)) return (int) $time;
-        if (!is_string($time)) return 0;
+        $listJadwal = collect($param['jadwal']);
 
-        $parts = explode(':', $time);
-        if (count($parts) !== 3) return 0;
-
-        [$h, $m, $s] = array_map('intval', $parts);
-        return $h * 3600 + $m * 60 + $s;
-    }
-
-    public static function safeDivide($a, $b, $default = 0)
-    {
-        return $b == 0 ? $default : $a / $b;
-    }
-
-    public static function getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
-    {
-        // dd($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
-        $result = [];
-        $logAttendances = collect($logAttendances);
-        $schedules = collect($schedules);
-        $izin = collect($izin);
-
-        foreach ($dateInMonth as $key => $value) {
+        foreach ($param['dateInMonth'] as $key => $value) {
             $return = [
                 'label_in' => 'off',
                 'label_out' => 'off',
@@ -110,334 +90,338 @@ class PublicHelper
                 'time_plg_lama' => 0,
             ];
 
-            $tglCek = Carbon::parse($value);
-            $tanggalYMD = $tglCek->format('Y-m-d');
-            $tglIndex = $tglCek->format('d');
+            $tglCekCarbon = Carbon::parse($value);
+            $tglStringYMD = $value;
+            $tglIndex = $tglCekCarbon->format('d');
+            $jadwalAktif = self::getJadwalAktifByDate($listJadwal, $tglCekCarbon);
 
-            // get jadwal kerja yang digunakan di tanggal ini
-            $scheduleMatch = $schedules->first(function ($schedule) use ($tglCek) {
-                $effective = Carbon::parse($schedule['pivot']['effective_at']);
-                $expired = $schedule['pivot']['expired_at']
-                    ? Carbon::parse($schedule['pivot']['expired_at'])
-                    : null;
-
-                return $expired
-                    ? $tglCek->between($effective, $expired)
-                    : $tglCek->greaterThanOrEqualTo($effective);
-            });
-
-            if (!$scheduleMatch) {
+            // skip jika tidak ada jadwal aktif
+            if (!$jadwalAktif) {
                 $result[$tglIndex] = $return;
                 continue;
             }
 
-            if (in_array($value, $tglMerah)) {
+            // skip jika tanggal merah
+            if (in_array($tglStringYMD, $param['tglMerah'])) {
                 $return = [
                     'label_in' => 'tgl merah',
                     'label_out' => 'tgl merah',
-                    'time_in' => '-',
-                    'time_out' => '-',
                     'status' => 'tgl merah'
                 ];
                 $result[$tglIndex] = $return;
                 continue;
             }
 
-            $hariKe = $tglCek->isoWeekday(); // 1 = Senin, ..., 7 = Minggu
-
-            $izinTanggalIni = $izin->first(function ($iz) use ($tglCek) {
-                $from = Carbon::parse($iz['from'])->startOfDay();
-                $to = Carbon::parse($iz['to'])->endOfDay();
-                return $tglCek->between($from, $to);
-            });
-
-            // dump($izinTanggalIni);
-
-            if ($scheduleMatch['type'] == 'Tetap') {
-
-
-                // Cek apakah ini hari kerja regular (bukan lembur atau hari libur kerja)
-                $isRegular = $scheduleMatch['day_work']['regular'][$hariKe] ?? false;
-                if (!$isRegular) {
-                    $result[$tglIndex] = $return;
-                    continue;
-                }
-
-                $kenaIzinMasuk = false;
-                $kenaIzinKeluar = false;
-
-                if ($izinTanggalIni) {
-                    $izinStart = Carbon::parse($izinTanggalIni['from']);
-                    $izinEnd = Carbon::parse($izinTanggalIni['to']);
-
-                    $jamMasuk = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_deadline_time']);
-                    $jamKeluar = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkout_time']);
-
-                    $kenaIzinMasuk = $izinStart->lte($jamMasuk) && $izinEnd->gte($jamMasuk);
-                    $kenaIzinKeluar = $izinStart->lte($jamKeluar) && $izinEnd->gte($jamKeluar);
-
-                    if ($kenaIzinMasuk) $return['label_in'] = $izinTanggalIni['jenis'];
-                    if ($kenaIzinKeluar) $return['label_out'] = $izinTanggalIni['jenis'];
-
-                    if ($kenaIzinMasuk && $kenaIzinKeluar) {
-                        $return['status'] = 'izin';
-                        $result[$tglIndex] = $return;
-                        continue;
-                    }
-                }
-
-                $checkinTime = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_time']);
-                $workTime = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['work_time']);
-                $checkinDeadline = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkin_deadline_time']);
-                $checkoutTime = Carbon::parse($tanggalYMD . ' ' . $scheduleMatch['checkout_time']);
-
-                // === IN ===
-                $logIn = $logAttendances->filter(function ($log) use ($tanggalYMD, $checkinTime) {
-                    $logTime = Carbon::parse($log['time']);
-                    return $logTime->format('Y-m-d') === $tanggalYMD && $logTime->gte($checkinTime);
-                })->sortBy('time')->first();
-
-                if (!$kenaIzinMasuk) {
-                    $return['label_in'] = 'tdk absen';
-                    // $return['time_dtg_cpt'] = $workTime->diff($waktuMasuk)->format('%H:%I:%S');
-                    if ($logIn) {
-                        $waktuMasuk = Carbon::parse($logIn['time']);
-                        $return['status'] = 'hadir';
-
-                        if ($waktuMasuk->between($checkinTime, $workTime)) {
-                            $return['label_in'] = 'dtg ontime';
-                            $return['time_in'] = $waktuMasuk->format('H:i:s');
-                            $return['time_dtg_cpt'] = $workTime->diff($waktuMasuk)->format('%H:%I:%S');
-                        } elseif ($waktuMasuk->between($workTime->copy()->addSecond(), $checkinDeadline)) {
-                            $return['label_in'] = 'terlambat';
-                            $return['time_in'] = $waktuMasuk->format('H:i:s');
-                            $return['time_dtg_lama'] = $waktuMasuk->diff($workTime)->format('%H:%I:%S');
-                        }
-                    }
-                }
-
-                // === OUT ===
-                $logOut = $logAttendances->filter(function ($log) use ($tanggalYMD) {
-                    return Carbon::parse($log['time'])->format('Y-m-d') === $tanggalYMD;
-                })->sortByDesc('time')->first();
-
-                if (!$kenaIzinKeluar) {
-                    $return['label_out'] = 'tdk absen';
-                    if ($logOut) {
-                        $waktuPulang = Carbon::parse($logOut['time']);
-                        $return['status'] = 'hadir';
-
-                        if ($waktuPulang->gte($checkoutTime)) {
-                            $return['label_out'] = 'plg ontime';
-                            $return['time_out'] = $waktuPulang->format('H:i:s');
-                            $return['time_plg_lama'] = $checkoutTime->diff($waktuPulang)->format('%H:%I:%S');
-                        } elseif ($waktuPulang->between($checkinDeadline, $checkoutTime->copy()->subSecond())) {
-                            $return['label_out'] = 'plg cepat';
-                            $return['time_out'] = $waktuPulang->format('H:i:s');
-                            $return['time_plg_cpt'] = $checkoutTime->diff($waktuPulang)->format('%H:%I:%S');
-                        }
-                    }
-                }
-
-                // === Final Evaluasi ===
-                if ($return['label_in'] === 'tdk absen' && $return['label_out'] === 'tdk absen') {
-                    $return['label_in'] = 'alpha';
-                    $return['label_out'] = 'alpha';
-                    $return['status'] = 'alpha';
-                }
+            if ($jadwalAktif['type'] == 'Tetap') {
+                $dtTetap['log'] = $param['log'];
+                $dtTetap['izin'] = $param['izin'];
+                $dtTetap['return'] = $return;
+                $dtTetap['jadwalAktif'] = $jadwalAktif;
+                $dtTetap['tglCekCarbon'] = $tglCekCarbon;
+                $return = self::cekTetap($dtTetap);
+                $result[$tglIndex] = $return;
             }
 
-            if ($scheduleMatch['type'] == 'Rotasi') {
-                // init default
-                $return['type'] = 'Rotasi';
-                $jadwal = null;
-                $tanggalLogIn = $value;
-                $tanggalLogOut = $value;
-                $shift = null;
-
-                $startDate = Carbon::createFromFormat('Y-m-d', $scheduleMatch['day_work']['start_date'])->startOfDay();
-                $diff = $startDate->diffInDays($tglCek);
-                $urutanShift = ['pagi', 'sore', 'malam'];
-                $jlhHarySiklus = ((int) $scheduleMatch['day_work']['work_day'] +
-                    (int) $scheduleMatch['day_work']['off_day']) *
-                    count($urutanShift);
-                $modulo = $diff % $jlhHarySiklus;
-
-                $shiftLength = (int)$scheduleMatch['day_work']['work_day'] + (int)$scheduleMatch['day_work']['off_day']; // total hari per shift
-                $shiftIndex = intdiv($modulo, $shiftLength); // 0 = pagi, 1 = sore, 2 = malam
-                $hariKeDalamShift = $modulo % $shiftLength;
-
-                if ($hariKeDalamShift >= (int)$scheduleMatch['day_work']['work_day']) {
-                    // Hari off
-                    $result[$tglIndex] = $return;
-                    continue;
-                }
-
-                $shift = $urutanShift[$shiftIndex];
-
-                if ($shift === 'pagi') {
-                    $jadwal = [
-                        'checkin_time' => $scheduleMatch['checkin_time'],
-                        'work_time' => $scheduleMatch['work_time'],
-                        'checkin_deadline_time' => $scheduleMatch['checkin_deadline_time'],
-                        'checkout_time' => $scheduleMatch['checkout_time'],
-                    ];
-                } else {
-                    $jadwal = $scheduleMatch['day_work']['rotasi'][$shift] ?? null;
-                }
-
-                $return['shift'] = $shift;
-
-                // if (in_array($modulo, [0, 1, 2])) {
-                //     $jadwal = [
-                //         'checkin_time' => $scheduleMatch['checkin_time'],
-                //         'work_time' => $scheduleMatch['work_time'],
-                //         'checkin_deadline_time' => $scheduleMatch['checkin_deadline_time'],
-                //         'checkout_time' => $scheduleMatch['checkout_time'],
-                //     ];
-                //     $shift = 'pagi';
-                // } elseif (in_array($modulo, [4, 5, 6])) {
-                //     $jadwal = $scheduleMatch['day_work']['rotasi']['sore'];
-                //     $shift = 'sore';
-                // } elseif (in_array($modulo, [8, 9, 10])) {
-                //     $jadwal = $scheduleMatch['day_work']['rotasi']['malam'];
-                //     $shift = 'malam';
-                // } else {
-                //     $result[$tglIndex] = $return;
-                //     continue;
-                // }
-                // $return['shift'] = $shift;
-
-                dd($shift, $jadwal);
-
-                if ($izinTanggalIni) {
-                    $return['label_in'] = $izinTanggalIni['jenis'];
-                    $return['label_out'] = $izinTanggalIni['jenis'];
-                    $return['status'] = 'izin';
-                    $result[$tglIndex] = $return;
-                    continue;
-                }
-
-                $logIn = $logAttendances
-                    ->filter(function ($log) use ($tanggalLogIn, $jadwal, $shift) {
-                        $logTime = Carbon::parse($log['time']);
-
-                        if ($shift === 'malam') {
-                            $start = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_time']);
-                            $end = Carbon::parse($tanggalLogIn)->addDay()
-                                ->setTimeFromTimeString($jadwal['checkin_deadline_time']);
-                        } else {
-                            $start = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_time']);
-                            $end = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_deadline_time']);
-                        }
-
-                        return $logTime->between($start, $end, true); // presisi: >= start && <= end
-                    })
-                    ->sortBy('time')
-                    ->first();
-
-                $logOut = $logAttendances
-                    ->filter(function ($log) use ($jadwal, $shift, $tanggalLogOut) {
-                        $logTime = Carbon::parse($log['time']);
-
-                        if ($shift === 'pagi') {
-                            $start = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkout_time'])->addHours(3);
-                        } elseif ($shift === 'sore') {
-                            $start = Carbon::parse($tanggalLogOut . ' ' . $jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkout_time'])->addHours(3);
-                        } elseif ($shift === 'malam') {
-                            $start = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkin_deadline_time'])->addSecond();
-                            $end = Carbon::parse($tanggalLogOut)->addDay()->setTimeFromTimeString($jadwal['checkout_time'])->addHours(3);
-                        } else {
-                            return false;
-                        }
-
-                        return $logTime->between($start, $end, true);
-                    })
-                    ->sortByDesc('time') // cari yang paling akhir
-                    ->first();
-
-
-                // --- IN
-                if ($logIn) {
-                    $waktuMasuk = Carbon::parse($logIn['time']);
-
-                    // Evaluasi tanggal acuan batas berdasarkan shift
-                    $tanggalBatas = ($shift === 'malam')
-                        ? Carbon::parse($tanggalLogIn)->addDay()->toDateString()
-                        : $tanggalLogIn;
-
-                    $batasAwal = Carbon::parse($tanggalLogIn . ' ' . $jadwal['checkin_time']);
-                    $batasOntime = Carbon::parse($tanggalBatas . ' ' . $jadwal['work_time']);
-                    $batasTerlambat = Carbon::parse($tanggalBatas . ' ' . $jadwal['checkin_deadline_time']);
-
-                    if ($waktuMasuk->between($batasAwal, $batasOntime)) {
-                        $return['label_in'] = 'dtg ontime';
-                        $return['time_in'] = $waktuMasuk->format('H:i:s');
-                        $return['time_dtg_cpt'] = $batasOntime->diff($waktuMasuk)->format('%H:%I:%S');
-                    } elseif ($waktuMasuk->between($batasOntime->copy()->addSecond(), $batasTerlambat)) {
-                        $return['label_in'] = 'terlambat';
-                        $return['time_in'] = $waktuMasuk->format('H:i:s');
-                        $return['time_dtg_lama'] = $waktuMasuk->diff($batasOntime)->format('%H:%I:%S');
-                    }
-                } else {
-                    $return['label_in'] = 'tdk absen';
-                }
-
-                // // --- OUT
-                if ($logOut) {
-
-                    $waktuPulang = Carbon::parse($logOut['time']);
-
-                    // Tentukan tanggal evaluasi berdasarkan shift
-                    if ($shift === 'malam') {
-                        // Untuk shift malam, logout biasanya di hari berikutnya
-                        $tanggalEvaluasi = Carbon::parse($tanggalLogOut)->addDay()->toDateString();
-                    } else {
-                        $tanggalEvaluasi = $tanggalLogOut;
-                    }
-
-                    // Batas waktu pulang (ontime)
-                    $batasPulang = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkout_time']);
-
-                    // Batas waktu pulang cepat (maksimal masih dianggap cepat)
-                    $batasPulangCepat = Carbon::parse($tanggalEvaluasi . ' ' . $jadwal['checkin_deadline_time']);
-
-                    if ($waktuPulang->gte($batasPulang)) {
-                        $return['label_out'] = 'plg ontime';
-                        $return['time_out'] = $waktuPulang->format('H:i:s');
-                        $return['time_plg_lama'] = $batasPulang->diff($waktuPulang)->format('%H:%I:%S');
-                    } else if ($waktuPulang->between($batasPulangCepat, $batasPulang->copy()->subSecond())) {
-                        $return['label_out'] = 'plg cepat';
-                        $return['time_out'] = $waktuPulang->format('H:i:s');
-                        $return['time_plg_cpt'] = $batasPulang->diff($waktuPulang)->format('%H:%I:%S');
-                    }
-                } else {
-                    $return['label_out'] = 'tdk absen';
-                }
-
-                if ($logIn || $logOut) {
-                    $return['status'] = 'hadir';
-                }
-
-                if ($return['label_in'] === 'tdk absen' && $return['label_out'] === 'tdk absen') {
-                    $return['label_in'] = 'alpha';
-                    $return['label_out'] = 'alpha';
-                    $return['status'] = 'alpha';
-                }
+            if ($jadwalAktif['type'] == 'Rotasi') {
+                $dtRotasi['log'] = $param['log'];
+                $dtRotasi['izin'] = $param['izin'];
+                $dtRotasi['return'] = $return;
+                $dtRotasi['jadwalAktif'] = $jadwalAktif;
+                $dtRotasi['tglCekCarbon'] = $tglCekCarbon;
+                $return = self::cekRotasi($dtRotasi);
+                $result[$tglIndex] = $return;
             }
-
-            $result[$tglIndex] = $return;
         }
-        // dd(json_encode($result));
 
         return $result;
     }
 
+    public static function cekTetap($dt)
+    {
+        $dt['return']['type'] = 'Tetap';
+        $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
+        $hariKerja = $dt['jadwalAktif']['day_work']['day'];
+        // jika tidak hari kerja;
+        if (!in_array($dayIndex, $hariKerja)) {
+            return $dt['return'];
+        }
+
+        // ===========Proses waktu kerja============
+        $timeRule = self::getTimeRuleTetap($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon']);
+        // ===========cek izin============
+        $dtIzin = self::checkIzin($dt['izin'], $timeRule, $dt);
+        $dt['return'] = $dtIzin['return'];
+        if ($dtIzin['status']['kenaIzinMasuk'] && $dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['status'] = 'izin';
+            return $dt['return'];
+        }
+        // ========CHECK STATUS ABSEN==========
+        $dt['return']['status'] = 'hadir';
+        // IN
+        if (!$dtIzin['status']['kenaIzinMasuk']) {
+            $dt['return']['label_in'] = 'tdk absen';
+            $logIn = collect($dt['log'])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                ->min();
+            if ($logIn) {
+                $dt['return']['time_in'] = $logIn->format('H:i:s');
+                if ($logIn <= $timeRule['checkin_ontime']) {
+                    $dt['return']['label_in'] = 'dtg ontime';
+                    $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_in'] = 'terlambat';
+                    $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        // OUT
+        if (!$dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['label_out'] = 'tdk absen';
+            $logOut = collect($dt['log'])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                ->max();
+            if ($logOut) {
+                $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+                if ($logOut < $timeRule['checkout_start']) {
+                    $dt['return']['label_out'] = 'plg cepat';
+                    $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_out'] = 'plg ontime';
+                    $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
+            $dt['return']['label_in'] = 'alpha';
+            $dt['return']['label_out'] = 'alpha';
+            $dt['return']['status'] = 'alpha';
+        }
+
+        return $dt['return'];
+    }
+
+    public static function cekRotasi($dt)
+    {
+        $dt['return']['type'] = 'Rotasi';
+        $startDate = Carbon::parse($dt['jadwalAktif']['day_work']['start_date'])->startOfDay();
+        $workDay = (int) $dt['jadwalAktif']['day_work']['work_day'];
+        $offDay = (int) $dt['jadwalAktif']['day_work']['off_day'];
+        $totalShift = count($dt['jadwalAktif']['day_work']['time']);
+        $diff = $startDate->diffInDays($dt['tglCekCarbon']);
+        $jumlahHariSiklus = ($workDay + $offDay) * $totalShift;
+        $hariKeBrpDalamSiklus = $diff % $jumlahHariSiklus;
+        $shiftIndex = intdiv($hariKeBrpDalamSiklus, ($workDay + $offDay)); // 0=Pagi, 1=Sore, 2=Malam
+        $hariKeBrpDalamSatuShift = $hariKeBrpDalamSiklus % ($workDay + $offDay);  // 0-3
+        // jika tidak hari kerja;
+        if ($hariKeBrpDalamSatuShift >= $workDay) {
+            return $dt['return'];
+        }
+
+        $dt['return']['shift'] = $dt['jadwalAktif']['day_work']['time'][$shiftIndex]['name'];
+
+
+        // ===========Proses waktu kerja============
+        $timeRule = self::getTimeRuleRotasi($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon'], $shiftIndex);
+        // ===========cek izin============
+        $dtIzin = self::checkIzin($dt['izin'], $timeRule, $dt);
+        $dt['return'] = $dtIzin['return'];
+        if ($dtIzin['status']['kenaIzinMasuk'] && $dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['status'] = 'izin';
+            return $dt['return'];
+        }
+        // ========CHECK STATUS ABSEN==========
+        $dt['return']['status'] = 'hadir';
+        // IN
+        if (!$dtIzin['status']['kenaIzinMasuk']) {
+            $dt['return']['label_in'] = 'tdk absen';
+            $logIn = collect($dt['log'])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                ->min();
+            if ($logIn) {
+                $dt['return']['time_in'] = $logIn->format('H:i:s');
+                if ($logIn <= $timeRule['checkin_ontime']) {
+                    $dt['return']['label_in'] = 'dtg ontime';
+                    $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_in'] = 'terlambat';
+                    $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        // OUT
+        if (!$dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['label_out'] = 'tdk absen';
+            $logOut = collect($dt['log'])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                ->max();
+            if ($logOut) {
+                $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+                if ($logOut < $timeRule['checkout_start']) {
+                    $dt['return']['label_out'] = 'plg cepat';
+                    $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_out'] = 'plg ontime';
+                    $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
+            $dt['return']['label_in'] = 'alpha';
+            $dt['return']['label_out'] = 'alpha';
+            $dt['return']['status'] = 'alpha';
+        }
+
+        return $dt['return'];
+    }
+
+    public static function getLogCheck($log, $timeRule)
+    {
+        $return['logIn'] = collect($log)
+            ->map(fn($l) => Carbon::parse($l['time']))
+            ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+            ->min();
+
+        $return['logOut'] = collect($log)
+            ->map(fn($l) => Carbon::parse($l['time']))
+            ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+            ->max();
+
+        return $return;
+    }
+
+    public static function checkIzin($dtIzin, $timeRule, $dt)
+    {
+        $izinCollection = collect($dtIzin)->map(function ($izin) {
+            return [
+                'jenis' => $izin['jenis'],
+                'from' => Carbon::parse($izin['from']),
+                'to' => Carbon::parse($izin['to']),
+            ];
+        });
+
+        $izinMasuk = $izinCollection->first(
+            fn($izin) =>
+            $izin['to'] >= $timeRule['checkin_start'] &&
+                $izin['from'] <= $timeRule['checkin_end']
+        );
+
+        $izinKeluar = $izinCollection->first(
+            fn($izin) =>
+            $izin['to'] >= $timeRule['checkin_end'] &&
+                $izin['from'] <= $timeRule['checkout_end']
+        );
+
+        $dt['status']['kenaIzinMasuk'] = false;
+        $dt['status']['kenaIzinKeluar'] = false;
+
+        if ($izinMasuk) {
+            $dt['return']['label_in'] = $izinMasuk['jenis'];
+            $dt['status']['status']['kenaIzinMasuk'] = true;
+        }
+
+        if ($izinKeluar) {
+            $re['return']['label_out'] = $izinKeluar['jenis'];
+            $dt['status']['kenaIzinKeluar'] = true;
+        }
+
+        return $dt;
+    }
+
+    public static function getTimeRuleTetap($dt, $tglCek)
+    {
+        $checkinStart = $dt['checkin_time'];
+        $checkinOntime = $dt['work_time'];
+        $checkinEnd = $dt['checkin_deadline_time'];
+        $checkoutStart = $dt['checkout_time'];
+        $checkoutEnd = $dt['checkout_deadline_time'];
+        // format waktu ke tanggal+waktu
+        $return['checkin_start'] = $tglCek->copy()->setTimeFromTimeString($checkinStart);
+
+        $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($checkinOntime);
+        if ($return['checkin_ontime']->lt($return['checkin_start'])) {
+            $return['checkin_ontime']->addDay();
+        }
+        $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($checkinEnd);
+        if ($return['checkin_end']->lt($return['checkin_start'])) {
+            $return['checkin_end']->addDay();
+        }
+        $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($checkoutStart);
+        if ($return['checkout_start']->lt($return['checkin_start'])) {
+            $return['checkout_start']->addDay();
+        }
+        $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($checkoutEnd);
+        if ($return['checkout_end']->lt($return['checkin_start'])) {
+            $return['checkout_end']->addDay();
+        }
+        return $return;
+    }
+
+    public static function getTimeRuleRotasi($shiftTimeList, $tglCek, $shiftIndex)
+    {
+
+        $shift = $shiftTimeList[$shiftIndex];
+
+        $return['checkin_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_time']);
+
+        $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($shift['work_time']);
+        if ($return['checkin_ontime']->lt($return['checkin_start'])) {
+            $return['checkin_ontime']->addDay();
+        }
+
+        $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_deadline_time']);
+        if ($return['checkin_end']->lt($return['checkin_start'])) {
+            $return['checkin_end']->addDay();
+        }
+
+        $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_time']);
+        if ($return['checkout_start']->lt($return['checkin_start'])) {
+            $return['checkout_start']->addDay();
+        }
+
+        $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_deadline_time']);
+        if ($return['checkout_end']->lt($return['checkin_start'])) {
+            $return['checkout_end']->addDay();
+        }
+
+        return $return;
+    }
+
+
+    public static function getJadwalAktifByDate($listJadwal, $tglCek)
+    {
+        $return = $listJadwal->first(function ($jadwal) use ($tglCek) {
+            $effective = Carbon::parse($jadwal['pivot']['effective_at']);
+            $expired = $jadwal['pivot']['expired_at']
+                ? Carbon::parse($jadwal['pivot']['expired_at'])
+                : null;
+
+            return $expired
+                ? $tglCek->between($effective, $expired)
+                : $tglCek->greaterThanOrEqualTo($effective);
+        });
+
+        return $return;
+    }
+
     public static function getAkumulasi($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
     {
-        $result = PublicHelper::getDtAbsen($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah);
+        $param['dateInMonth'] = $dateInMonth;
+        $param['tglMerah'] = $tglMerah;
+        $param['izin'] = $izin;
+        $param['log'] = $logAttendances;
+        $param['jadwal'] = $schedules;
+
+        $result = self::getDtAbsen($param);
 
         $akumulasi['hari_bulan'] = count($result);
 
@@ -515,6 +499,7 @@ class PublicHelper
                 in_array($item['label_out'] ?? '', ['Cuti']);
         })->count();
 
+
         $akumulasi['time_detail'] = collect($result)->reduce(function ($carry, $item) {
             $carry['total_dtg_cpt']  += PublicHelper::toSeconds($item['time_dtg_cpt']  ?? '00:00:00');
             $carry['total_dtg_lama'] += PublicHelper::toSeconds($item['time_dtg_lama'] ?? '00:00:00');
@@ -566,6 +551,24 @@ class PublicHelper
         $akumulasi['insight']['dtg_ontime'] = collect($result)->filter(function ($item) {
             return in_array($item['label_in'] ?? '', ['dtg ontime']);
         })->count();
+        // dd($akumulasi);
         return $akumulasi;
+    }
+
+    public static function toSeconds($time)
+    {
+        if (is_numeric($time)) return (int) $time;
+        if (!is_string($time)) return 0;
+
+        $parts = explode(':', $time);
+        if (count($parts) !== 3) return 0;
+
+        [$h, $m, $s] = array_map('intval', $parts);
+        return $h * 3600 + $m * 60 + $s;
+    }
+
+    public static function safeDivide($a, $b, $default = 0)
+    {
+        return $b == 0 ? $default : $a / $b;
     }
 }

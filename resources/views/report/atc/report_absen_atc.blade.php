@@ -181,7 +181,7 @@
     });
 
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,dom: 'lrtip', pageLength: 100,
+        processing: true,serverSide: true,dom: 'rtip', pageLength: -1,
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
         order: [[0, 'asc']],
         fixedColumns: {

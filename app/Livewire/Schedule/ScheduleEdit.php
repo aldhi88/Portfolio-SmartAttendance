@@ -55,7 +55,9 @@ class ScheduleEdit extends Component
     {
         $this->validate($this->rulesTetap());
         $this->dtTetap['type'] = $this->pass['type'];
-        $this->dtTetap['day_work']['day'] = array_keys(array_filter($this->dtTetap['day_work']['day'] ?? []));
+        $dayWork = array_keys(array_filter($this->dtTetap['day_work']['day'] ?? []));
+        sort($dayWork);
+        $this->dtTetap['day_work']['day'] = $dayWork;
         if($this->masterScheduleRepo->update($this->pass['editId'], $this->dtTetap)){
             $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->genDataEditTetap();
