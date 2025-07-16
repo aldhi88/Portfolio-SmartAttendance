@@ -83,8 +83,9 @@
                             shiftList = data.time
                                 .map((shift, idx) => {
                                     return `
-                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong>
                                             ${shift.checkin_time}
+                                            <br>
                                     `;
                                 })
                                 .join('');
@@ -103,8 +104,9 @@
                             shiftList = data.time
                                 .map((shift, idx) => {
                                     return `
-                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong>
                                             ${shift.work_time}
+                                            <br>
                                     `;
                                 })
                                 .join('');
@@ -123,8 +125,9 @@
                             shiftList = data.time
                                 .map((shift, idx) => {
                                     return `
-                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong>
                                             ${shift.checkin_deadline_time}
+                                            <br>
                                     `;
                                 })
                                 .join('');
@@ -143,8 +146,9 @@
                             shiftList = data.time
                                 .map((shift, idx) => {
                                     return `
-                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong>
                                             ${shift.checkout_time}
+                                            <br>
                                     `;
                                 })
                                 .join('');
@@ -163,8 +167,9 @@
                             shiftList = data.time
                                 .map((shift, idx) => {
                                     return `
-                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong>
                                             ${shift.checkout_deadline_time}
+                                            <br>
                                     `;
                                 })
                                 .join('');

@@ -37,7 +37,7 @@ class DashboardController extends Controller
             ->where('status', 'Aktif')
             ->has('master_schedules')
             ->with([
-                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,kode,day_work',
                 'log_attendances' => function ($q) {
                     $q->select('data_employee_id', 'time')
                         ->whereYear('time', date('Y'))
@@ -100,7 +100,7 @@ class DashboardController extends Controller
             ->where('status', 'Aktif')
             ->has('master_schedules')
             ->with([
-                'master_schedules:id,type,kode,checkin_time,work_time,checkin_deadline_time,checkout_time,day_work',
+                'master_schedules:id,type,kode,day_work',
                 'log_attendances' => function ($q) {
                     $q->select('data_employee_id', 'time')
                         ->whereDate('time', date('Y-m-d'));
