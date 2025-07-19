@@ -19,12 +19,21 @@ $(document).ready(function () {
 });
 
 function initSearchCol(table, headerId, inputClass) {
-    $(headerId).on('keyup', '.' + inputClass, function () {
-        table.column($(this).parent().index()).search(this.value).draw(false);
-    });
+    // $(headerId).on('keyup', '.' + inputClass, function () {
+    //     table.column($(this).parent().index()).search(this.value).draw(false);
+    // });
 
-    $(headerId).on('change', '.' + inputClass, function () {
-        table.column($(this).parent().index()).search(this.value).draw();
+    // $(headerId).on('change', '.' + inputClass, function () {
+    //     table.column($(this).parent().index()).search(this.value).draw();
+    // });
+    $(headerId).on('input', '.' + inputClass, function () {
+        const colIndex = $(this).parent().index();
+        const searchVal = this.value;
+
+        // Jalankan search hanya kalau value-nya berubah
+        if (table.column(colIndex).search() !== searchVal) {
+            table.column(colIndex).search(searchVal).draw(false);
+        }
     });
 }
 
