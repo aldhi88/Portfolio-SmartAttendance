@@ -48,6 +48,10 @@ class DataEmployee extends Model
             ->withTimestamps();
     }
 
+    public function data_lemburs(): HasMany
+    {
+        return $this->hasMany(DataLembur::class, 'data_employee_id', 'id');
+    }
     public function data_izins(): HasMany
     {
         return $this->hasMany(DataIzin::class, 'data_employee_id', 'id');

@@ -6,10 +6,12 @@ use App\Http\Middleware\CheckAuthorization;
 use App\Http\Middleware\CheckKeyApiRequest;
 use App\Repositories\AuthRepository;
 use App\Repositories\DataEmployeeRepo;
+use App\Repositories\DataLemburRepo;
 use App\Repositories\DataLiburIzinRepo;
 use App\Repositories\DataLiburRepo;
 use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\DataEmployeeFace;
+use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\DataLiburFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
@@ -80,6 +82,7 @@ return Application::configure(basePath: dirname(__DIR__))
         DataEmployeeFace::class => DataEmployeeRepo::class,
         DataLiburFace::class => DataLiburRepo::class,
         DataLiburIzinFace::class => DataLiburIzinRepo::class,
+        DataLemburFace::class => DataLemburRepo::class,
         UserRoleFace::class => UserRoleRepo::class,
     ])
     ->create();

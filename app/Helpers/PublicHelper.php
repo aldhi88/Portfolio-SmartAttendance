@@ -115,16 +115,17 @@ class PublicHelper
             if ($jadwalAktif['type'] == 'Tetap') {
                 $dtTetap['log'] = $param['log'];
                 $dtTetap['izin'] = $param['izin'];
+                $dtTetap['lembur'] = $param['lembur'];
                 $dtTetap['return'] = $return;
                 $dtTetap['jadwalAktif'] = $jadwalAktif;
                 $dtTetap['tglCekCarbon'] = $tglCekCarbon;
                 $return = self::cekTetap($dtTetap);
                 $result[$tglIndex] = $return;
             }
-
             if ($jadwalAktif['type'] == 'Rotasi') {
                 $dtRotasi['log'] = $param['log'];
                 $dtRotasi['izin'] = $param['izin'];
+                $dtRotasi['lembur'] = $param['lembur'];
                 $dtRotasi['return'] = $return;
                 $dtRotasi['jadwalAktif'] = $jadwalAktif;
                 $dtRotasi['tglCekCarbon'] = $tglCekCarbon;
@@ -143,6 +144,13 @@ class PublicHelper
         $hariKerja = $dt['jadwalAktif']['day_work']['day'];
         // jika tidak hari kerja;
         if (!in_array($dayIndex, $hariKerja)) {
+            $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+                return $dt['return'];
+            }
             return $dt['return'];
         }
 
@@ -219,14 +227,24 @@ class PublicHelper
         $hariKeBrpDalamSatuShift = $hariKeBrpDalamSiklus % ($workDay + $offDay);  // 0-3
         // jika tidak hari kerja;
         if ($hariKeBrpDalamSatuShift >= $workDay) {
+            // ===========cek lembur============
+            if(count($dt['lembur'])>0){
+                $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+                if ($dtLembur) {
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
+            }
             return $dt['return'];
         }
 
         $dt['return']['shift'] = $dt['jadwalAktif']['day_work']['time'][$shiftIndex]['name'];
 
-
         // ===========Proses waktu kerja============
         $timeRule = self::getTimeRuleRotasi($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon'], $shiftIndex);
+
         // ===========cek izin============
         $dtIzin = self::checkIzin($dt['izin'], $timeRule, $dt);
         $dt['return'] = $dtIzin['return'];
@@ -234,6 +252,7 @@ class PublicHelper
             $dt['return']['status'] = 'izin';
             return $dt['return'];
         }
+
         // ========CHECK STATUS ABSEN==========
         $dt['return']['status'] = 'hadir';
         // IN
@@ -280,7 +299,6 @@ class PublicHelper
             $dt['return']['label_out'] = 'alpha';
             $dt['return']['status'] = 'alpha';
         }
-
         return $dt['return'];
     }
 
@@ -297,6 +315,14 @@ class PublicHelper
             ->max();
 
         return $return;
+    }
+
+    public static function checkLembur($dtLembur, $tglCekCarbon, $dt)
+    {
+        return collect($dtLembur)->contains(function ($item) use ($tglCekCarbon) {
+            return isset($item['tanggal']) &&
+                $tglCekCarbon->isSameDay(Carbon::parse($item['tanggal']));
+        });
     }
 
     public static function checkIzin($dtIzin, $timeRule, $dt)
@@ -330,7 +356,7 @@ class PublicHelper
         }
 
         if ($izinKeluar) {
-            $re['return']['label_out'] = $izinKeluar['jenis'];
+            $dt['return']['label_out'] = $izinKeluar['jenis'];
             $dt['status']['kenaIzinKeluar'] = true;
         }
 
@@ -413,11 +439,12 @@ class PublicHelper
         return $return;
     }
 
-    public static function getAkumulasi($dateInMonth, $logAttendances, $schedules, $izin, $tglMerah)
+    public static function getAkumulasi($dateInMonth, $logAttendances, $schedules, $izin, $lembur, $tglMerah)
     {
         $param['dateInMonth'] = $dateInMonth;
         $param['tglMerah'] = $tglMerah;
         $param['izin'] = $izin;
+        $param['lembur'] = $lembur;
         $param['log'] = $logAttendances;
         $param['jadwal'] = $schedules;
 

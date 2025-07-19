@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataEmployeeController;
+use App\Http\Controllers\DataLemburController;
 use App\Http\Controllers\DataLiburController;
 use App\Http\Controllers\DataPengawasEmployeeController;
 use App\Http\Controllers\LaporanController;
@@ -170,6 +171,18 @@ Route::middleware('auth:web')->group(function(){
         Route::name('merah.')->group(function () {
             Route::controller(DataLiburController::class)->group(function () {
                 Route::get('index', 'indexMerah')->name('indexMerah');
+            });
+        });
+    });
+
+    Route::prefix('lembur')->group(function () {
+        Route::name('lembur.')->group(function () {
+            Route::controller(DataLemburController::class)->group(function () {
+                Route::get('index', 'indexLembur')->name('indexLembur');
+                Route::get('dt', 'indexLemburDT')->name('indexLemburDT');
+                Route::get('create', 'lemburCreate')->name('lemburCreate');
+                Route::get('edit/{id}', 'lemburEdit')->name('lemburEdit');
+
             });
         });
     });

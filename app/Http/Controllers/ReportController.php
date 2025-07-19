@@ -28,8 +28,7 @@ class ReportController extends Controller
         DataEmployeeFace $dataEmployeeRepo,
         DataLiburFace $dataLiburRepo,
         Request $request
-    )
-    {
+    ) {
         $data = $dataEmployeeRepo->getReportDT(0);
         $data->select([
             'data_employees.id',
@@ -44,28 +43,41 @@ class ReportController extends Controller
             ->has('master_schedules')
         ;
 
+        $range['start_cast'] = Carbon::parse($request->filter_start)->startOfDay();
+        $range['end_cast'] = Carbon::parse($request->filter_end)->addDay()->endOfDay();
+
         $data->with([
-                'master_schedules:id,type,kode,day_work',
-                'log_attendances' => function ($q) use ($request) {
-                    $q->select('data_employee_id', 'time')
-                        ->whereBetween('time', [
-                            $request->filter_start,
-                            Carbon::parse($request->filter_end)->addDay()->format('Y-m-d 23:59:59')
-                        ])
-                    ;
-                },
-                'data_izins' => function ($q) use ($request) {
-                    $q->select('id','data_employee_id','jenis','from','to','desc')
-                        ->where('status', 'Disetujui');
-                },
-            ])
+            'master_schedules:id,type,kode,day_work',
+            'log_attendances' => function ($q) use ($range) {
+                $q->select('data_employee_id', 'time')
+                    ->whereBetween('time', [
+                        $range['start_cast'],
+                        $range['end_cast']
+                    ])
+                ;
+            },
+            'data_izins' => function ($q) use ($range) {
+                $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
+                    ->where('status', 'Disetujui')
+                    ->where(function ($sub) use ($range) {
+                        $sub->whereBetween('from', [$range['start_cast'], $range['end_cast']])
+                            ->orWhereBetween('to', [$range['start_cast'], $range['end_cast']]);
+                    });
+            },
+            'data_lemburs' => function ($q) use ($range) {
+                $q->select('id', 'data_employee_id', 'tanggal')
+                    ->where('status', 'Disetujui')
+                    ->whereBetween('tanggal', [
+                        $range['start_cast']->toDateString(),
+                        $range['end_cast']->toDateString(),
+                    ]);
+            },
+        ]);
 
-        ;
-
-        if($request->filter_master_organization_id){
+        if ($request->filter_master_organization_id) {
             $data->where('master_organization_id', $request->filter_master_organization_id);
         }
-        if($request->filter_master_position_id){
+        if ($request->filter_master_position_id) {
             $data->where('master_position_id', $request->filter_master_position_id);
         }
 
@@ -81,20 +93,22 @@ class ReportController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
             })
-            ->addColumn('absensi', function ($data) use($dateInMonth, $tglMerah) {
+            ->addColumn('absensi', function ($data) use ($dateInMonth, $tglMerah) {
                 $param['dateInMonth'] = $dateInMonth;
                 $param['tglMerah'] = $tglMerah;
                 $param['izin'] = $data->data_izins->toArray();
+                $param['lembur'] = $data->data_lemburs->toArray();
                 $param['log'] = $data->log_attendances->toArray();
                 $param['jadwal'] = $data->master_schedules->toArray();
                 return PublicHelper::getDtAbsen($param);
             })
-            ->addColumn('akumulasi', function ($data) use($dateInMonth, $tglMerah) {
+            ->addColumn('akumulasi', function ($data) use ($dateInMonth, $tglMerah) {
                 return PublicHelper::getAkumulasi(
                     $dateInMonth,
                     $data->log_attendances->toArray(),
                     $data->master_schedules->toArray(),
                     $data->data_izins->toArray(),
+                    $data->data_lemburs->toArray(),
                     $tglMerah,
                 );
             })
@@ -116,8 +130,7 @@ class ReportController extends Controller
         DataEmployeeFace $dataEmployeeRepo,
         DataLiburFace $dataLiburRepo,
         Request $request
-    )
-    {
+    ) {
         $data = $dataEmployeeRepo->getReportDT(0);
         $data->select([
             'data_employees.id',
@@ -139,21 +152,21 @@ class ReportController extends Controller
                             Carbon::parse($request->filter_end)->addDay()->format('Y-m-d 23:59:59')
                         ])
                         // ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
-                            // ->whereYear('time', $request->filter_year)
-                            // ->whereMonth('time', $request->filter_month)
-                        ;
+                        // ->whereYear('time', $request->filter_year)
+                        // ->whereMonth('time', $request->filter_month)
+                    ;
                 },
                 'data_izins' => function ($q) use ($request) {
-                    $q->select('id','data_employee_id','jenis','from','to','desc')
+                    $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
                         ->where('status', 'Disetujui');
                 },
             ])
         ;
 
-        if($request->filter_master_organization_id){
+        if ($request->filter_master_organization_id) {
             $data->where('master_organization_id', $request->filter_master_organization_id);
         }
-        if($request->filter_master_position_id){
+        if ($request->filter_master_position_id) {
             $data->where('master_position_id', $request->filter_master_position_id);
         }
 
@@ -167,12 +180,13 @@ class ReportController extends Controller
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
             })
-            ->addColumn('akumulasi', function ($data) use($dateInMonth, $tglMerah) {
+            ->addColumn('akumulasi', function ($data) use ($dateInMonth, $tglMerah) {
                 return PublicHelper::getAkumulasi(
                     $dateInMonth,
                     $data->log_attendances->toArray(),
                     $data->master_schedules->toArray(),
                     $data->data_izins->toArray(),
+                    $data->data_lemburs->toArray(),
                     $tglMerah,
                 );
             })
@@ -240,12 +254,12 @@ class ReportController extends Controller
                 'master_locations:id,name',
                 'master_functions:id,name',
                 'master_positions:id,name',
-                'log_attendances' => function ($q) use ($year, $month, $request)  {
+                'log_attendances' => function ($q) use ($year, $month, $request) {
                     $q->select('data_employee_id', 'time')
                         ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
                         // ->whereYear('time', $year)
                         // ->whereMonth('time', $month)
-                        ;
+                    ;
                 },
                 'data_izins' => function ($q) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -281,10 +295,10 @@ class ReportController extends Controller
         })->toArray();
 
         $manajer = DataEmployee::whereHas('user_logins', function ($query) {
-                $query->where('user_role_id', 500);
-            })
+            $query->where('user_role_id', 500);
+        })
             ->pluck('name')
-            ->first()?? 'Manajer belum dipilih';
+            ->first() ?? 'Manajer belum dipilih';
 
         $pdf = Pdf::loadView('report.export.report_export_pdf', [
             'data' => $data,
@@ -301,11 +315,4 @@ class ReportController extends Controller
 
         return $pdf->download($filename);
     }
-
-
-
-
-
-
 }
-
