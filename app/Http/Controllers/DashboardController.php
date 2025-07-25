@@ -62,6 +62,7 @@ class DashboardController extends Controller
                 $item->log_attendances->toArray(),
                 $item->master_schedules->toArray(),
                 $item->data_izins->toArray(),
+                $item->data_lemburs->toArray(),
                 $tglMerah
             );
 
