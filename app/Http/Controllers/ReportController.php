@@ -239,6 +239,9 @@ class ReportController extends Controller
             $start->addDay();
         }
 
+        $range['start_cast'] = Carbon::parse($request->filter_start)->startOfDay();
+        $range['end_cast'] = Carbon::parse($request->filter_end)->addDay()->endOfDay();
+
         $query = DataEmployee::query()
             ->select([
                 'data_employees.id',
@@ -254,16 +257,29 @@ class ReportController extends Controller
                 'master_locations:id,name',
                 'master_functions:id,name',
                 'master_positions:id,name',
-                'log_attendances' => function ($q) use ($year, $month, $request) {
+                'log_attendances' => function ($q) use ($range) {
                     $q->select('data_employee_id', 'time')
-                        ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
-                        // ->whereYear('time', $year)
-                        // ->whereMonth('time', $month)
+                        ->whereBetween('time', [
+                            $range['start_cast'],
+                            $range['end_cast']
+                        ])
                     ;
                 },
-                'data_izins' => function ($q) {
+                'data_izins' => function ($q) use ($range) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
-                        ->where('status', 'Disetujui');
+                        ->where('status', 'Disetujui')
+                        ->where(function ($sub) use ($range) {
+                            $sub->whereBetween('from', [$range['start_cast'], $range['end_cast']])
+                                ->orWhereBetween('to', [$range['start_cast'], $range['end_cast']]);
+                        });
+                },
+                'data_lemburs' => function ($q) use ($range) {
+                    $q->select('id', 'data_employee_id', 'tanggal')
+                        ->where('status', 'Disetujui')
+                        ->whereBetween('tanggal', [
+                            $range['start_cast']->toDateString(),
+                            $range['end_cast']->toDateString(),
+                        ]);
                 },
             ])
             ->where('status', 'Aktif')
@@ -284,13 +300,14 @@ class ReportController extends Controller
         $dateInMonth = PublicHelper::dateInMonth($request->filter_start, $request->filter_end);
 
         $data = $query->get()->map(function ($row) use ($dateInMonth, $tglMerah) {
-            $row->absensi = PublicHelper::getDtAbsen(
-                $dateInMonth,
-                $row->log_attendances->toArray(),
-                $row->master_schedules->toArray(),
-                $row->data_izins->toArray(),
-                $tglMerah
-            );
+            $param['dateInMonth'] = $dateInMonth;
+            $param['tglMerah'] = $tglMerah;
+            $param['izin'] = $row->data_izins->toArray();
+            $param['lembur'] = $row->data_lemburs->toArray();
+            $param['log'] = $row->log_attendances->toArray();
+            $param['jadwal'] = $row->master_schedules->toArray();
+
+            $row->absensi = PublicHelper::getDtAbsen($param);
             return $row;
         })->toArray();
 
