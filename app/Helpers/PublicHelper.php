@@ -228,7 +228,7 @@ class PublicHelper
         // jika tidak hari kerja;
         if ($hariKeBrpDalamSatuShift >= $workDay) {
             // ===========cek lembur============
-            if(count($dt['lembur'])>0){
+            if (count($dt['lembur']) > 0) {
                 $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
                 if ($dtLembur) {
                     $dt['return']['label_in'] = 'lembur';
@@ -337,14 +337,14 @@ class PublicHelper
 
         $izinMasuk = $izinCollection->first(
             fn($izin) =>
-            $izin['to'] >= $timeRule['checkin_start'] &&
-                $izin['from'] <= $timeRule['checkin_end']
+            $timeRule['checkin_start'] >= $izin['from'] &&
+                $timeRule['checkin_end'] <= $izin['to']
         );
 
         $izinKeluar = $izinCollection->first(
             fn($izin) =>
-            $izin['to'] >= $timeRule['checkin_end'] &&
-                $izin['from'] <= $timeRule['checkout_end']
+            $timeRule['checkout_start'] >= $izin['from'] &&
+                $timeRule['checkout_end']   <= $izin['to']
         );
 
         $dt['status']['kenaIzinMasuk'] = false;
@@ -352,7 +352,7 @@ class PublicHelper
 
         if ($izinMasuk) {
             $dt['return']['label_in'] = $izinMasuk['jenis'];
-            $dt['status']['status']['kenaIzinMasuk'] = true;
+            $dt['status']['kenaIzinMasuk'] = true;
         }
 
         if ($izinKeluar) {

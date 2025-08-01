@@ -40,6 +40,14 @@ Route::middleware('guest')->group(function(){
 
 Route::middleware('auth:web')->group(function(){
 
+    Route::prefix('auth')->group(function () {
+        Route::name('auth.')->group(function () {
+            Route::controller(AuthController::class)->group(function () {
+                Route::get('logout', 'logout')->name('logout');
+            });
+        });
+    });
+
     Route::prefix('dashboard')->group(function () {
         Route::name('dashboard.')->group(function () {
             Route::controller(DashboardController::class)->group(function () {
@@ -55,14 +63,6 @@ Route::middleware('auth:web')->group(function(){
             Route::controller(LaporanController::class)->group(function () {
                 Route::get('log-absen', 'indexLogAbsen')->name('indexLogAbsen');
                 Route::get('log-absen/dt', 'indexLogAbsenDt')->name('indexLogAbsenDt');
-            });
-        });
-    });
-
-    Route::prefix('auth')->group(function () {
-        Route::name('auth.')->group(function () {
-            Route::controller(AuthController::class)->group(function () {
-                Route::get('logout', 'logout')->name('logout');
             });
         });
     });
