@@ -103,11 +103,9 @@ class PublicHelper
 
             // skip jika tanggal merah
             if (in_array($tglStringYMD, $param['tglMerah'])) {
-                $return = [
-                    'label_in' => 'tgl merah',
-                    'label_out' => 'tgl merah',
-                    'status' => 'tgl merah'
-                ];
+                $return['label_in'] = 'tgl merah';
+                $return['label_out'] = 'tgl merah';
+                $return['status'] = 'tgl merah';
                 $result[$tglIndex] = $return;
                 continue;
             }
