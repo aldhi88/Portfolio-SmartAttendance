@@ -35,6 +35,24 @@ class MasterScheduleController extends Controller
         return view('index', compact('data'));
     }
 
+    public function createHybrid()
+    {
+        $data['tab_title'] = "Jadwal Hybrid Baru | ".config('app.name');
+        $data['page_title'] = "Jadwal Hybrid Baru";
+        $data['page_desc'] = "Form menambah data jadwal kerja hybrid";
+        $data['lw'] = "schedule.schedule-create-hybrid";
+        return view('index', compact('data'));
+    }
+
+    public function createBebas()
+    {
+        $data['tab_title'] = "Jadwal Bebas Baru | ".config('app.name');
+        $data['page_title'] = "Jadwal Bebas Baru";
+        $data['page_desc'] = "Form menambah data jadwal kerja bebas";
+        $data['lw'] = "schedule.schedule-create-bebas";
+        return view('index', compact('data'));
+    }
+
     public function edit($id,$type)
     {
         $data['type'] = $type;
@@ -46,4 +64,23 @@ class MasterScheduleController extends Controller
         $data['lw'] = "schedule.schedule-edit";
         return view('index', compact('data'));
     }
+    public function editHybrid($id)
+    {
+        $data['editId'] = $id;
+        $data['tab_title'] = "Edit Data Jadwal Hybrid | ".config('app.name');
+        $data['page_title'] = "Edit Data Jadwal Hybrid";
+        $data['page_desc'] = "Form edit data jadwal kerja";
+        $data['lw'] = "schedule.schedule-edit-hybrid";
+        return view('index', compact('data'));
+    }
+    public function editBebas($id)
+    {
+        $data['editId'] = $id;
+        $data['tab_title'] = "Edit Data Jadwal Bebas | ".config('app.name');
+        $data['page_title'] = "Edit Data Jadwal Bebas";
+        $data['page_desc'] = "Form edit data jadwal kerja";
+        $data['lw'] = "schedule.schedule-edit-bebas";
+        return view('index', compact('data'));
+    }
+
 }

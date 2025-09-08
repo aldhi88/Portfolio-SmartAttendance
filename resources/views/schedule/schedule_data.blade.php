@@ -12,6 +12,8 @@
                         <div class="dropdown-menu" style="">
                             <a class="dropdown-item" href="{{ route('jadwal-kerja.create', 'tetap') }}">Jadwal Tetap</a>
                             <a class="dropdown-item" href="{{ route('jadwal-kerja.create', 'rotasi') }}">Jadwal Rotasi</a>
+                            <a class="dropdown-item" href="{{ route('jadwal-kerja.createHybrid') }}">Jadwal Hybrid</a>
+                            <a class="dropdown-item" href="{{ route('jadwal-kerja.createBebas') }}">Jadwal Bebas</a>
                         </div>
                     </div>
                 </div>

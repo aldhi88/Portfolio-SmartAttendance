@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -14,6 +15,11 @@ class MasterSchedule extends Model
 {
     use SoftDeletes;
     protected $guarded = [];
+
+    public function data_schedule_bebas(): HasMany
+    {
+        return $this->hasMany(DataSchedulesBebas::class, 'master_schedule_id','id');
+    }
 
     public function data_employees(): BelongsToMany
     {

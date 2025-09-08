@@ -123,13 +123,10 @@
                     <div class="col-md">
                         <div class="form-group" x-data>
                             <label>Username Login</label>
-                            <input
-                                wire:model="dtForm.username"
-                                type="text"
+                            <input wire:model="dtForm.username" type="text"
                                 class="form-control @error('dtForm.username') is-invalid @enderror"
                                 x-on:keydown.space.prevent
-                                x-on:input="$event.target.value = $event.target.value.replace(/\s/g, '')"
-                            >
+                                x-on:input="$event.target.value = $event.target.value.replace(/\s/g, '')">
                             @error('dtForm.username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -139,7 +136,8 @@
                     <div class="col-md">
                         <div class="form-group">
                             <label>Password Login</label>
-                            <input wire:model="dtForm.password" type="text" placeholder="isi jika ingin mengganti password"
+                            <input wire:model="dtForm.password" type="text"
+                                placeholder="isi jika ingin mengganti password"
                                 class="form-control @error('dtForm.password') is-invalid @enderror">
                             @error('dtForm.password')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -200,25 +198,41 @@
                                 <th>Tanggal Selesai <br>
                                     <small>(biarkan kosong jika masih berlaku)</small>
                                 </th>
+                                <th>#</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($dtEdit['schedule'] as $item)
-                            <tr>
-                                <td>
-                                    <input
-                                        name="check-{{$item['id']}}"
-                                        type="checkbox"
-                                        wire:model="dtForm.master_schedule_id.{{$item['id']}}"
-                                        wire:click="checkSchedule({{$item['id']}})"
-                                        style="transform: scale(1.2);"
-                                    >
-                                </td>
-                                <td>{{ $item['kode'] }}</td>
-                                <td>{{ $item['name'] }}</td>
-                                <td><input type="date" wire:model="dtForm.effective_at.{{$item['id']}}" class="form-control form-control-sm"></td>
-                                <td><input type="date" wire:model="dtForm.expired_at.{{$item['id']}}" class="form-control form-control-sm"></td>
-                            </tr>
+                                <tr>
+                                    <td>
+                                        <input name="check-{{ $item['id'] }}" type="checkbox"
+                                            wire:model="dtForm.master_schedule_id.{{ $item['id'] }}"
+                                            wire:click="checkSchedule({{ $item['id'] }})"
+                                            style="transform: scale(1.2);">
+                                    </td>
+                                    <td>{{ $item['kode'] }}</td>
+                                    <td>{{ $item['name'] }}</td>
+                                    <td>
+                                        <input type="date"
+                                            wire:model.live="dtForm.effective_at.{{ $item['id'] }}"
+                                            class="form-control form-control-sm"
+                                            {{ ($dtForm['master_schedule_id'][$item['id']] ?? false) ? '' : 'readonly' }}>
+                                    </td>
+                                    <td>
+                                        <input type="date" min="{{ $dtForm['effective_at'][$item['id']] ?? '' }}"
+                                            wire:model.live="dtForm.expired_at.{{ $item['id'] }}"
+                                            class="form-control form-control-sm"
+                                            {{ ($dtForm['master_schedule_id'][$item['id']] ?? false) ? '' : 'readonly' }}>
+                                    </td>
+                                    <td>
+                                        @if ($item['type'] === 'Bebas')
+                                            <button @disabled(!$this->isReady($item['id'])) type="button"
+                                                class="btn btn-success btn-sm">
+                                                Set Jam Kerja
+                                            </button>
+                                        @endif
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>

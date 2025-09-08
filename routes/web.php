@@ -113,6 +113,10 @@ Route::middleware('auth:web')->group(function(){
         Route::name('jadwal-kerja.')->group(function () {
             Route::controller(MasterScheduleController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
+                Route::get('create/hybrid', 'createHybrid')->name('createHybrid');
+                Route::get('edit/hybrid/{id}', 'editHybrid')->name('editHybrid');
+                Route::get('create/bebas', 'createBebas')->name('createBebas');
+                Route::get('edit/bebas/{id}', 'editBebas')->name('editBebas');
                 Route::get('create/{type}', 'create')->name('create');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
                 Route::get('edit/{id}/{type}', 'edit')->name('edit');

@@ -137,8 +137,6 @@ class EmployeeEdit extends Component
                     return;
                 }
             }
-
-
         }
 
         $index = 0;
@@ -153,7 +151,7 @@ class EmployeeEdit extends Component
         $dtLogin['nickname'] = $this->dtForm['name'];
         $dtLogin['username'] = $this->dtForm['username'];
         $dtLogin['user_role_id'] = $this->dtForm['role'];
-        if(isset($this->dtForm['password'])){
+        if (isset($this->dtForm['password'])) {
             $dtLogin['password'] = Hash::make($this->dtForm['password']);
         }
 
@@ -161,15 +159,15 @@ class EmployeeEdit extends Component
         // dd($dtEmployee, $dtRel, $dtLogin);
 
         try {
-            DB::transaction(function () use($dtEmployee, $dtRel, $dtLogin) {
-                if(!is_null($this->dtForm['user_login_id'])){
-                    $this->userLoginRepository->update($this->dtForm['user_login_id'],$dtLogin);
-                    $this->dataEmployeeRepo->update($this->dtForm['id'],$dtEmployee);
+            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin) {
+                if (!is_null($this->dtForm['user_login_id'])) {
+                    $this->userLoginRepository->update($this->dtForm['user_login_id'], $dtLogin);
+                    $this->dataEmployeeRepo->update($this->dtForm['id'], $dtEmployee);
                     $this->relDataEmployeeMasterScheduleRepo->update($this->dtForm['id'], $dtRel);
-                }else{
+                } else {
                     $userId = $this->userLoginRepository->create($dtLogin);
                     $dtEmployee['user_login_id'] = $userId;
-                    $this->dataEmployeeRepo->update($this->dtForm['id'],$dtEmployee);
+                    $this->dataEmployeeRepo->update($this->dtForm['id'], $dtEmployee);
                     $this->relDataEmployeeMasterScheduleRepo->update($this->dtForm['id'], $dtRel);
                 }
             });
@@ -179,7 +177,6 @@ class EmployeeEdit extends Component
             dd($e);
             $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
         }
-
     }
 
     public function checkSchedule($id)
@@ -187,16 +184,44 @@ class EmployeeEdit extends Component
         $this->dtForm['expired_at'][$id] = null;
         $this->dtForm['effective_at'][$id] = null;
 
-        if(isset($this->dtForm['master_schedule_id'][$id])){
-            if($this->dtForm['master_schedule_id'][$id]){
+        if (isset($this->dtForm['master_schedule_id'][$id])) {
+            if ($this->dtForm['master_schedule_id'][$id]) {
                 $this->dtForm['effective_at'][$id] = '2025-02-01';
-            }else{
+            } else {
                 unset(
                     $this->dtForm['master_schedule_id'][$id],
                     $this->dtForm['effective_at'][$id],
                     $this->dtForm['expired_at'][$id],
                 );
             }
+        }
+    }
+
+    public function isReady($id): bool
+    {
+        return !empty($this->dtForm['master_schedule_id'][$id] ?? null)
+            && !empty($this->dtForm['effective_at'][$id] ?? null)
+            && !empty($this->dtForm['expired_at'][$id] ?? null);
+    }
+
+    public function resetTglSelesai($id)
+    {
+        if (!empty($this->dtForm['expired_at'][$id])) {
+            $expired   = Carbon::parse($this->dtForm['expired_at'][$id]);
+            $effective = Carbon::parse($this->dtForm['effective_at'][$id]);
+
+            if ($expired->lt($effective)) {
+                $this->dtForm['expired_at'][$id] = '';
+            }
+        }
+    }
+
+    public function updated($property)
+    {
+        $base = Str::beforeLast($property, '.');
+        $id   = Str::afterLast($property, '.');
+        if ($base === 'dtForm.effective_at') {
+            $this->resetTglSelesai($id);
         }
     }
 
@@ -216,7 +241,7 @@ class EmployeeEdit extends Component
             "dtForm.effective_at" => "",
             "dtForm.expired_at" => "",
             "dtForm.username" => "required|unique:user_logins,username,{$this->dtForm['user_login_id']},id,deleted_at,NULL",
-            "dtForm.password" => $this->dtForm['user_logins']? 'nullable':'required',
+            "dtForm.password" => $this->dtForm['user_logins'] ? 'nullable' : 'required',
 
         ];
     }
@@ -250,7 +275,7 @@ class EmployeeEdit extends Component
         $this->dtEdit['schedule'] = $this->masterScheduleRepo->getAll()->toArray();
         $this->dtEdit['roles'] = $this->userRoleRepo
             ->getAll()
-            ->filter(fn ($role) => $role->name !== 'Super User')
+            ->filter(fn($role) => $role->name !== 'Super User')
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();
@@ -262,7 +287,7 @@ class EmployeeEdit extends Component
         $this->dtForm['username'] = "";
         $this->dtForm['username'] = null;
         $this->dtForm['role'] = null;
-        if($this->dtForm['user_logins']){
+        if ($this->dtForm['user_logins']) {
             $this->dtForm['username'] = $this->dtForm['user_logins']['username'];
             $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
         }
@@ -271,16 +296,16 @@ class EmployeeEdit extends Component
         $scheduleId = [];
         $effectiveAt = [];
         $expiredAt = [];
-        if($this->dtForm['master_schedules']){
+        if ($this->dtForm['master_schedules']) {
             foreach ($this->dtForm['master_schedules'] as $key => $value) {
                 $scheduleId[$value['id']] = true;
                 $effectiveAt[$value['id']] = null;
                 $expiredAt[$value['id']] = null;
 
-                if($value['pivot']['effective_at']){
+                if ($value['pivot']['effective_at']) {
                     $effectiveAt[$value['id']] = Carbon::parse($value['pivot']['effective_at'])->format('Y-m-d');
                 }
-                if($value['pivot']['expired_at']){
+                if ($value['pivot']['expired_at']) {
                     $expiredAt[$value['id']] = Carbon::parse($value['pivot']['expired_at'])->format('Y-m-d');
                 }
             }
@@ -289,7 +314,7 @@ class EmployeeEdit extends Component
         $this->dtForm['master_schedule_id'] = $scheduleId;
         $this->dtForm['effective_at'] = $effectiveAt;
         $this->dtForm['expired_at'] = $expiredAt;
-        if($this->dtForm['status']=='Belum Aktif'){
+        if ($this->dtForm['status'] == 'Belum Aktif') {
             $this->dtForm['status'] = "Aktif";
         }
     }

@@ -33,13 +33,21 @@
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function(data, type, row) {
+                    let baseUrl = "{{ url('jadwal-kerja/edit/:id/:type') }}";
+                    if (data.type === "Hybrid") {
+                        baseUrl = "{{ url('jadwal-kerja/edit/hybrid/:id') }}";
+                    } else if (data.type === "Bebas") {
+                        baseUrl = "{{ url('jadwal-kerja/edit/bebas/:id') }}";
+                    }
+                    let url = baseUrl.replace(':id', data.id).replace(':type', data.type);
+
                     let html = `
                         <div class="btn-group">
                             <a href="javascript:void(0)" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="edit/`+data.id+`/`+data.type.toLowerCase()+`">
+                                <a class="dropdown-item" href="`+url+`">
                                     <i class="fas fa-edit fa-fw"></i> Edit Data
                                 </a>
                     `;
@@ -77,7 +85,7 @@
                     if (row.type === 'Tetap') {
                         return data.time.checkin_time;
                     }
-                    if (row.type === 'Rotasi') {
+                    if (row.type === 'Rotasi' || row.type === 'Hybrid' || row.type === 'Bebas') {
                         let shiftList = '-';
                         if (Array.isArray(data.time) && data.time.length > 0) {
                             shiftList = data.time
@@ -98,7 +106,7 @@
                     if (row.type === 'Tetap') {
                         return data.time.work_time;
                     }
-                    if (row.type === 'Rotasi') {
+                    if (row.type === 'Rotasi' || row.type === 'Hybrid' || row.type === 'Bebas') {
                         let shiftList = '-';
                         if (Array.isArray(data.time) && data.time.length > 0) {
                             shiftList = data.time
@@ -119,7 +127,7 @@
                     if (row.type === 'Tetap') {
                         return data.time.checkin_deadline_time;
                     }
-                    if (row.type === 'Rotasi') {
+                    if (row.type === 'Rotasi' || row.type === 'Hybrid' || row.type === 'Bebas') {
                         let shiftList = '-';
                         if (Array.isArray(data.time) && data.time.length > 0) {
                             shiftList = data.time
@@ -140,7 +148,7 @@
                     if (row.type === 'Tetap') {
                         return data.time.checkout_time;
                     }
-                    if (row.type === 'Rotasi') {
+                    if (row.type === 'Rotasi' || row.type === 'Hybrid' || row.type === 'Bebas') {
                         let shiftList = '-';
                         if (Array.isArray(data.time) && data.time.length > 0) {
                             shiftList = data.time
@@ -161,7 +169,7 @@
                     if (row.type === 'Tetap') {
                         return data.time.checkout_deadline_time;
                     }
-                    if (row.type === 'Rotasi') {
+                    if (row.type === 'Rotasi' || row.type === 'Hybrid' || row.type === 'Bebas') {
                         let shiftList = '-';
                         if (Array.isArray(data.time) && data.time.length > 0) {
                             shiftList = data.time
@@ -211,7 +219,70 @@
                             <div style="${rowStyle}"><div style="${labelStyle}">Siklus Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
                             <div style="${rowStyle}"><div style="${labelStyle}"></div><div style="${valueStyle}">${offDay}</div></div>
                         `;
-                    } else if (row.type === 'Tetap') {
+                    }
+
+                    if (row.type === 'Hybrid') {
+
+                        const startDate = data.start_date
+                            ? moment(data.start_date).format('DD-MM-YYYY')
+                            : '-';
+                        const workDay = data.work_day ? `${data.work_day} hari kerja` : '-';
+                        const offDay = data.off_day != null ? `${data.off_day} hari off` : '-';
+
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                        <div>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            Masuk: ${shift.checkin_time} s/d ${shift.checkin_deadline_time}<br>
+                                            Kerja: ${shift.work_time}<br>
+                                            Pulang: ${shift.checkout_time} s/d ${shift.checkout_deadline_time}
+                                        </div>
+                                    `;
+                                })
+                                .join('<hr style="margin: 4px 0;">');
+                        }
+
+                        return `
+                            <div style="${rowStyle}"><div style="${labelStyle}">Tanggal Mulai Rotasi:</div><div style="${valueStyle}">${startDate}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}">Siklus Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}"></div><div style="${valueStyle}">${offDay}</div></div>
+                        `;
+                    }
+
+                    if (row.type === 'Bebas') {
+                        const startDate = data.start_date
+                            ? moment(data.start_date).format('DD-MM-YYYY')
+                            : '-';
+                        const workDay = data.work_day ? `${data.work_day} hari kerja` : '-';
+                        const offDay = data.off_day ? `${data.off_day} hari off` : '-';
+
+                        let shiftList = '-';
+                        if (Array.isArray(data.time) && data.time.length > 0) {
+                            shiftList = data.time
+                                .map((shift, idx) => {
+                                    return `
+                                        <div>
+                                            <strong>${shift.name || 'Shift ' + (idx + 1)}</strong><br>
+                                            Masuk: ${shift.checkin_time} s/d ${shift.checkin_deadline_time}<br>
+                                            Kerja: ${shift.work_time}<br>
+                                            Pulang: ${shift.checkout_time} s/d ${shift.checkout_deadline_time}
+                                        </div>
+                                    `;
+                                })
+                                .join('<hr style="margin: 4px 0;">');
+                        }
+
+                        return `
+                            <div style="${rowStyle}"><div style="${labelStyle}">Tanggal Mulai Rotasi:</div><div style="${valueStyle}">${startDate}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}">Siklus Rotasi:</div><div style="${valueStyle}">${workDay}</div></div>
+                            <div style="${rowStyle}"><div style="${labelStyle}"></div><div style="${valueStyle}">${offDay}</div></div>
+                        `;
+                    }
+
+                    if (row.type === 'Tetap') {
                         const semuaHari = [0, 1, 2, 3, 4, 5, 6];
 
                         const regularDays = Array.isArray(data.day) && data.day.length > 0

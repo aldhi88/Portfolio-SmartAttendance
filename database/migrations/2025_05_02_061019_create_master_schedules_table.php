@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode', 16);
             $table->string('name', 128);
-            $table->enum('type', ['Tetap','Rotasi']);
+            $table->enum('type', ['Tetap','Rotasi','Hybrid','Bebas']);
             $table->json('day_work')->nullable();
             $table->timestamps();
             $table->softDeletes();
