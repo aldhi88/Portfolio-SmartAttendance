@@ -66,8 +66,8 @@
                                             <option value="">Semua</option>
                                             <option value="Tetap">Tetap</option>
                                             <option value="Rotasi">Rotasi</option>
-                                            <option value="Rotasi">Hybrid</option>
-                                            <option value="Rotasi">Bebas</option>
+                                            <option value="Hybrid">Hybrid</option>
+                                            <option value="Bebas">Bebas</option>
                                         </select>
                                     </th>
                                     <th class="text-center" style=""></th>
