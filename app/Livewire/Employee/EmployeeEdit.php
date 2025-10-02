@@ -228,9 +228,9 @@ class EmployeeEdit extends Component
             $this->resetTglSelesai($id);
         }
 
-        if ($base === 'dtForm.effective_at' || $base === 'dtForm.expired_at') {
-            $this->genScheduleTime($id);
-        }
+        // if ($base === 'dtForm.effective_at' || $base === 'dtForm.expired_at') {
+        //     $this->genScheduleTime($id);
+        // }
     }
 
     public $dtScheduleBebas = [];
