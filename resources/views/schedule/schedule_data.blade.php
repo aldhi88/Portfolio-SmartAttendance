@@ -37,7 +37,7 @@
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
                                 <th rowspan="2" class="text-center" width="10">No</th>
                                 <th rowspan="2" class="text-center">Kode Jadwal</th>
-                                <th rowspan="2" class="text-center" style="min-width: 200px">Nama Jadwal</th>
+                                <th rowspan="2" class="text-cent´er" style="min-width: 200px">Nama Jadwal</th>
                                 <th rowspan="2" class="text-center" style="max-width: 70px">Tipe Jadwal</th>
                                 <th colspan="5" class="text-center">Ketentuan Waktu Absen</th>
                                 <th rowspan="2" class="text-center" style="min-width: 400px">Ketentuan Hari Kerja</th>

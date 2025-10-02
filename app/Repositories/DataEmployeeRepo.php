@@ -173,6 +173,7 @@ class DataEmployeeRepo implements DataEmployeeFace
         return DataEmployee::where('id', $id)
             ->with([
                 'master_schedules',
+                'master_schedules.data_schedule_bebas',
                 'user_logins.user_roles',
             ])
             ->first()

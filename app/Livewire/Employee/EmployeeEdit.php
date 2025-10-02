@@ -12,9 +12,11 @@ use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleFace;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class EmployeeEdit extends Component
@@ -53,6 +55,7 @@ class EmployeeEdit extends Component
     // insert
     public function wireSubmit()
     {
+        dd($this->all());
         $this->validate();
         $dtEmployee = $this->dtForm;
         unset(
@@ -220,9 +223,62 @@ class EmployeeEdit extends Component
     {
         $base = Str::beforeLast($property, '.');
         $id   = Str::afterLast($property, '.');
+
         if ($base === 'dtForm.effective_at') {
             $this->resetTglSelesai($id);
         }
+
+        if ($base === 'dtForm.effective_at' || $base === 'dtForm.expired_at') {
+            $this->genScheduleTime($id);
+        }
+    }
+
+    public $dtScheduleBebas = [];
+    public $modalListDates = [];
+    public $activeScheduleId;
+    public function genScheduleTime($id)
+    {
+        $this->activeScheduleId = $id;
+        if (
+            !empty($this->dtForm['effective_at'][$id]) &&
+            !empty($this->dtForm['expired_at'][$id])
+        ) {
+            $start = Carbon::parse($this->dtForm['effective_at'][$id]);
+            $end   = Carbon::parse($this->dtForm['expired_at'][$id]);
+            $period = CarbonPeriod::create($start, $end);
+            foreach ($period as $date) {
+                $this->dtScheduleBebas[$id][] = [
+                    'master_schedule_id' => $id,
+                    'tanggal' => $date->format('Y-m-d'),
+                    'checkin_time' => null,
+                    'work_time' => null,
+                    'checkin_deadline_time' => null,
+                    'checkout_time' => null,
+                    'checkout_deadline_time' => null,
+                ];
+            }
+        } else {
+            unset($this->dtScheduleBebas[$id]);
+        }
+
+        // dd($this->all());
+        $this->modalListDates = $this->dtScheduleBebas[$id];
+    }
+
+    #[On('setScheduleTime')]
+    public function setScheduleTime($index, $scheduleId, $jadwal, $times)
+    {
+        // dd($this->all());
+        // $times['master_schedule_id'] = $scheduleId;
+        // $this->dtScheduleBebas[$scheduleId][$index] = $times;
+        // dd($this->dtScheduleBebas[$scheduleId]);
+    }
+
+    public $modalTimeTemplate = [];
+    public function openModal($id)
+    {
+        $this->modalTimeTemplate = $this->masterScheduleRepo->getByKey($id)->toArray()['day_work']['time'];
+        $this->dispatch('openModal', id: 'myModal', scheduleId: $id);
     }
 
     public $dtForm = [];
@@ -279,6 +335,7 @@ class EmployeeEdit extends Component
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();
+        // dd($this->all());
     }
 
     public function genDataEdit()
@@ -307,6 +364,17 @@ class EmployeeEdit extends Component
                 }
                 if ($value['pivot']['expired_at']) {
                     $expiredAt[$value['id']] = Carbon::parse($value['pivot']['expired_at'])->format('Y-m-d');
+                }
+
+                if($value['type'] == 'Bebas' && count($value['data_schedule_bebas'])>0){
+                    foreach ($value['data_schedule_bebas'] as $iBebas => $vBebas) {
+                        unset(
+                            $this->dtForm['master_schedules'][$key]['data_schedule_bebas']['id'],
+                            $this->dtForm['master_schedules'][$key]['data_schedule_bebas']['created_at'],
+                            $this->dtForm['master_schedules'][$key]['data_schedule_bebas']['updated_at'],
+                            $this->dtForm['master_schedules'][$key]['data_schedule_bebas']['deleted_at'],
+                        );
+                    }
                 }
             }
         }

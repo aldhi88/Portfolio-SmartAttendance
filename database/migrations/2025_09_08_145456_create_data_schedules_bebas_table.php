@@ -16,11 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(MasterSchedule::class)->constrained();
             $table->date('tanggal');
-            $table->time('checkin_time');
-            $table->time('work_time');
-            $table->time('checkin_deadline_time');
-            $table->time('checkout_time');
-            $table->time('checkout_deadline_time');
+            $table->json('day_work')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -227,7 +227,8 @@
                                     <td>
                                         @if ($item['type'] === 'Bebas')
                                             <button @disabled(!$this->isReady($item['id'])) type="button"
-                                                class="btn btn-success btn-sm">
+                                                class="btn btn-success btn-sm"
+                                                wire:click="openModal({{ $item['id'] }})">
                                                 Set Jam Kerja
                                             </button>
                                         @endif
@@ -253,6 +254,9 @@
                 </a>
             </div>
         </div>
+
+        @include('employee.employee_edit_jam_kerja')
+        @include('employee.atc.employee_edit_atc')
 
     </form>
 
