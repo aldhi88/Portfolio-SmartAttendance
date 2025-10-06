@@ -187,9 +187,14 @@ class EmployeeEdit extends Component
         $this->dtForm['expired_at'][$id] = null;
         $this->dtForm['effective_at'][$id] = null;
 
+        $dtSchedule = $this->masterScheduleRepo->getByKey($id)->toArray();
+
         if (isset($this->dtForm['master_schedule_id'][$id])) {
             if ($this->dtForm['master_schedule_id'][$id]) {
                 $this->dtForm['effective_at'][$id] = '2025-02-01';
+                if($dtSchedule['type']=="Rotasi" || $dtSchedule['type']=="Hybrid"){
+                    $this->dtForm['effective_at'][$id] = $dtSchedule['day_work']['start_date'];
+                }
             } else {
                 unset(
                     $this->dtForm['master_schedule_id'][$id],
@@ -227,7 +232,7 @@ class EmployeeEdit extends Component
         if ($base === 'dtForm.effective_at') {
             $this->resetTglSelesai($id);
         }
-
+        // dump($this->all());
         // if ($base === 'dtForm.effective_at' || $base === 'dtForm.expired_at') {
         //     $this->genScheduleTime($id);
         // }
@@ -385,6 +390,8 @@ class EmployeeEdit extends Component
         if ($this->dtForm['status'] == 'Belum Aktif') {
             $this->dtForm['status'] = "Aktif";
         }
+
+        // dd($this->all());
     }
 
     public $pass;

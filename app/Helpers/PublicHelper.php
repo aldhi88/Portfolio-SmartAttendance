@@ -73,7 +73,9 @@ class PublicHelper
 
     public static function getDtAbsen($param)
     {
+        // dump($param);
         $listJadwal = collect($param['jadwal']);
+
 
         foreach ($param['dateInMonth'] as $key => $value) {
             $return = [
@@ -94,7 +96,7 @@ class PublicHelper
             $tglStringYMD = $value;
             $tglIndex = $tglCekCarbon->format('d');
             $jadwalAktif = self::getJadwalAktifByDate($listJadwal, $tglCekCarbon);
-
+            // dump(0);
             // skip jika tidak ada jadwal aktif
             if (!$jadwalAktif) {
                 $result[$tglIndex] = $return;
@@ -130,8 +132,23 @@ class PublicHelper
                 $return = self::cekRotasi($dtRotasi);
                 $result[$tglIndex] = $return;
             }
-        }
 
+            // dd($param);
+            if ($jadwalAktif['type'] == 'Hybrid') {
+                $dtHybrid['log'] = $param['log'];
+                $dtHybrid['izin'] = $param['izin'];
+                $dtHybrid['lembur'] = $param['lembur'];
+                $dtHybrid['return'] = $return;
+                $dtHybrid['jadwalAktif'] = $jadwalAktif;
+                $dtHybrid['tglCekCarbon'] = $tglCekCarbon;
+                $return = self::cekHybrid($dtHybrid);
+                $result[$tglIndex] = $return;
+                // dd(0);
+            }
+
+            // dd(0);
+        }
+        // dd($result); //dd disini error Undefined array key -1
         return $result;
     }
 
@@ -302,12 +319,13 @@ class PublicHelper
 
     public static function cekHybrid($dt)
     {
+        // dump($dt);
         $dt['return']['type'] = 'Rotasi';
 
         // jika tidak hari kerja;
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
         $hariKerja = $dt['jadwalAktif']['day_work']['day'];
-        if (!in_array($dayIndex, $hariKerja)) {
+        if (!array_key_exists($dayIndex, $hariKerja)) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
                 $dt['return']['label_in'] = 'lembur';

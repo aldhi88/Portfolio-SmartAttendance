@@ -215,6 +215,7 @@
                                     <td>
                                         <input type="date"
                                             wire:model.live="dtForm.effective_at.{{ $item['id'] }}"
+                                            min="{{ $dtForm['effective_at'][$item['id']] ?? '' }}"
                                             class="form-control form-control-sm"
                                             {{ ($dtForm['master_schedule_id'][$item['id']] ?? false) ? '' : 'readonly' }}>
                                     </td>

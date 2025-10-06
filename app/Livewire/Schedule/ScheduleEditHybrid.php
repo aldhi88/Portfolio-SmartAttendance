@@ -31,8 +31,8 @@ class ScheduleEditHybrid extends Component
     public function rulesRotasi()
     {
         return [
-            "dtRotasi.kode" => "required|max:16|unique:master_schedules,kode,NULL,id,deleted_at,NULL",
-            "dtRotasi.name" => "required|unique:master_schedules,name,NULL,id,deleted_at,NULL",
+            "dtRotasi.kode" => "required|max:16|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
+            "dtRotasi.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
             "dtRotasi.type" => "",
             "dtRotasi.day_work.start_date" => "required",
             "dtRotasi.day_work.work_day" => "required|numeric|min:1",
