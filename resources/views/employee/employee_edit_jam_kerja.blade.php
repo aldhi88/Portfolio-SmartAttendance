@@ -20,7 +20,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <h3 class="text-center">Set Waktu Jadwal Bebas {{ $item['id'] }}</h3>
+                                <h3 class="text-center">Set Waktu Jadwal Bebas ({{ $item['name'] }})</h3>
                                 <div class="table-responsive">
                                     <table class="table table-sm m-0 table-hover table-striped">
                                         <thead>
