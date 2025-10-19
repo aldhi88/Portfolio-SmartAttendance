@@ -205,35 +205,31 @@
                             @foreach ($dtEdit['schedule'] as $item)
                                 <tr>
                                     <td>
-                                        <input
-                                            type="checkbox"
-                                            wire:click="toggleSchedule({{ $item['id'] }})"
-                                            @checked(in_array($item['id'], $activedSchedules['id'] ?? []))
+                                        <input name="check-{{ $item['id'] }}" type="checkbox"
+                                            wire:model="dtForm.master_schedule_id.{{ $item['id'] }}"
+                                            wire:click="checkSchedule({{ $item['id'] }})"
                                             style="transform: scale(1.2);">
-
                                     </td>
                                     <td>{{ $item['kode'] }}</td>
                                     <td>{{ $item['name'] }}</td>
                                     <td>
-                                        <input
-                                            type="date"
-                                            wire:model.live="activedSchedules.effective_at.{{ $item['id'] }}"
+                                        <input type="date"
+                                            wire:model.live="dtForm.effective_at.{{ $item['id'] }}"
+                                            min="{{ $dtForm['effective_at'][$item['id']] ?? '' }}"
                                             class="form-control form-control-sm"
-                                            min="{{ $activedSchedules['effective_at'][$item['id']] ?? '' }}"
-                                            {{ in_array($item['id'], $activedSchedules['id'] ?? []) ? '' : 'readonly' }}>
+                                            {{ ($dtForm['master_schedule_id'][$item['id']] ?? false) ? '' : 'readonly' }}>
                                     </td>
                                     <td>
-                                        <input
-                                            type="date"
-                                            wire:model.live="activedSchedules.expired_at.{{ $item['id'] }}"
+                                        <input type="date" min="{{ $dtForm['effective_at'][$item['id']] ?? '' }}"
+                                            wire:model.live="dtForm.expired_at.{{ $item['id'] }}"
                                             class="form-control form-control-sm"
-                                            min="{{ $activedSchedules['effective_at'][$item['id']] ?? '' }}"
-                                            {{ in_array($item['id'], $activedSchedules['id'] ?? []) ? '' : 'readonly' }}>
+                                            {{ ($dtForm['master_schedule_id'][$item['id']] ?? false) ? '' : 'readonly' }}>
                                     </td>
                                     <td>
                                         @if ($item['type'] === 'Bebas')
                                             <button @disabled(!$this->isReady($item['id'])) type="button"
-                                                class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalJamKerja{{$item['id']}}">
+                                                class="btn btn-success btn-sm"
+                                                wire:click="openModal({{ $item['id'] }})">
                                                 Set Jam Kerja
                                             </button>
                                         @endif
@@ -263,7 +259,6 @@
 
     </form>
     @include('employee.employee_edit_jam_kerja')
-    {{-- @include('employee.atc.employee_edit_atc') --}}
+    @include('employee.atc.employee_edit_atc')
 
 </div>
-

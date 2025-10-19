@@ -9,11 +9,13 @@ use App\Repositories\DataEmployeeRepo;
 use App\Repositories\DataLemburRepo;
 use App\Repositories\DataLiburIzinRepo;
 use App\Repositories\DataLiburRepo;
+use App\Repositories\DataScheduleBebasRepo;
 use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\DataLiburFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
+use App\Repositories\Interfaces\DataScheduleBebasFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
@@ -84,5 +86,6 @@ return Application::configure(basePath: dirname(__DIR__))
         DataLiburIzinFace::class => DataLiburIzinRepo::class,
         DataLemburFace::class => DataLemburRepo::class,
         UserRoleFace::class => UserRoleRepo::class,
+        DataScheduleBebasFace::class => DataScheduleBebasRepo::class,
     ])
     ->create();

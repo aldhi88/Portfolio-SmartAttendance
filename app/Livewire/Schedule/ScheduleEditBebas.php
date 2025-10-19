@@ -29,8 +29,8 @@ class ScheduleEditBebas extends Component
     public function rulesRotasi()
     {
         return [
-            "dtRotasi.kode" => "required|max:16|unique:master_schedules,kode,NULL,id,deleted_at,NULL",
-            "dtRotasi.name" => "required|unique:master_schedules,name,NULL,id,deleted_at,NULL",
+            "dtRotasi.kode" => "required|max:16|unique:master_schedules,kode,{$this->pass['editId']},id,deleted_at,NULL",
+            "dtRotasi.name" => "required|unique:master_schedules,name,{$this->pass['editId']},id,deleted_at,NULL",
             "dtRotasi.type" => "",
             "dtRotasi.day_work.time.*.name" => "required",
             "dtRotasi.day_work.time.*.checkin_time" => ['required', 'regex:/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/'],
