@@ -67,6 +67,7 @@ class EmployeeEdit extends Component
 
         // Validasi jika user pilih lebih dari 1 jadwal
         if ($selectedIds->count() > 1) {
+            // dd($selectedIds);
             $activeSchedules = [];
 
             foreach ($selectedIds as $id) {
@@ -113,6 +114,7 @@ class EmployeeEdit extends Component
             // Urutkan berdasarkan start date
             usort($itemsToCheck, fn($a, $b) => $a['start']->timestamp <=> $b['start']->timestamp);
             // Periksa overlap antar jadwal
+            // dd($this->all(),$itemsToCheck);
             for ($i = 0; $i < count($itemsToCheck) - 1; $i++) {
                 if ($itemsToCheck[$i + 1]['start'] <= $itemsToCheck[$i]['end']) {
                     $this->addError('multi_schedule', 'Tanggal tidak valid, ada jadwal yang overlap.');
@@ -176,7 +178,7 @@ class EmployeeEdit extends Component
             });
 
             $this->dispatch('alert', data: ['type' => 'success', 'message' => 'Perubahan data berhasil disimpan.']);
-            $this->genDataEdit();
+            $this->dispatch('reloadPage');
         } catch (\Throwable $e) {
             dd($e);
             $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Terjadi masalah, hubungi administrator.']);
@@ -234,14 +236,14 @@ class EmployeeEdit extends Component
 
     public function updated($property)
     {
-        // dd($property);
+
         $base = Str::beforeLast($property, '.');
         $id   = Str::afterLast($property, '.');
 
         if ($base === 'dtForm.effective_at') {
             $this->resetTglSelesai($id);
         }
-
+        // dump($property, $this->all());
         $isBebas = collect($this->dtEdit['schedule'])->contains(fn($i) => $i['id'] == $id && $i['type'] === 'Bebas');
         if ($isBebas && ($base === 'activedSchedules.effective_at' || $base === 'activedSchedules.expired_at')) {
             if (
@@ -315,9 +317,6 @@ class EmployeeEdit extends Component
         // dump($this->all());
     }
 
-
-
-
     public $dtForm = [];
     public function rules()
     {
@@ -372,7 +371,6 @@ class EmployeeEdit extends Component
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();
-        // dd($this->all());
     }
 
     public $activedSchedules = [

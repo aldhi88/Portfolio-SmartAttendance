@@ -19,6 +19,9 @@ return new class extends Migration
             $table->json('day_work')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['master_schedule_id', 'tanggal'], 'unique_schedule_date');
+
         });
     }
 

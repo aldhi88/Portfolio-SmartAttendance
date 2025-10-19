@@ -20,14 +20,29 @@ class DataScheduleBebasRepo implements DataScheduleBebasFace
             $row['updated_at'] = now();
             $row['created_at'] = $row['created_at'] ?? now();
             return $row;
-        })->toArray();
+        });
+
+        // Ambil master_schedule_id dari data pertama
+        $masterScheduleId = $data->first()['master_schedule_id'] ?? null;
+
+        if (!$masterScheduleId) {
+            Log::error("bulkCreate gagal: master_schedule_id tidak ditemukan");
+            return false;
+        }
 
         try {
+            // Hapus tanggal yang sudah tidak ada di data baru
+            DataSchedulesBebas::where('master_schedule_id', $masterScheduleId)
+                ->whereNotIn('tanggal', $data->pluck('tanggal'))
+                ->forceDelete();
+
+            // Insert atau update sisanya
             DataSchedulesBebas::upsert(
-                $data,
+                $data->toArray(),
                 ['master_schedule_id', 'tanggal'],
                 ['day_work', 'updated_at']
             );
+
             return true;
         } catch (\Exception $e) {
             Log::error("Upsert data_schedule_bebas failed", ['error' => $e->getMessage()]);
