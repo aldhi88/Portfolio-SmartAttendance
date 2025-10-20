@@ -205,26 +205,21 @@
                             @foreach ($dtEdit['schedule'] as $item)
                                 <tr>
                                     <td>
-                                        <input
-                                            type="checkbox"
-                                            wire:click="toggleSchedule({{ $item['id'] }})"
-                                            @checked(in_array($item['id'], $activedSchedules['id'] ?? []))
-                                            style="transform: scale(1.2);">
+                                        <input type="checkbox" wire:click="toggleSchedule({{ $item['id'] }})"
+                                            @checked(in_array($item['id'], $activedSchedules['id'] ?? [])) style="transform: scale(1.2);">
 
                                     </td>
                                     <td>{{ $item['kode'] }}</td>
                                     <td>{{ $item['name'] }}</td>
                                     <td>
-                                        <input
-                                            type="date"
+                                        <input type="date"
                                             wire:model.live="activedSchedules.effective_at.{{ $item['id'] }}"
                                             class="form-control form-control-sm"
                                             min="{{ $activedSchedules['effective_at'][$item['id']] ?? '' }}"
                                             {{ in_array($item['id'], $activedSchedules['id'] ?? []) ? '' : 'readonly' }}>
                                     </td>
                                     <td>
-                                        <input
-                                            type="date"
+                                        <input type="date"
                                             wire:model.live="activedSchedules.expired_at.{{ $item['id'] }}"
                                             class="form-control form-control-sm"
                                             min="{{ $activedSchedules['effective_at'][$item['id']] ?? '' }}"
@@ -233,7 +228,8 @@
                                     <td>
                                         @if ($item['type'] === 'Bebas')
                                             <button @disabled(!$this->isReady($item['id'])) type="button"
-                                                class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalJamKerja{{$item['id']}}">
+                                                class="btn btn-success btn-sm" data-toggle="modal"
+                                                data-target="#modalJamKerja{{ $item['id'] }}">
                                                 Set Jam Kerja
                                             </button>
                                         @endif
@@ -266,4 +262,3 @@
     @include('employee.atc.employee_edit_atc')
 
 </div>
-

@@ -22,7 +22,8 @@ class DataScheduleBebasRepo implements DataScheduleBebasFace
             return $row;
         });
 
-        // Ambil master_schedule_id dari data pertama
+        // Ambil semua master_schedule_id dari data baru
+        $allMasterIds = $data->pluck('master_schedule_id')->unique()->values();
         $masterScheduleId = $data->first()['master_schedule_id'] ?? null;
 
         if (!$masterScheduleId) {
@@ -31,7 +32,10 @@ class DataScheduleBebasRepo implements DataScheduleBebasFace
         }
 
         try {
-            // Hapus tanggal yang sudah tidak ada di data baru
+            // Hapus semua schedule ID yang sudah tidak dikirim sama sekali
+            DataSchedulesBebas::whereNotIn('master_schedule_id', $allMasterIds)->forceDelete();
+
+            // Hapus tanggal yang sudah tidak ada di data baru untuk ID saat ini
             DataSchedulesBebas::where('master_schedule_id', $masterScheduleId)
                 ->whereNotIn('tanggal', $data->pluck('tanggal'))
                 ->forceDelete();

@@ -178,6 +178,7 @@ class EmployeeEdit extends Component
             });
 
             $this->dispatch('alert', data: ['type' => 'success', 'message' => 'Perubahan data berhasil disimpan.']);
+            // session()->flash('success', 'Perubahan data berhasil disimpan.');
             $this->dispatch('reloadPage');
         } catch (\Throwable $e) {
             dd($e);
