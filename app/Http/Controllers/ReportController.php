@@ -48,6 +48,13 @@ class ReportController extends Controller
 
         $data->with([
             'master_schedules:id,type,kode,day_work',
+            'master_schedules.data_schedule_bebas' => function ($q) use ($range) {
+                $q->select('master_schedule_id', 'tanggal', 'day_work')
+                    ->whereBetween('tanggal', [
+                        $range['start_cast']->toDateString(),
+                        $range['end_cast']->toDateString(),
+                    ]);
+            },
             'log_attendances' => function ($q) use ($range) {
                 $q->select('data_employee_id', 'time')
                     ->whereBetween('time', [

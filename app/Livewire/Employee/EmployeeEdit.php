@@ -186,13 +186,6 @@ class EmployeeEdit extends Component
         }
     }
 
-
-    public array $selectedJadwal = [];
-    public function wireSubmitScheduleBebas()
-    {
-        dd($this->all());
-    }
-
     public function isReady($id): bool
     {
         return in_array($id, $this->activedSchedules['id'] ?? [])
@@ -303,6 +296,7 @@ class EmployeeEdit extends Component
 
     public function applyTemplate($scheduleId, $index, $json)
     {
+        // dump($this->dtScheduleBebas, $scheduleId, $index, $json);
         if (!$json) return;
         $data = json_decode($json, true);
 
@@ -315,7 +309,7 @@ class EmployeeEdit extends Component
             'checkout_deadline_time' => $data['checkout_deadline_time'] ?? null,
         ];
 
-        // dump($this->all());
+
     }
 
     public $dtForm = [];
@@ -379,10 +373,11 @@ class EmployeeEdit extends Component
         'effective_at' => [],
         'expired_at' => [],
     ];
-    public $dtScheduleBebas = [];
     public $modalTimeTemplate = [];
+    public $dtScheduleBebas = [];
     public function genDataEdit()
     {
+
         $this->dtForm = $this->dataEmployeeRepo->getByKey($this->pass['editId'])->toArray();
         $this->dtForm['username'] = "";
         $this->dtForm['username'] = null;
@@ -391,7 +386,6 @@ class EmployeeEdit extends Component
             $this->dtForm['username'] = $this->dtForm['user_logins']['username'];
             $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
         }
-
         if ($this->dtForm['master_schedules']) {
             foreach ($this->dtForm['master_schedules'] as $key => $value) {
                 $this->activedSchedules['id'][] = $value['id'];
@@ -419,7 +413,7 @@ class EmployeeEdit extends Component
                         })
                         ->sortBy('tanggal')
                         ->values();
-                    $this->dtScheduleBebas[$value['id']] = $dataTgl;
+                    $this->dtScheduleBebas[$value['id']] = $dataTgl->toArray();
                 }
             }
         }
@@ -427,6 +421,8 @@ class EmployeeEdit extends Component
         if ($this->dtForm['status'] == 'Belum Aktif') {
             $this->dtForm['status'] = "Aktif";
         }
+
+        // dd($this->all());
     }
 
     public $pass;

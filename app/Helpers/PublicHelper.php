@@ -96,6 +96,7 @@ class PublicHelper
             $tglStringYMD = $value;
             $tglIndex = $tglCekCarbon->format('d');
             $jadwalAktif = self::getJadwalAktifByDate($listJadwal, $tglCekCarbon);
+
             // dump(0);
             // skip jika tidak ada jadwal aktif
             if (!$jadwalAktif) {
@@ -142,6 +143,19 @@ class PublicHelper
                 $dtHybrid['jadwalAktif'] = $jadwalAktif;
                 $dtHybrid['tglCekCarbon'] = $tglCekCarbon;
                 $return = self::cekHybrid($dtHybrid);
+                $result[$tglIndex] = $return;
+                // dd(0);
+            }
+
+            // dd($param);
+            if ($jadwalAktif['type'] == 'Bebas') {
+                $dtBebas['log'] = $param['log'];
+                $dtBebas['izin'] = $param['izin'];
+                $dtBebas['lembur'] = $param['lembur'];
+                $dtBebas['return'] = $return;
+                $dtBebas['jadwalAktif'] = $jadwalAktif;
+                $dtBebas['tglCekCarbon'] = $tglCekCarbon;
+                $return = self::cekBebas($dtBebas);
                 $result[$tglIndex] = $return;
                 // dd(0);
             }
@@ -320,7 +334,7 @@ class PublicHelper
     public static function cekHybrid($dt)
     {
         // dump($dt);
-        $dt['return']['type'] = 'Rotasi';
+        $dt['return']['type'] = 'Hybrid';
 
         // jika tidak hari kerja;
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
@@ -421,6 +435,131 @@ class PublicHelper
         }
         return $dt['return'];
     }
+
+    public static function cekBebas($dt)
+    {
+        // dump($dt);
+        $dt['return']['type'] = 'Bebas';
+
+        // ====== Cari data jadwal bebas sesuai tanggal ======
+        $tanggalCek = $dt['tglCekCarbon']->format('Y-m-d');
+        $jadwalBebas = collect($dt['jadwalAktif']['data_schedule_bebas'] ?? [])
+            ->firstWhere('tanggal', $tanggalCek);
+
+        // Jika tidak ada jadwal untuk tanggal itu → off (kecuali lembur)
+        if (!$jadwalBebas) {
+            $dtLembur = self::checkLembur($dt['lembur'] ?? [], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+            }
+            return $dt['return'];
+        }
+
+        // ====== Ambil jadwal untuk tanggal itu ======
+        $jw = $jadwalBebas['day_work'] ?? [];
+
+        // Pastikan field yang diperlukan ada
+        foreach (['checkin_time', 'work_time', 'checkin_deadline_time', 'checkout_time', 'checkout_deadline_time'] as $k) {
+            if (!isset($jw[$k])) {
+                // Data tidak lengkap → treat as off
+                return $dt['return'];
+            }
+        }
+
+        // ====== Bangun timeRule yang konsisten + tangani lintas hari ======
+        $checkin_start   = Carbon::parse("$tanggalCek {$jw['checkin_time']}");
+        $checkin_ontime  = Carbon::parse("$tanggalCek {$jw['work_time']}");                // <- patokan ontime yg benar
+        $checkin_end     = Carbon::parse("$tanggalCek {$jw['checkin_deadline_time']}");
+
+        $checkout_start  = Carbon::parse("$tanggalCek {$jw['checkout_time']}");
+        $checkout_end    = Carbon::parse("$tanggalCek {$jw['checkout_deadline_time']}");
+
+        // Jika batas2 checkin melewati tengah malam (jarang, tapi amankan)
+        if ($checkin_ontime->lt($checkin_start))  $checkin_ontime->addDay();
+        if ($checkin_end->lt($checkin_start))     $checkin_end->addDay();
+
+        // Shift lintas hari: checkout_* ≤ checkin_start → geser ke hari berikutnya
+        if ($checkout_start->lte($checkin_start)) $checkout_start->addDay();
+        if ($checkout_end->lte($checkin_start))   $checkout_end->addDay();
+
+        $timeRule = compact(
+            'checkin_start',
+            'checkin_ontime',
+            'checkin_end',
+            'checkout_start',
+            'checkout_end'
+        );
+
+        $dt['return']['shift'] = '-';
+
+        // ===========cek izin============
+        $dtIzin = self::checkIzin($dt['izin'] ?? [], $timeRule, $dt);
+        $dt['return'] = $dtIzin['return'];
+        if ($dtIzin['status']['kenaIzinMasuk'] && $dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['status'] = 'izin';
+            return $dt['return'];
+        }
+
+        // ========CHECK STATUS ABSEN==========
+        $dt['return']['status'] = 'hadir';
+
+        // IN
+        if (!$dtIzin['status']['kenaIzinMasuk']) {
+            $dt['return']['label_in'] = 'tdk absen';
+            $logIn = collect($dt['log'] ?? [])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                ->min();
+
+            if ($logIn) {
+                $dt['return']['time_in'] = $logIn->format('H:i:s');
+
+                // On-time jika datang <= work_time; selebihnya terlambat
+                if ($logIn->lte($timeRule['checkin_ontime'])) {
+                    $dt['return']['label_in'] = 'dtg ontime';
+                    $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_in'] = 'terlambat';
+                    $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        // OUT
+        if (!$dtIzin['status']['kenaIzinKeluar']) {
+            $dt['return']['label_out'] = 'tdk absen';
+            $logOut = collect($dt['log'] ?? [])
+                ->map(fn($l) => Carbon::parse($l['time']))
+                ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                ->max();
+
+            if ($logOut) {
+                $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+                // Pulang cepat jika sebelum checkout_start; sisanya ontime/normal (atau overtime dihitung via selisih)
+                if ($logOut->lt($timeRule['checkout_start'])) {
+                    $dt['return']['label_out'] = 'plg cepat';
+                    $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+                } else {
+                    $dt['return']['label_out'] = 'plg ontime';
+                    $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+                }
+            }
+        }
+
+        // === Tidak ada absen sama sekali ===
+        if (($dt['return']['label_in'] ?? null) === 'tdk absen' && ($dt['return']['label_out'] ?? null) === 'tdk absen') {
+            $dt['return']['label_in'] = 'alpha';
+            $dt['return']['label_out'] = 'alpha';
+            $dt['return']['status'] = 'alpha';
+        }
+
+        return $dt['return'];
+    }
+
+
 
     public static function getLogCheck($log, $timeRule)
     {
