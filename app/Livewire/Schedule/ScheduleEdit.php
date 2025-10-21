@@ -193,6 +193,6 @@ class ScheduleEdit extends Component
     public $pass;
     public function render()
     {
-        return view('schedule.schedule_edit_'.$this->pass['type']);
+        return view('schedule.schedule_edit_'.strtolower($this->pass['type']));
     }
 }
