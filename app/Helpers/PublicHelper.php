@@ -97,13 +97,12 @@ class PublicHelper
             $tglIndex = $tglCekCarbon->format('d');
             $jadwalAktif = self::getJadwalAktifByDate($listJadwal, $tglCekCarbon);
 
-            // dump(0);
+            // dd(0);
             // skip jika tidak ada jadwal aktif
             if (!$jadwalAktif) {
                 $result[$tglIndex] = $return;
                 continue;
             }
-
             // skip jika tanggal merah
             if (in_array($tglStringYMD, $param['tglMerah'])) {
                 $return['label_in'] = 'tgl merah';
@@ -112,6 +111,8 @@ class PublicHelper
                 $result[$tglIndex] = $return;
                 continue;
             }
+
+            // dd($jadwalAktif);
 
             if ($jadwalAktif['type'] == 'Tetap') {
                 $dtTetap['log'] = $param['log'];
@@ -123,6 +124,7 @@ class PublicHelper
                 $return = self::cekTetap($dtTetap);
                 $result[$tglIndex] = $return;
             }
+
             if ($jadwalAktif['type'] == 'Rotasi') {
                 $dtRotasi['log'] = $param['log'];
                 $dtRotasi['izin'] = $param['izin'];
@@ -253,6 +255,13 @@ class PublicHelper
         $jumlahHariSiklus = ($workDay + $offDay) * $totalShift;
         $hariKeBrpDalamSiklus = $diff % $jumlahHariSiklus;
         $shiftIndex = intdiv($hariKeBrpDalamSiklus, ($workDay + $offDay)); // 0=Pagi, 1=Sore, 2=Malam
+        if($shiftIndex < 0){
+            $dt['return']['label_in'] = 'Out Date';
+            $dt['return']['label_out'] = 'Out Date';
+            $dt['return']['status'] = 'error';
+            return $dt['return'];
+        }
+
         $hariKeBrpDalamSatuShift = $hariKeBrpDalamSiklus % ($workDay + $offDay);  // 0-3
         // jika tidak hari kerja;
         if ($hariKeBrpDalamSatuShift >= $workDay) {
@@ -270,7 +279,6 @@ class PublicHelper
         }
 
         $dt['return']['shift'] = $dt['jadwalAktif']['day_work']['time'][$shiftIndex]['name'];
-
         // ===========Proses waktu kerja============
         $timeRule = self::getTimeRuleRotasi($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon'], $shiftIndex);
 
@@ -322,6 +330,7 @@ class PublicHelper
                 }
             }
         }
+
 
         if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
             $dt['return']['label_in'] = 'alpha';

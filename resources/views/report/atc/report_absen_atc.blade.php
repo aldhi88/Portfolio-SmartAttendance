@@ -103,6 +103,7 @@
                         'alpha': 'danger',
                         'tgl merah': 'danger',
                         'off': 'secondary',
+                        'error': 'danger',
                     };
 
                     let color = colorMap[abs.status] ?? 'info';
@@ -147,6 +148,7 @@
                         'alpha': 'danger',
                         'tgl merah': 'danger',
                         'off': 'secondary',
+                        'error': 'danger',
                     };
                     let color = colorMap[abs.status] ?? 'info';
                     if(
