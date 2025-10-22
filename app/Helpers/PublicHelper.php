@@ -258,7 +258,7 @@ class PublicHelper
         if($shiftIndex < 0){
             $dt['return']['label_in'] = 'Out Date';
             $dt['return']['label_out'] = 'Out Date';
-            $dt['return']['status'] = 'error';
+            $dt['return']['status'] = 'outdate';
             return $dt['return'];
         }
 
