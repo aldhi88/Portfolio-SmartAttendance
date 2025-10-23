@@ -124,7 +124,7 @@
                     }
 
                     var type = '';
-                    if(abs.type==='Rotasi'){
+                    if(abs.type==='Rotasi' || abs.type==='Hybrid'){
                         type = '<br><small>'+abs.shift+'</small>';
                     }
 
@@ -167,7 +167,7 @@
                     }
                     var type = '';
 
-                    if(abs.type==='Rotasi'){
+                    if(abs.type==='Rotasi' || abs.type==='Hybrid'){
                         type = '<br><small>'+abs.shift+'</small>';
                     }
                     return `

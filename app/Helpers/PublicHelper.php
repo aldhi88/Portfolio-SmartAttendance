@@ -97,7 +97,7 @@ class PublicHelper
             $tglIndex = $tglCekCarbon->format('d');
             $jadwalAktif = self::getJadwalAktifByDate($listJadwal, $tglCekCarbon);
 
-            // dd(0);
+            // dd($jadwalAktif, $tglIndex);
             // skip jika tidak ada jadwal aktif
             if (!$jadwalAktif) {
                 $result[$tglIndex] = $return;
@@ -255,6 +255,7 @@ class PublicHelper
         $jumlahHariSiklus = ($workDay + $offDay) * $totalShift;
         $hariKeBrpDalamSiklus = $diff % $jumlahHariSiklus;
         $shiftIndex = intdiv($hariKeBrpDalamSiklus, ($workDay + $offDay)); // 0=Pagi, 1=Sore, 2=Malam
+        // dd($shiftIndex, $dt);
         if($shiftIndex < 0){
             $dt['return']['label_in'] = 'Out Date';
             $dt['return']['label_out'] = 'Out Date';
