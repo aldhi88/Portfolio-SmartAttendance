@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Carbon;
 use phpDocumentor\Reflection\Types\Self_;
 
@@ -257,7 +258,7 @@ class PublicHelper
         $hariKeBrpDalamSiklus = $diff % $jumlahHariSiklus;
         $shiftIndex = intdiv($hariKeBrpDalamSiklus, ($workDay + $offDay)); // 0=Pagi, 1=Sore, 2=Malam
         // dd($shiftIndex, $dt);
-        if($shiftIndex < 0){
+        if ($shiftIndex < 0) {
             $dt['return']['label_in'] = 'Out Date';
             $dt['return']['label_out'] = 'Out Date';
             $dt['return']['status'] = 'outdate';
@@ -365,7 +366,11 @@ class PublicHelper
         $workDay = (int) $dt['jadwalAktif']['day_work']['work_day'];
         $offDay = (int) $dt['jadwalAktif']['day_work']['off_day'];
         $totalShift = count($dt['jadwalAktif']['day_work']['time']);
-        $diff = $startDate->diffInDays($dt['tglCekCarbon']);
+        // $diff = $startDate->diffInDays($dt['tglCekCarbon']); //salah sabtu minggu kehitung
+        $diff = collect(CarbonPeriod::create($startDate, $dt['tglCekCarbon']))
+            ->filter(fn($d) => in_array($d->dayOfWeek, array_keys($hariKerja)))
+            ->count() - 1;
+
         $jumlahHariSiklus = ($workDay + $offDay) * $totalShift;
         $hariKeBrpDalamSiklus = $diff % $jumlahHariSiklus;
         $shiftIndex = intdiv($hariKeBrpDalamSiklus, ($workDay + $offDay)); // 0=Pagi, 1=Sore, 2=Malam
