@@ -570,8 +570,6 @@ class PublicHelper
         return $dt['return'];
     }
 
-
-
     public static function getLogCheck($log, $timeRule)
     {
         $return['logIn'] = collect($log)
