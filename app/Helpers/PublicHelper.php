@@ -170,7 +170,7 @@ class PublicHelper
 
     public static function cekTetap($dt)
     {
-        dd($dt);
+        // dd($dt);
         $dt['return']['type'] = 'Tetap';
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
         $hariKerja = $dt['jadwalAktif']['day_work']['day'];
