@@ -7,5 +7,8 @@ use Illuminate\Http\Request;
 
 class LogGpsController extends Controller
 {
-    //
+    public function create()
+    {
+
+    }
 }
