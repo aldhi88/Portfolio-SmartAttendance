@@ -4,6 +4,7 @@ use App\Http\Middleware\BlockApiBrowserRequest;
 use App\Http\Middleware\BlockHttpApiRequest;
 use App\Http\Middleware\CheckAuthorization;
 use App\Http\Middleware\CheckKeyApiRequest;
+use App\Http\Middleware\EnforceTokenExpiry;
 use App\Repositories\AuthRepository;
 use App\Repositories\DataEmployeeRepo;
 use App\Repositories\DataLemburRepo;
@@ -64,6 +65,7 @@ return Application::configure(basePath: dirname(__DIR__))
             BlockApiBrowserRequest::class,
             BlockHttpApiRequest::class,
             CheckKeyApiRequest::class,
+            EnforceTokenExpiry::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -9,7 +9,6 @@ use App\Repositories\Interfaces\UserLoginInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -40,36 +39,51 @@ class AuthController extends Controller
         // Identitas device untuk menamai token
         $client    = $data['client']    ?? 'web';
         $deviceId  = $data['device_id'] ?? Str::uuid()->toString();
+
         $tokenName = "{$client}:{$deviceId}";
+        $user->tokens()->whereIn('name', [$tokenName, "{$tokenName}:rt"])->delete();
 
-        // Hapus token lama HANYA untuk device ini (bukan semua)
-        $user->tokens()->where('name', $tokenName)->delete();
-
-        // Opsional expiry
-        $expiresAt = isset($data['expires_days']) ? now()->addDays((int)$data['expires_days']) : null;
-
-        $tokenResult = $user->createToken(
-            name: $tokenName,
-            abilities: ['*'],          // batasi sesuai kebutuhan
-            expiresAt: $expiresAt      // null = tidak auto-expired
-        );
+        $access = $user->createToken($tokenName, abilities: ['*'], expiresAt: now()->addMinutes(60));
+        $refresh = $user->createToken("{$tokenName}:rt", abilities: ['refresh'], expiresAt: now()->addDays(30));
 
         return response()->json([
-            'user'       => new UserLoginResource($user),
-            'token'      => $tokenResult->plainTextToken,
-            'device'     => ['name' => $tokenName, 'client' => $client, 'device_id' => $deviceId],
-            'expires_at' => optional($tokenResult->accessToken->expires_at)?->toISOString(),
+            'user' => new UserLoginResource($user),
+            'access_token' => $access->plainTextToken,
+            'refresh_token' => $refresh->plainTextToken,
+            'expires_at' => optional($access->accessToken->expires_at)?->toISOString(),
         ], 200);
+
     }
 
-    public function logout(Request $request)
+    public function refresh(Request $r)
     {
-        // Idempotent: hapus token jika ada; jika token ngasal, tetap 204
-        if ($bearer = $request->bearerToken()) {
+        $refresh = $r->bearerToken(); // kirim refresh token di Authorization
+        $pat = LaravelPersonalAccessToken::findToken($refresh);
+        if (!$pat || !$pat->can('refresh') || ($pat->expires_at && $pat->expires_at->isPast())) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $user = $pat->tokenable;
+
+        // Rotasi access token baru
+        $name = str_replace(':rt', '', $pat->name);
+        $user->tokens()->where('name', $name)->delete();
+        $newAccess = $user->createToken($name, ['*'], now()->addMinutes(60));
+
+        return response()->json([
+            'access_token' => $newAccess->plainTextToken,
+            'expires_at'   => optional($newAccess->accessToken->expires_at)?->toISOString(),
+        ]);
+    }
+
+    public function logout(Request $r)
+    {
+        if ($bearer = $r->bearerToken()) {
             if ($pat = LaravelPersonalAccessToken::findToken($bearer)) {
-                $pat->delete();
+                $base = $pat->name;            // bisa access atau refresh
+                $base = str_replace(':rt', '', $base);
+                $r->user()?->tokens()->whereIn('name', [$base, "$base:rt"])->delete();
             }
         }
-        return response()->noContent(); // 204
+        return response()->noContent();
     }
 }
