@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LogAttendanceController;
 use App\Http\Controllers\Api\LogGpsController;
+use App\Http\Middleware\CheckKeyApiRequest;
 use Illuminate\Support\Facades\Route;
 
 
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/login', 'login');
-        Route::post('/refresh', 'refresh');
+        Route::post('/refresh', 'refresh')->withoutMiddleware(CheckKeyApiRequest::class);
         Route::post('/logout', 'logout');
     });
 });
