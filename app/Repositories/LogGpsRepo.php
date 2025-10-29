@@ -10,7 +10,7 @@ class LogGpsRepo implements LogGpsFace
 {
     public function store(array $data)
     {
-        return LogGps::insert($data);
+        return LogGps::create($data);
     }
 
     // public function getLastTimeByMachine($data)
