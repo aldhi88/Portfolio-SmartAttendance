@@ -18,6 +18,7 @@ use App\Repositories\Interfaces\DataLiburFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use App\Repositories\Interfaces\DataScheduleBebasFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
+use App\Repositories\Interfaces\LogGpsFace;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
 use App\Repositories\Interfaces\MasterMinorFace;
@@ -29,6 +30,7 @@ use App\Repositories\Interfaces\UserLoginInterface;
 use App\Repositories\Interfaces\UserRoleFace;
 use App\Repositories\Interfaces\UserRoleInterface;
 use App\Repositories\LogAttendanceRepository;
+use App\Repositories\LogGpsRepo;
 use App\Repositories\MasterFunctionRepo;
 use App\Repositories\MasterLocationRepo;
 use App\Repositories\MasterMinorRepo;
@@ -89,5 +91,6 @@ return Application::configure(basePath: dirname(__DIR__))
         DataLemburFace::class => DataLemburRepo::class,
         UserRoleFace::class => UserRoleRepo::class,
         DataScheduleBebasFace::class => DataScheduleBebasRepo::class,
+        LogGpsFace::class => LogGpsRepo::class,
     ])
     ->create();

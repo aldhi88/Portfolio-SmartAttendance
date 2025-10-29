@@ -16,13 +16,13 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
-//     Route::prefix('log/gps')->group(function () {
-//         Route::´controller(LogGpsController::class)->group(function () {
-//             Route::post('/stor´e', 'store');
-//         });
-//     });
-// });
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('log/gps')->group(function () {
+        Route::controller(LogGpsController::class)->group(function () {
+            Route::post('/store', 'store');
+        });
+    });
+});
 
 Route::prefix('log/attendance')->group(function () {
     Route::controller(LogAttendanceController::class)->group(function () {

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(DataEmployee::class);
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
+            $table->decimal('accuracy', 6, 2);
             $table->timestamps();
         });
     }

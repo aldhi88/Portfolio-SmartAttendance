@@ -63,7 +63,22 @@ class UserLoginRepository implements UserLoginInterface
 
     public function getByUsername($data)
     {
-        return UserLogin::with('user_roles')
+        return UserLogin::query()
+            ->select([
+                'id','nickname','username','password'
+            ])
+            ->with([
+                'data_employees' => function($q){
+                    $q->select([
+                        'id','user_login_id',
+                        'master_organization_id',
+                        'master_position_id',
+                        'name','number','status'
+                    ]);
+                },
+                'data_employees.master_organizations:id,name',
+                'data_employees.master_positions:id,name',
+            ])
             ->where('username', $data)->first();
     }
 }
