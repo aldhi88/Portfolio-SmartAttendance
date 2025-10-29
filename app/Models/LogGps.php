@@ -9,7 +9,7 @@ class LogGps extends Model
 {
     protected $guarded = [];
 
-    public function data_employee():BelongsTo
+    public function data_employees():BelongsTo
     {
         return $this->belongsTo(DataEmployee::class, 'data_employee_id', 'id');
     }
