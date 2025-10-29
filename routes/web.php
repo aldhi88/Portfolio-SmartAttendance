@@ -63,6 +63,8 @@ Route::middleware('auth:web')->group(function(){
             Route::controller(LaporanController::class)->group(function () {
                 Route::get('log-absen', 'indexLogAbsen')->name('indexLogAbsen');
                 Route::get('log-absen/dt', 'indexLogAbsenDt')->name('indexLogAbsenDt');
+                Route::get('log-gps', 'indexLogGps')->name('indexLogGps');
+                Route::get('log-gps/dt', 'indexLogGpsDt')->name('indexLogGpsDt');
             });
         });
     });

@@ -62,7 +62,7 @@
                             <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
                             <li><a href="{{ route('report.rank') }}">Rekap Passing Grade</a></li>
                             <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
-                            <li><a href="#">Log Lokasi</a></li>
+                            <li><a href="{{ route('laporan.indexLogGps') }}">Log Lokasi</a></li>
                         </ul>
                     </li>
 
