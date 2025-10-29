@@ -22,8 +22,8 @@
         ajax: '{{ route("laporan.indexLogGpsDt") }}',
         columns: [
             { data: 'action', name: 'action', orderable: true, searchable:true },
+            { data: 'data_employee_id', name: 'data_employee_id', orderable: true, searchable:true },
             { data: 'data_employees.name', name: 'data_employees.name', orderable: true, searchable:true },
-            { data: 'name', name: 'name', orderable: true, searchable:true },
             { data: 'latitude', name: 'latitude', orderable: true, searchable:true },
             { data: 'longitude', name: 'longitude', orderable: true, searchable:true },
 
