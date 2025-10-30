@@ -51,7 +51,8 @@ class AuthController extends Controller
         $tokenName = "{$client}:{$deviceId}";
         $user->tokens()->whereIn('name', [$tokenName, "{$tokenName}:rt"])->delete();
 
-        $access = $user->createToken($tokenName, abilities: ['*'], expiresAt: now()->addMinutes(15));
+        $access = $user->createToken($tokenName, abilities: ['*'], expiresAt: now()->addDays(15));
+        // $access = $user->createToken($tokenName, abilities: ['*'], expiresAt: now()->addMinutes(15));
         $refresh = $user->createToken("{$tokenName}:rt", abilities: ['refresh'], expiresAt: now()->addDays(30));
 
         return response()->json([

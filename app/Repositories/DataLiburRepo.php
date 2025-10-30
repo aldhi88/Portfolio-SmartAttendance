@@ -13,10 +13,18 @@ class DataLiburRepo implements DataLiburFace
     {
         $query = DataLibur::select('date')
             ->whereYear('date', $year);
-        if(!is_null($month)){
+        if (!is_null($month)) {
             $query->whereMonth('date', $month);
         }
         return $query->pluck('date')->toArray();
+    }
+
+    public function isDateLibur($date)
+    {
+        $query = DataLibur::select('date')
+            ->whereDate('date', $date);
+
+        return $query->exists();
     }
 
     public function insert($data)
@@ -40,5 +48,4 @@ class DataLiburRepo implements DataLiburFace
             return false;
         }
     }
-
 }

@@ -600,6 +600,7 @@ class PublicHelper
 
     public static function checkIzin($dtIzin, $timeRule, $dt)
     {
+
         $izinCollection = collect($dtIzin)->map(function ($izin) {
             return [
                 'jenis' => $izin['jenis'],
@@ -708,7 +709,6 @@ class PublicHelper
                 ? $tglCek->between($effective, $expired)
                 : $tglCek->greaterThanOrEqualTo($effective);
         });
-
         return $return;
     }
 

@@ -10,6 +10,29 @@ use Illuminate\Support\Facades\Log;
 class DataEmployeeRepo implements DataEmployeeFace
 {
 
+    public function apiGetById($request)
+    {
+        $dt = DataEmployee::query()
+            ->with([
+                'master_schedules',
+                'data_lemburs' => function ($q) use ($request) {
+                    $q->select('*')
+                        ->where('status', 'Disetujui')
+                        ->where('tanggal', $request->date);
+                },
+                'data_izins' => function ($q) use ($request) {
+                    $q->select('*')
+                        ->where('status', 'Disetujui')
+                        ->whereDate('from', '<=', $request->date)
+                        ->whereDate('to', '>=', $request->date);
+                },
+            ])
+            ->find($request->user_id)
+            ->toArray();
+        return $dt;
+    }
+
+
     public function pengawasCheck($id)
     {
 
