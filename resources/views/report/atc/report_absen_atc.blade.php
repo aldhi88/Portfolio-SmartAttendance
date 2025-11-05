@@ -49,23 +49,6 @@
                 html += `<div class="text-muted text-rapat">`;
                 html += `${row.master_organizations.name}</div>`;
                 html += `<div class="text-muted text-rapat">${row.master_positions.name}</div>`;
-                // html += `
-                //     <div class="row text-center mt-2">
-                //         <div class="col border-right">
-                //             <div class="text-rapat">Dtg <br> Cpt <br> <span class="text-muted">1 jam</span></div>
-                //         </div>
-                //         <div class="col border-right">
-                //             <div class="text-rapat">Dtg <br> Lama <br> <span class="text-muted">1 jam</span></div>
-                //         </div>
-                //         <div class="col border-right">
-                //             <div class="text-rapat">Plg <br> Cpt <br> <span class="text-muted">1 jam</span></div>
-                //         </div>
-                //         <div class="col">
-                //             <div class="text-rapat">Plg <br> Lama <br> <span class="text-muted">1 jam</span></div>
-                //         </div>
-                //     </div>
-                // `;
-
                 return html;
             }
         },

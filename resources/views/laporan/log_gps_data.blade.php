@@ -12,9 +12,8 @@
                                 <th class="text-center" width="10"></th>
                                 <th class="text-center">ID User</th>
                                 <th class="text-center">Nama Karyawan</th>
-                                <th class="text-center">Latitude</th>
-                                <th class="text-center">Longitude</th>
-                                <th class="text-center">Google Map</th>
+                                <th class="text-center">Koordinat</th>
+                                <th class="text-center">Area</th>
                                 <th class="text-center">Waktu</th>
                             </tr>
                             </thead>
@@ -24,7 +23,6 @@
                                     <th class="text-center"></th>
                                     <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
                                     <th class="text-center"><input type="text" class="form-control form-control-sm text-center search-col-dt"></th>
-                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center">

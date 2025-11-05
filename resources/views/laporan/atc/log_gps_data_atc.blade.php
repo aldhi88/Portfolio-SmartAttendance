@@ -15,7 +15,7 @@
 
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,sDom: 'lrtip',
-        order: [[6, 'desc']],
+        order: [[5, 'desc']],
         columnDefs: [
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -24,12 +24,12 @@
             { data: 'action', name: 'action', orderable: true, searchable:true },
             { data: 'data_employee_id', name: 'data_employee_id', orderable: true, searchable:true },
             { data: 'data_employees.name', name: 'data_employees.name', orderable: true, searchable:true },
-            { data: 'latitude', name: 'latitude', orderable: true, searchable:true },
-            { data: 'longitude', name: 'longitude', orderable: true, searchable:true },
-
-            // ✅ Koma yang tadi hilang sudah ditambahkan
-            { data: 'google_map', orderable:false, searchable:false },
-
+            { data: null, name: 'koordinat', orderable: false, searchable: false,
+                render: function (data, type, row) {
+                    return `${row.latitude}, ${row.longitude}`;
+                }
+            },
+            { data: 'area_name', orderable:false, searchable:false },
             { data: 'created_at', name: 'created_at', orderable: true, searchable:true,
                 render: function(data){
                     return moment.utc(data).local().format('DD-MM-YYYY HH:mm:ss');
