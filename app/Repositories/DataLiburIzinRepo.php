@@ -34,6 +34,7 @@ class DataLiburIzinRepo implements DataLiburIzinFace
 
     public function create($data)
     {
+        // dd($data);
         try {
             if (isset($data['bukti'])) {
                 $file = $data['bukti'];
@@ -57,6 +58,7 @@ class DataLiburIzinRepo implements DataLiburIzinFace
                 'data_employees',
                 'data_employee_admins',
             ])
+            ->orderBy('from', 'DESC')
         ;
     }
 
@@ -70,6 +72,7 @@ class DataLiburIzinRepo implements DataLiburIzinFace
                 'data_employees',
                 'data_employee_admins',
             ])
+            ->orderBy('from', 'DESC')
         ;
     }
 

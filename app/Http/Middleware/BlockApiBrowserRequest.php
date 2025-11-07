@@ -15,9 +15,16 @@ class BlockApiBrowserRequest
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Jika request tidak mengharapkan JSON, tolak akses
-        if (!$request->expectsJson()) {
-            return response()->json(['message' => 'Only JSON requests are allowed'], 406);
+        $contentType = $request->header('Content-Type');
+
+        // Izinkan JSON dan multipart
+        $isJson = $contentType && str_contains($contentType, 'application/json');
+        $isMultipart = $contentType && str_contains($contentType, 'multipart/form-data');
+
+        if (!($isJson || $isMultipart)) {
+            return response()->json([
+                'message' => 'Unsupported Content-Type. Only application/json or multipart/form-data allowed.',
+            ], 406); // 415 = Unsupported Media Type
         }
 
         return $next($request);

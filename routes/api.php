@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\IzinController;
 use App\Http\Controllers\Api\LogAttendanceController;
 use App\Http\Controllers\Api\LogGpsController;
 use App\Http\Controllers\Api\LovController;
@@ -34,6 +35,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('lov')->group(function () {
         Route::controller(LovController::class)->group(function () {
             Route::get('/getByKey', 'getByKey');
+        });
+    });
+
+    Route::prefix('izin')->group(function () {
+        Route::controller(IzinController::class)->group(function () {
+            Route::post('/store', 'store');
         });
     });
 });
