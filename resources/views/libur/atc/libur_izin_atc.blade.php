@@ -26,7 +26,7 @@
                     return el;
                 }
             },
-            { data: null, name: 'created_at', orderable: false, searchable: false,
+            { data: null, name: 'from', orderable: false, searchable: false,
                 render: function(data, type, row) {
                     let editUrl = "edit/"+row.id;
                     let html = `
