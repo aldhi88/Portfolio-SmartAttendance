@@ -25,6 +25,10 @@ Route::get('/', function(){
     return redirect()->route('auth.formLogin');
 })->name('anchor');
 
+Route::get('/privacy-policy-smartitd', function(){
+    return view('mix.privacy_policy');
+});
+
 
 Route::middleware('guest')->group(function(){
 
