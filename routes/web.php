@@ -28,6 +28,9 @@ Route::get('/', function(){
 Route::get('/privacy-policy-smartitd', function(){
     return view('mix.privacy_policy');
 });
+Route::get('/delete-account', function(){
+    return view('mix.privacy_policy');
+});
 
 
 Route::middleware('guest')->group(function(){
