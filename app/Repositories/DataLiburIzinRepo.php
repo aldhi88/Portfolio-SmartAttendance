@@ -13,8 +13,11 @@ class DataLiburIzinRepo implements DataLiburIzinFace
 {
     public function update($data)
     {
+
         try {
+            // dd($data);
             if (isset($data['form']['bukti'])) {
+                // dd(1);
                 $file = $data['form']['bukti'];
                 $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('bukti', $uniqueName, 'public');
@@ -23,10 +26,11 @@ class DataLiburIzinRepo implements DataLiburIzinFace
                     Storage::disk('public')->delete('bukti/' . $data['old_file']);
                 }
             }
-
+            // dd($data);
             DataIzin::find($data['id'])->update($data['form']);
             return true;
         } catch (\Exception $e) {
+            // dd(0);
             Log::error("Insert data_izins failed", ['error' => $e->getMessage()]);
             return false;
         }

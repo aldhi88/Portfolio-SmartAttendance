@@ -41,6 +41,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('izin')->group(function () {
         Route::controller(IzinController::class)->group(function () {
             Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::post('/delete/{id}', 'delete');
         });
     });
 });
