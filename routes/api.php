@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\IzinController;
+use App\Http\Controllers\Api\LemburController;
 use App\Http\Controllers\Api\LogAttendanceController;
 use App\Http\Controllers\Api\LogGpsController;
 use App\Http\Controllers\Api\LovController;
@@ -40,6 +41,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::prefix('izin')->group(function () {
         Route::controller(IzinController::class)->group(function () {
+            Route::post('/store', 'store');
+            Route::post('/update/{id}', 'update');
+            Route::post('/delete/{id}', 'delete');
+        });
+    });
+    Route::prefix('lembur')->group(function () {
+        Route::controller(LemburController::class)->group(function () {
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update');
             Route::post('/delete/{id}', 'delete');

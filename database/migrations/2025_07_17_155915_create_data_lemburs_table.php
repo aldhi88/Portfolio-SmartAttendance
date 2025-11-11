@@ -17,11 +17,11 @@ return new class extends Migration
             $table->foreignIdFor(DataEmployee::class)->constrained();
             $table->unsignedBigInteger('approved_by')->nullable();
             $table->date('tanggal');
-            $table->time('checkin_time_lembur');
-            $table->time('work_time_lembur');
-            $table->time('checkin_deadline_time_lembur');
-            $table->time('checkout_time_lembur');
-            $table->time('checkout_deadline_time_lembur');
+            $table->dateTime('checkin_time_lembur');
+            $table->dateTime('work_time_lembur');
+            $table->dateTime('checkin_deadline_time_lembur');
+            $table->dateTime('checkout_time_lembur');
+            $table->dateTime('checkout_deadline_time_lembur');
             $table->enum('status', ['Proses','Disetujui','Ditolak']);
             $table->timestamps();
             $table->softDeletes();
