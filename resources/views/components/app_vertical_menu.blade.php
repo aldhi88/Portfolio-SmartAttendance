@@ -35,8 +35,8 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="false">
                             <li class="child jadwal-kerja"><a href="{{ route('jadwal-kerja.index') }}">Jadwal Kerja</a></li>
-                            <li class="child pengawas "><a href="{{ route('pengawas.index') }}">Pengawas</a></li>
                             <li class="child karyawan "><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
+                            <li class="child pengawas "><a href="{{ route('pengawas.index') }}">Pengawas</a></li>
                         </ul>
                     </li>
 
