@@ -54,11 +54,16 @@
                     return html;
                 }
             },
-            { data: null, name: 'DT_RowIndex', orderable: false, searchable: false,
+            { data: 'id', name: 'id', orderable: true, searchable: true,
                 render: function (data, type, row, meta) {
-                    return meta.row + meta.settings._iDisplayStart + 1;
+                    return '#'+row.id;
                 }
             },
+            // { data: null, name: 'DT_RowIndex', orderable: false, searchable: false,
+            //     render: function (data, type, row, meta) {
+            //         return meta.row + meta.settings._iDisplayStart + 1;
+            //     }
+            // },
             { data: 'status', name: 'status', orderable: false, searchable: true,
                 render: function (data, type, row, meta) {
                     css = 'badge-primary';

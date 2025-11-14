@@ -4,11 +4,9 @@
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between row">
                 @include('components.app_layout_title')
-                {{-- <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <a class="btn btn-primary" href="{{ route('karyawan.create') }}">
-                        <i class="fas fa-plus fa-fw"></i> Tambah Data Baru
-                    </a>
-                </div> --}}
+                <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
+                    <h4>ID Baru : {{ $dt['newId'] }}</h4>
+                </div>
             </div>
         </div>
     </div>
@@ -45,7 +43,7 @@
                                     </div>
                                 </th>
                                 <th class="text-center"></th>
-                                <th class="text-center">No</th>
+                                <th class="text-center">ID</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Role</th>
                                 <th class="text-center">Nama</th>
@@ -63,7 +61,9 @@
                                         <input type="checkbox" class="check-data-all">
                                     </th>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                    <th class="text-center">
+                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
                                     <th class="text-center" style="min-width: 110px">
                                         <select name="" class="form-control form-control-sm search-col-dt">
                                             <option value="">Semua</option>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Employee;
 
+use App\Models\DataEmployee;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
@@ -87,6 +88,12 @@ class EmployeeData extends Component
     }
     // end delete section
 
+    public function getNewId()
+    {
+        $q = DataEmployee::max('id');
+        $this->dt['newId'] = $q+1;
+    }
+
     public $dt;
     public function mount()
     {
@@ -97,6 +104,7 @@ class EmployeeData extends Component
         $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
         $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
         $this->dt['roles'] = $this->userRoleRepo->getAll()->toArray();
+        $this->getNewId();
     }
 
     public $pass;
