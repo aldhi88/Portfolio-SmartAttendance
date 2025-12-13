@@ -30,7 +30,7 @@ class AuthRepository implements AuthInterface
                 return "invalid_role";
             }
 
-            if(count($user) > 0 && $data['username'] != 'superuser'){
+            if(count($user) > 0 && $data['username'] != 'superuser' && $user['user_role_id']!=600){
                 if($user['data_employees']['status'] != 'Aktif'){
                     return "not_active";
                 }

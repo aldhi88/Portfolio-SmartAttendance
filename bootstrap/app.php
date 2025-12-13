@@ -11,12 +11,14 @@ use App\Repositories\DataLemburRepo;
 use App\Repositories\DataLiburIzinRepo;
 use App\Repositories\DataLiburRepo;
 use App\Repositories\DataScheduleBebasRepo;
+use App\Repositories\DataVendorRepo;
 use App\Repositories\Interfaces\AuthInterface;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\DataLiburFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use App\Repositories\Interfaces\DataScheduleBebasFace;
+use App\Repositories\Interfaces\DataVendorFace;
 use App\Repositories\Interfaces\LogAttendanceInterface;
 use App\Repositories\Interfaces\LogGpsFace;
 use App\Repositories\Interfaces\MasterFunctionFace;
@@ -92,5 +94,6 @@ return Application::configure(basePath: dirname(__DIR__))
         UserRoleFace::class => UserRoleRepo::class,
         DataScheduleBebasFace::class => DataScheduleBebasRepo::class,
         LogGpsFace::class => LogGpsRepo::class,
+        DataVendorFace::class => DataVendorRepo::class,
     ])
     ->create();

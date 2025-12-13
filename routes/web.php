@@ -6,6 +6,7 @@ use App\Http\Controllers\DataEmployeeController;
 use App\Http\Controllers\DataLemburController;
 use App\Http\Controllers\DataLiburController;
 use App\Http\Controllers\DataPengawasEmployeeController;
+use App\Http\Controllers\DataVendorController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MasterFunctionController;
 use App\Http\Controllers\MasterLocationController;
@@ -87,6 +88,15 @@ Route::middleware('auth:web')->group(function(){
     Route::prefix('perusahaan')->group(function () {
         Route::name('perusahaan.')->group(function () {
             Route::controller(MasterOrganizationController::class)->group(function () {
+                Route::get('index', 'index')->name('index');
+                Route::get('indexDT', 'indexDT')->name('indexDT');
+            });
+        });
+    });
+
+    Route::prefix('vendor')->group(function () {
+        Route::name('vendor.')->group(function () {
+            Route::controller(DataVendorController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
             });
