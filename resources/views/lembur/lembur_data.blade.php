@@ -31,7 +31,7 @@
                                 <th class="text-center">Karyawan</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Pengawas</th>
-                                <th class="text-center">Tanggal</th>
+                                <th class="text-center">Waktu Lembur</th>
                             </tr>
                             </thead>
 

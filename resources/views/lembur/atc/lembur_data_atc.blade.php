@@ -127,7 +127,17 @@
             },
             { data: 'tanggal', name: 'tanggal', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
-                    return moment(row.tanggal).locale('id').format('DD MMMM YYYY');
+                    moment.locale('id');
+                    const workTime = moment(row.work_time_lembur)
+                        .format('DD MMMM YYYY, HH:mm');
+                    const checkoutTime = moment(row.checkout_time_lembur)
+                        .format('DD MMMM YYYY, HH:mm');
+                    return `
+                        <div>
+                            <div>${workTime} WIB</div>
+                            <div>${checkoutTime} WIB</div>
+                        </div>
+                    `;
                 }
             },
 

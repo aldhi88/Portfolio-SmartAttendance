@@ -49,11 +49,11 @@ return new class extends Migration
             MasterPosition::query()
                 ->where('id', 101)
                 ->where('name', 'Kepala Security')
-                ->delete();
+                ->forceDelete();
             MasterPosition::query()
                 ->where('id', 100)
                 ->where('name', 'Security')
-                ->delete();
+                ->forceDelete();
         });
     }
 };
