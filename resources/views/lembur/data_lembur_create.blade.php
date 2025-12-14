@@ -44,46 +44,25 @@
 
                     <div class="col-12 col-md">
                         <div class="form-group">
-                            <label>Tanggal</label>
-                            <input wire:model="form.tanggal" type="date" class="form-control datetime @error('form.tanggal') is-invalid @enderror" />
-                            @error('form.tanggal')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-12 col-md">
-                        <div class="form-group">
-                            <label>Jam Masuk Lembur</label>
-                            <input
-                                type="text"
-                                placeholder="HH:mm"
-                                class="form-control input-mask-time
-                                    @error('form.work_time_lembur') is-invalid @enderror"
-                                data-field="form.work_time_lembur"
-                                wire:model.defer="form.work_time_lembur"
-                            >
+                            <label>Tanggal Waktu</label>
+                            <div>
+                                <div class="input-daterange input-group">
+                                    <input wire:model="form.work_time_lembur" placeholder="Dari kapan.." type="text" class="form-control datetime @error('form.work_time_lembur') is-invalid @enderror" name="start" />
+                                    <input wire:model="form.checkout_time_lembur" placeholder="Sampai kapan.." type="text" class="form-control datetime @error('form.checkout_time_lembur') is-invalid @enderror" name="end" />
+                                </div>
+                                @if ($errors->has('form.work_time_lembur') || $errors->has('form.checkout_time_lembur'))
+                                    <div class="text-danger">
+                                        <small>{{ $errors->first('form.work_time_lembur') ?: $errors->first('form.checkout_time_lembur') }}</small>
+                                    </div>
+                                @endif
 
-                            @error('form.work_time_lembur')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+                                @error('tgl_range_invalid')
+                                    <div class="text-danger">
+                                        <small>{{ $message }}</small>
+                                    </div>
+                                @enderror
 
-                    <div class="col-12 col-md">
-                        <div class="form-group">
-                            <label>Jam Pulang Lembur</label>
-                            <input
-                                type="text"
-                                placeholder="HH:mm"
-                                class="form-control input-mask-time
-                                    @error('form.checkout_time_lembur') is-invalid @enderror"
-                                data-field="form.checkout_time_lembur"
-                                wire:model.defer="form.checkout_time_lembur"
-                            >
-
-                            @error('form.checkout_time_lembur')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            </div>
                         </div>
                     </div>
 
@@ -92,28 +71,21 @@
 
                 <div class="row">
                     <div class="col-12 col-md">
-                        <div class="form-group position-relative">
+                        <div style="position: relative;" class="form-group">
                             <label>Pekerjaan</label>
-                            <input
-                                type="text"
-                                class="form-control @error('form.pekerjaan') is-invalid @enderror"
-                                placeholder="Ketik pekerjaan..."
-                                wire:model.live.debounce.400ms="pekerjaanQuery"
-                            >
-
+                            <input type="text" class="form-control @error('form.pekerjaan') is-invalid @enderror" placeholder="Ketik pekerjaan..." wire:model.live.debounce.400ms="queryPekerjaan">
                             @error('form.pekerjaan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-
-                            @if (!empty($pekerjaanResults))
+                            <input type="hidden" wire:model="form.pekerjaan">
+                            @error('employee_invalid')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if (!empty($resultsPekerjaan))
                                 <ul class="list-group position-absolute w-100" style="z-index: 1000;">
-                                    @foreach ($pekerjaanResults as $item)
-                                        <li
-                                            class="list-group-item list-group-item-action"
-                                            wire:click="selectPekerjaan('{{ $item }}')"
-                                            style="cursor: pointer;"
-                                        >
-                                            {!! str_ireplace($pekerjaanQuery, '<strong>'.$pekerjaanQuery.'</strong>', $item) !!}
+                                    @foreach ($resultsPekerjaan as $item)
+                                        <li class="list-group-item list-group-item-action" wire:click="selectPekerjaan('{{ $item }}')" style="cursor: pointer;">
+                                            {!! str_ireplace($queryPekerjaan, '<strong>' . $queryPekerjaan . '</strong>', $item) !!}
                                         </li>
                                     @endforeach
                                 </ul>
@@ -134,18 +106,23 @@
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Pengawas 1 (Wajib)</label>
-                            <select name="" class="form-control">
-                                @foreach ($pengawas as $item)
+                            <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
+                                <option value="">- Pilih -</option>
+                                @foreach ($ttd['pengawas'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
+                            @error('form.pengawas1')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Pengawas 2</label>
                             <select name="" class="form-control">
-                                @foreach ($pengawas as $item)
+                                <option value="">- Pilih -</option>
+                                @foreach ($ttd['pengawas'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>
@@ -156,8 +133,9 @@
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Security</label>
-                            <select name="" class="form-control">
-                                @foreach ($pengawas as $item)
+                            <select class="form-control">
+                                <option value="">- Pilih -</option>
+                                @foreach ($ttd['security'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             </select>

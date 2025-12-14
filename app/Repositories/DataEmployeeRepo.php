@@ -116,7 +116,7 @@ class DataEmployeeRepo implements DataEmployeeFace
     public function searchByName($name)
     {
 
-        if(Auth::user()->is_pengawas){
+        if (Auth::user()->is_pengawas) {
             $pengawasId = Auth::user()->data_employees->id;
             return DataEmployee::select('id', 'name')
                 ->where('name', 'like', '%' . $name . '%')
@@ -134,10 +134,10 @@ class DataEmployeeRepo implements DataEmployeeFace
         }
 
         return DataEmployee::select('id', 'name')
-                ->where('name', 'like', '%' . $name . '%')
-                ->limit(10)
-                ->get()
-                ->toArray();
+            ->where('name', 'like', '%' . $name . '%')
+            ->limit(10)
+            ->get()
+            ->toArray();
     }
     public function createForm($data)
     {
@@ -282,10 +282,19 @@ class DataEmployeeRepo implements DataEmployeeFace
     {
         $kodePengawas = [200, 400, 500];
         return DataEmployee::select('id', 'name')
-            ->whereHas('user_logins.user_roles', function ($q) use($kodePengawas) {
+            ->whereHas('user_logins.user_roles', function ($q) use ($kodePengawas) {
                 $q->select('id', 'name')
                     ->whereIn('id', $kodePengawas);
             })
+            ->get()
+            ->toArray();
+    }
+    public function getSecurityLembur()
+    {
+        $kodeSecurity = [100, 101];
+        return DataEmployee::query()
+            ->select('id', 'name')
+            ->whereIn('master_position_id', $kodeSecurity)
             ->get()
             ->toArray();
     }

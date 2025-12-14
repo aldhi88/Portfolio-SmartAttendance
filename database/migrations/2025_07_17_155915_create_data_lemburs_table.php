@@ -23,6 +23,7 @@ return new class extends Migration
             $table->dateTime('checkout_time_lembur');
             $table->dateTime('checkout_deadline_time_lembur');
             $table->enum('status', ['Proses','Disetujui','Ditolak'])->default('Proses');
+            $table->text('pekerjaan');
             $table->unsignedBigInteger('pengawas1')->nullable();
             $table->unsignedBigInteger('pengawas2')->nullable();
             $table->unsignedBigInteger('security')->nullable();

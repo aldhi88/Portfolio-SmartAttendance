@@ -4,6 +4,7 @@ namespace App\Livewire\Lembur;
 
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class DataLemburCreate extends Component
@@ -18,32 +19,36 @@ class DataLemburCreate extends Component
         $this->dataLemburRepo = $dataLemburRepo;
     }
 
-    public $pengawas = [];
-    public function genPengawasLembur()
+    public $ttd = [];
+    public function genTtdLembur()
     {
-        $this->pengawas = $this->dataEmployeeRepo->getPengawasLembur();
+        $this->ttd['pengawas'] = $this->dataEmployeeRepo->getPengawasLembur();
+        $this->ttd['security'] = $this->dataEmployeeRepo->getSecurityLembur();
     }
-
-    // pekerjaan
-    public $pekerjaanQuery = '';
-    public $pekerjaanResults = [];
-    public function updatedPekerjaanQuery()
-    {
-        if (strlen($this->pekerjaanQuery) > 1) {
-            $this->pekerjaanResults =
-                $this->dataLemburRepo->searchPekerjaan($this->pekerjaanQuery);
-        } else {
-            $this->pekerjaanResults = [];
-        }
-        $this->form['pekerjaan'] = $this->pekerjaanQuery;
-    }
-
 
     public function wireSubmit()
     {
+        // dd($this->all());
         $this->validate();
-        $this->form['approved_by'] = $this->dataEmployeeRepo->pengawasCheck($this->form['data_employee_id']);
+        $workTime = Carbon::parse($this->form['work_time_lembur']);
+        $checkoutTime = Carbon::parse($this->form['checkout_time_lembur']);
+        $this->form['tanggal'] = $workTime->toDateString(); // Y-m-d
+        $this->form['checkin_time_lembur'] = $workTime
+            ->copy()
+            ->subHours(2)
+            ->format('Y-m-d H:i:s');
+        $this->form['checkin_deadline_time_lembur'] = $workTime
+            ->copy()
+            ->addHour()
+            ->format('Y-m-d H:i:s');
+        $this->form['checkout_deadline_time_lembur'] = $checkoutTime
+            ->copy()
+            ->addHours(2)
+            ->format('Y-m-d H:i:s');
+
+        $this->form['approved_by'] = $this->form['pengawas1'];
         $this->form['status'] = "Disetujui";
+
         if ($this->dataLemburRepo->create($this->form)) {
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->reset('form');
@@ -60,13 +65,13 @@ class DataLemburCreate extends Component
     {
         $return = [
             "form.data_employee_id" => "required",
-            "form.tanggal" => "required",
             "form.work_time_lembur" => "required",
             "form.checkout_time_lembur" => "required",
             "form.pekerjaan" => "required",
             "form.pengawas1" => "required",
 
             "query" => "required",
+            "queryPekerjaan" => "required",
         ];
 
         if (!$this->form['data_employee_id']) {
@@ -79,16 +84,17 @@ class DataLemburCreate extends Component
     {
         return [
             "form.data_employee_id.required" => "Ketik nama karyawan lalu pilih dari list yang muncul",
-
             "form.mask.required" => "Ketik nama karyawan lalu pilih dari list yang muncul",
         ];
     }
     public $validationAttributes = [
         "form.tanggal" => "Tanggal",
         "form.pekerjaan" => "Pekerjaan",
-        "form.work_time_lembur" => "Jam Masuk",
-        "form.checkout_time_lembur" => "Jam Pulang",
+        "form.pengawas1" => "Pengawas 1",
+        "form.work_time_lembur" => "Jam Masuk & Pulang",
+        "form.checkout_time_lembur" => "Jam Masuk & Pulang",
         "query" => "Nama Karyawan",
+        "queryPekerjaan" => "Pekerjaan",
     ];
 
     public $query = '';
@@ -99,7 +105,6 @@ class DataLemburCreate extends Component
             $this->results = $this->dataEmployeeRepo->searchByName($this->query);
         }
     }
-
     public function selectNama($id)
     {
         $item = collect($this->results);
@@ -109,11 +114,27 @@ class DataLemburCreate extends Component
         $this->results = [];
     }
 
+    public $queryPekerjaan = '';
+    public $resultsPekerjaan = [];
+    public function updatedQueryPekerjaan()
+    {
+        if (strlen($this->queryPekerjaan) > 1) {
+            $this->resultsPekerjaan = $this->dataLemburRepo->searchPekerjaan($this->queryPekerjaan);
+            $this->form['pekerjaan'] = $this->queryPekerjaan;
+        }
+    }
+    public function selectPekerjaan($val)
+    {
+        $this->queryPekerjaan = $val;
+        $this->form['pekerjaan'] = $val;
+        $this->resultsPekerjaan = [];
+    }
+
     public $izinList;
     public function mount()
     {
         $this->form['data_employee_id'] = false;
-        $this->genPengawasLembur();
+        $this->genTtdLembur();
     }
 
     public $pass;

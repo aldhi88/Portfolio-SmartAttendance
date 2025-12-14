@@ -25,4 +25,5 @@ interface DataEmployeeFace
     public function searchByName($name);
     public function apiGetById($request);
     public function getPengawasLembur();
+    public function getSecurityLembur();
 }
