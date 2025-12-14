@@ -84,12 +84,6 @@
                                 <li class="child"><a href="{{ route('lembur.indexLembur') }}">Data Lembur</a></li>
                                 <li class="child"><a href="{{ route('lembur.lemburCreate') }}">Pengajuan Lembur</a></li>
                                 <li class="child"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
-                                <li class="child"><a href="#">Daftar Pekerjaan</a></li>
-                                <li class="child"><a href="#">Pejabat Penanda Tangan</a></li>
-                                <li class="child"><a href="#">Pembatalan</a></li>
-                                <li class="child"><a href="#">Print Surat Lembur</a></li>
-                                <li class="child"><a href="#">Rekap Laporan 40 Jam</a></li>
-                                <li class="child"><a href="#">Rekap Laporan 40 Jam+</a></li>
                             </ul>
                         </li>
 

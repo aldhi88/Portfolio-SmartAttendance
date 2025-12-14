@@ -120,7 +120,7 @@
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Pengawas 2</label>
-                            <select name="" class="form-control">
+                            <select wire:model="form.pengawas2" class="form-control">
                                 <option value="">- Pilih -</option>
                                 @foreach ($ttd['pengawas'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
@@ -133,7 +133,7 @@
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Security</label>
-                            <select class="form-control">
+                            <select wire:model="form.security" class="form-control">
                                 <option value="">- Pilih -</option>
                                 @foreach ($ttd['security'] as $item)
                                     <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
@@ -144,7 +144,7 @@
                     <div class="col-12 col-md">
                         <div class="form-group">
                             <label>Koordinator Lapangan</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" wire:model="form.korlap">
                         </div>
                     </div>
 

@@ -69,6 +69,9 @@ class DataLemburCreate extends Component
             "form.checkout_time_lembur" => "required",
             "form.pekerjaan" => "required",
             "form.pengawas1" => "required",
+            "form.pengawas2" => "",
+            "form.security" => "",
+            "form.korlap" => "",
 
             "query" => "required",
             "queryPekerjaan" => "required",

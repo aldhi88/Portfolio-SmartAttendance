@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ReportLemburHelper;
 use App\Repositories\Interfaces\DataLemburFace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,15 @@ class DataLemburController extends Controller
             $data = $dataLemburRepo->getDataDT(0);
         }
 
+        // dd($data->get()->toArray());
+
         return DataTables::of($data)
+            ->addColumn('laporan_lembur_checkin', function ($data) {
+                return ReportLemburHelper::getLemburCheckin($data->toArray());
+            })
+            ->addColumn('laporan_lembur_checkout', function ($data) {
+                return ReportLemburHelper::getLemburCheckout($data->toArray());
+            })
             ->toJson();
     }
     public function lemburCreate()

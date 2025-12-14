@@ -19,4 +19,16 @@ class DataLembur extends Model
     {
         return $this->belongsTo(DataEmployee::class, 'data_employee_id', 'id');
     }
+    public function pengawas1():BelongsTo
+    {
+        return $this->belongsTo(DataEmployee::class, 'pengawas1', 'id');
+    }
+    public function pengawas2():BelongsTo
+    {
+        return $this->belongsTo(DataEmployee::class, 'pengawas2', 'id');
+    }
+    public function security():BelongsTo
+    {
+        return $this->belongsTo(DataEmployee::class, 'security', 'id');
+    }
 }

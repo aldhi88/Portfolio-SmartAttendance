@@ -21,17 +21,26 @@
                         <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
                             <thead>
                             <tr>
-                                <th class="text-center" width="10">
+                                <th rowspan="2" class="text-center" width="10">
                                     <button class="btn btn-danger btn-sm delete-mulitple" id="btnDeleteSelected" disabled>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </th>
-                                <th class="text-center" style="max-width: 5px"></th>
-                                <th class="text-center" width="10">No</th>
-                                <th class="text-center">Karyawan</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Pengawas</th>
-                                <th class="text-center">Waktu Lembur</th>
+                                <th rowspan="2" class="text-center" style="max-width: 5px"></th>
+                                <th rowspan="2" class="text-center" width="10">No</th>
+                                <th rowspan="2" class="text-center">Karyawan</th>
+                                <th rowspan="2" class="text-center">Tanggal</th>
+                                <th rowspan="2" class="text-center">Status</th>
+                                <th rowspan="2" class="text-center">Pengawas <br> Penandatangan</th>
+                                <th class="text-center" colspan="3">Laporan Absensi Lembur</th>
+                                <th class="text-center" colspan="2">Ketentuan Absensi</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">Check In</th>
+                                <th class="text-center">Check Out</th>
+                                <th class="text-center">Total Jam</th>
+                                <th class="text-center">Check In</th>
+                                <th class="text-center">Check Out</th>
                             </tr>
                             </thead>
 
@@ -40,6 +49,10 @@
                                     <th class="text-center">
                                         <input type="checkbox" class="check-data-all">
                                     </th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
