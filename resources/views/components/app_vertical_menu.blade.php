@@ -83,7 +83,7 @@
                             <ul class="sub-menu" aria-expanded="false">
                                 <li class="child"><a href="{{ route('lembur.indexLembur') }}">Data Lembur</a></li>
                                 <li class="child"><a href="{{ route('lembur.lemburCreate') }}">Pengajuan Lembur</a></li>
-                                <li class="child lembur"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
+                                <li class="child"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
                                 <li class="child"><a href="#">Daftar Pekerjaan</a></li>
                                 <li class="child"><a href="#">Pejabat Penanda Tangan</a></li>
                                 <li class="child"><a href="#">Pembatalan</a></li>

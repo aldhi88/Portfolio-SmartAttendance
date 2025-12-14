@@ -12,6 +12,18 @@ use Illuminate\Support\Str;
 
 class DataLemburRepo implements DataLemburFace
 {
+    public function searchPekerjaan($keyword)
+    {
+        return DataLembur::query()
+            ->select('pekerjaan')
+            ->whereNotNull('pekerjaan')
+            ->where('pekerjaan', 'like', "%{$keyword}%")
+            ->groupBy('pekerjaan')
+            ->limit(10)
+            ->pluck('pekerjaan')
+            ->toArray();
+    }
+
     public function update($data)
     {
         try {

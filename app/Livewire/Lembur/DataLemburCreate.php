@@ -18,6 +18,27 @@ class DataLemburCreate extends Component
         $this->dataLemburRepo = $dataLemburRepo;
     }
 
+    public $pengawas = [];
+    public function genPengawasLembur()
+    {
+        $this->pengawas = $this->dataEmployeeRepo->getPengawasLembur();
+    }
+
+    // pekerjaan
+    public $pekerjaanQuery = '';
+    public $pekerjaanResults = [];
+    public function updatedPekerjaanQuery()
+    {
+        if (strlen($this->pekerjaanQuery) > 1) {
+            $this->pekerjaanResults =
+                $this->dataLemburRepo->searchPekerjaan($this->pekerjaanQuery);
+        } else {
+            $this->pekerjaanResults = [];
+        }
+        $this->form['pekerjaan'] = $this->pekerjaanQuery;
+    }
+
+
     public function wireSubmit()
     {
         $this->validate();
@@ -40,6 +61,11 @@ class DataLemburCreate extends Component
         $return = [
             "form.data_employee_id" => "required",
             "form.tanggal" => "required",
+            "form.work_time_lembur" => "required",
+            "form.checkout_time_lembur" => "required",
+            "form.pekerjaan" => "required",
+            "form.pengawas1" => "required",
+
             "query" => "required",
         ];
 
@@ -53,12 +79,15 @@ class DataLemburCreate extends Component
     {
         return [
             "form.data_employee_id.required" => "Ketik nama karyawan lalu pilih dari list yang muncul",
-            "form.mask.required" => "Ketik nama karyawan lalu pilih dari list yang muncul",
 
+            "form.mask.required" => "Ketik nama karyawan lalu pilih dari list yang muncul",
         ];
     }
     public $validationAttributes = [
         "form.tanggal" => "Tanggal",
+        "form.pekerjaan" => "Pekerjaan",
+        "form.work_time_lembur" => "Jam Masuk",
+        "form.checkout_time_lembur" => "Jam Pulang",
         "query" => "Nama Karyawan",
     ];
 
@@ -84,11 +113,12 @@ class DataLemburCreate extends Component
     public function mount()
     {
         $this->form['data_employee_id'] = false;
+        $this->genPengawasLembur();
     }
 
     public $pass;
     public function render()
     {
-        return view('lembur.lembur_create');
+        return view('lembur.data_lembur_create');
     }
 }

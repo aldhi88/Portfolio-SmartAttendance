@@ -24,4 +24,5 @@ interface DataEmployeeFace
     public function getMultiByCol($col, $val);
     public function searchByName($name);
     public function apiGetById($request);
+    public function getPengawasLembur();
 }

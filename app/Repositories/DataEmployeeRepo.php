@@ -277,4 +277,16 @@ class DataEmployeeRepo implements DataEmployeeFace
             ->pluck($col)
             ->toArray();
     }
+
+    public function getPengawasLembur()
+    {
+        $kodePengawas = [200, 400, 500];
+        return DataEmployee::select('id', 'name')
+            ->whereHas('user_logins.user_roles', function ($q) use($kodePengawas) {
+                $q->select('id', 'name')
+                    ->whereIn('id', $kodePengawas);
+            })
+            ->get()
+            ->toArray();
+    }
 }

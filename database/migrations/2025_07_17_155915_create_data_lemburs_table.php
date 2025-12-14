@@ -22,7 +22,11 @@ return new class extends Migration
             $table->dateTime('checkin_deadline_time_lembur');
             $table->dateTime('checkout_time_lembur');
             $table->dateTime('checkout_deadline_time_lembur');
-            $table->enum('status', ['Proses','Disetujui','Ditolak']);
+            $table->enum('status', ['Proses','Disetujui','Ditolak'])->default('Proses');
+            $table->unsignedBigInteger('pengawas1')->nullable();
+            $table->unsignedBigInteger('pengawas2')->nullable();
+            $table->unsignedBigInteger('security')->nullable();
+            $table->string('korlap')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -12,4 +12,5 @@ interface DataLemburFace
     public function delete($id);
     public function deleteMultiple($ids);
     public function getByCol($col, $val);
+    public function searchPekerjaan($keyword);
 }
