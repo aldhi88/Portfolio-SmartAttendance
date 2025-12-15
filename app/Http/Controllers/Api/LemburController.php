@@ -23,7 +23,6 @@ class LemburController extends Controller
 
     public function store(Request $r)
     {
-        dd($r->all());
         $validated = $r->validate([
             'data_employee_id'       => 'required',
             'work_time_lembur'       => 'required|date',
