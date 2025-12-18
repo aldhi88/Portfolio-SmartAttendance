@@ -29,6 +29,7 @@
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
                                 <th rowspan="2" class="text-center" width="10">No</th>
                                 <th rowspan="2" class="text-center">Karyawan</th>
+                                <th rowspan="2" class="text-center">Perusahaan</th>
                                 <th rowspan="2" class="text-center">Tanggal</th>
                                 <th rowspan="2" class="text-center">Status</th>
                                 <th rowspan="2" class="text-center">Pengawas <br> Penandatangan</th>
@@ -49,6 +50,7 @@
                                     <th class="text-center">
                                         <input type="checkbox" class="check-data-all">
                                     </th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>

@@ -51,6 +51,7 @@ class DataLemburRepo implements DataLemburFace
         return DataLembur::query()
             ->with([
                 'data_employees',
+                'data_employees.master_organizations:id,name',
                 'pengawas1:id,name',
                 'pengawas2:id,name',
                 'security:id,name',

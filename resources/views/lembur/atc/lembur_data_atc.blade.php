@@ -18,7 +18,7 @@
         columnDefs: [
             // { className: 'text-left', targets: [3] },
             { className: 'px-0', targets: [1] },
-            { className: 'text-left text-nowrap', targets: [3,6] },
+            { className: 'text-left text-nowrap', targets: [4,7] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
         ajax: '{{ route("lembur.indexLemburDT") }}',
@@ -45,6 +45,10 @@
                                     <i class="fas fa-edit fa-fw"></i> Edit Data
                                 </a>
                     `;
+
+                    if(data.master_employee_id==100){
+
+                    }
 
                     if (data.status === 'Proses' || data.status === 'Ditolak') {
                         const dtJson = {
@@ -103,6 +107,7 @@
                 }
             },
             { data: 'data_employees.name', name: 'data_employees.name', orderable: false, searchable:false },
+            { data: 'data_employees.master_organizations.name', name: 'data_employees.master_organizations.name', orderable: false, searchable:false },
             { data: 'tanggal', name: 'tanggal', orderable: true, searchable:false,
                 render: function (data, type, row, meta) {
                     return moment(row.tanggal).locale('id').format('DD MMMM YYYY');

@@ -151,6 +151,69 @@
 
     }
 
+    $.ajax({
+        url: '{{ route("dashboard.getMonthlyLateSummary") }}',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        data: JSON.stringify({
+            // _token: '{{ csrf_token() }}'
+        }),
+        success: function(response) {
+            // cara parsing ke tabel
+            const tbody = $('#late-summary tbody');
+            tbody.empty();
+
+            if (!response.data || response.data.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">
+                            Tidak ada data
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            // 1️⃣ Filter >= 4 keterlambatan
+            const filtered = response.data.filter(
+                item => item.total_terlambat >= 4
+            );
+
+            if (filtered.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">
+                            Tidak ada karyawan dengan keterlambatan ≥ 4
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            // 2️⃣ Sort DESC
+            filtered
+                .sort((a, b) => b.total_terlambat - a.total_terlambat)
+                .forEach((item, index) => {
+
+                    tbody.append(`
+                        <tr>
+                            <td class="text-center">${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td class="text-center fw-bold text-danger">
+                                ${item.total_terlambat}
+                            </td>
+                        </tr>
+                    `);
+                });
+        },
+        error: function(xhr) {
+            console.error('Gagal:', xhr.responseText);
+        }
+    });
+
 
 </script>
 

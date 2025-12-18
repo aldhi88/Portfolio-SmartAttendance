@@ -62,6 +62,7 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('index', 'index')->name('index');
                 Route::post('get-summary-rank', 'getSummaryRank')->name('getSummaryRank');
                 Route::post('get-summary-attd', 'getSummaryAttd')->name('getSummaryAttd');
+                Route::post('get-monthly-late-summary', 'getMonthlyLateSummary')->name('getMonthlyLateSummary');
             });
         });
     });

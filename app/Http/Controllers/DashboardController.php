@@ -81,7 +81,6 @@ class DashboardController extends Controller
             'data' => $results,
             'param' => $param,
         ]);
-
     }
 
     public function getSummaryAttd(
@@ -105,8 +104,8 @@ class DashboardController extends Controller
                 'log_attendances' => function ($q) {
                     $q->select('data_employee_id', 'time')
                         ->whereDate('time', date('Y-m-d'));
-                        // ->whereYear('time', date('Y'))
-                        // ->whereMonth('time', date('m'));
+                    // ->whereYear('time', date('Y'))
+                    // ->whereMonth('time', date('m'));
                 },
                 'data_izins' => function ($q) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -138,11 +137,93 @@ class DashboardController extends Controller
 
         $param['jlh_karyawan'] = count($results);
 
+        // dd($param, $results->toArray());
+
         return response()->json([
             'status' => 'success',
             'data' => $results,
             'param' => $param,
         ]);
+    }
 
+    public function getMonthlyLateSummary(
+        DataEmployeeFace $dataEmployeeRepo,
+        DataLiburFace $dataLiburRepo,
+    ) {
+        $year  = now()->year;
+        $month = now()->month;
+
+        $startDate = now()->startOfMonth();
+        $endDate   = now()->endOfMonth();
+
+        $employees = $dataEmployeeRepo->getReportDashboardDT(0)
+            ->select([
+                'data_employees.id',
+                'data_employees.name',
+                'data_employees.status',
+            ])
+            ->where('status', 'Aktif')
+            ->has('master_schedules')
+            ->with([
+                'master_schedules:id,type,kode,day_work',
+                'log_attendances' => function ($q) use ($year, $month) {
+                    $q->select('data_employee_id', 'time')
+                        ->whereYear('time', $year)
+                        ->whereMonth('time', $month);
+                },
+                'data_izins' => function ($q) use ($year, $month) {
+                    $q->where('status', 'Disetujui')
+                        ->whereYear('from', '<=', $year)
+                        ->whereYear('to', '>=', $year);
+                },
+                'data_lemburs',
+            ])
+            ->get();
+
+        $tglMerah = $dataLiburRepo->getByDate($month, $year);
+
+        $results = $employees->map(function ($emp) use ($startDate, $endDate, $tglMerah) {
+
+            $totalTerlambat = 0;
+
+            $dates = PublicHelper::dateInMonth(
+                $startDate->toDateString(),
+                $endDate->toDateString()
+            );
+
+            foreach ($dates as $date) {
+
+                // filter log attendance PER TANGGAL
+                $logHariIni = collect($emp->log_attendances)
+                    ->filter(
+                        fn($l) =>
+                        date('Y-m-d', strtotime($l['time'])) === $date
+                    )
+                    ->values()
+                    ->toArray();
+
+                $akumulasiHarian = PublicHelper::getAkumulasi(
+                    [$date], // ⬅️ 1 TANGGAL SAJA
+                    $logHariIni,
+                    $emp->master_schedules->toArray(),
+                    $emp->data_izins->toArray(),
+                    $emp->data_lemburs->toArray(),
+                    $tglMerah
+                );
+
+                $totalTerlambat += $akumulasiHarian['terlambat'] ?? 0;
+            }
+
+            return [
+                'id' => $emp->id,
+                'name' => $emp->name,
+                'total_terlambat' => $totalTerlambat
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $results
+        ]);
     }
 }
