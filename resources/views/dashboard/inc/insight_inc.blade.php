@@ -9,16 +9,16 @@
     }
 
     .table-scroll {
-        max-height: 400px;       /* 🔥 atur tinggi sesuai kebutuhan */
-        overflow-y: auto;
+        max-height: 400px;
+        overflow-y: scroll;
     }
 
     /* opsional: biar scroll lebih halus */
     .table-scroll::-webkit-scrollbar {
-        width: 6px !important;
+        width: 10px !important;
     }
     .table-scroll::-webkit-scrollbar-thumb {
-        background-color: rgba(0,0,0,.2) !important;
+        background-color: rgba(0, 0, 0, 0.437) !important;
         border-radius: 4px !important;
     }
 
