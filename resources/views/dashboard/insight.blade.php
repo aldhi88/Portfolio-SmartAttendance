@@ -6,7 +6,7 @@
     @include('dashboard.inc.sum_rank')
     @include('dashboard.inc.sum_attd')
     @include('dashboard.inc.sum_top')
-    @include('dashboard.inc.top_late')
+    @include('dashboard.inc.top_late_alpa')
 
     @include('dashboard.inc.insight_inc')
 </div>

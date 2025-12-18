@@ -158,16 +158,10 @@
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        data: JSON.stringify({
-            // _token: '{{ csrf_token() }}'
-        }),
         success: function(response) {
-            // cara parsing ke tabel
-            const tbody = $('#late-summary tbody');
-            tbody.empty();
 
             if (!response.data || response.data.length === 0) {
-                tbody.append(`
+                $('#late-summary tbody, #alpa-summary tbody').html(`
                     <tr>
                         <td colspan="3" class="text-center text-muted">
                             Tidak ada data
@@ -177,42 +171,82 @@
                 return;
             }
 
-            // 1️⃣ Filter >= 4 keterlambatan
-            const filtered = response.data.filter(
-                item => item.total_terlambat >= 4
-            );
-
-            if (filtered.length === 0) {
-                tbody.append(`
-                    <tr>
-                        <td colspan="3" class="text-center text-muted">
-                            Tidak ada karyawan dengan keterlambatan ≥ 4
-                        </td>
-                    </tr>
-                `);
-                return;
-            }
-
-            // 2️⃣ Sort DESC
-            filtered
-                .sort((a, b) => b.total_terlambat - a.total_terlambat)
-                .forEach((item, index) => {
-
-                    tbody.append(`
-                        <tr>
-                            <td class="text-center">${index + 1}</td>
-                            <td>${item.name}</td>
-                            <td class="text-center fw-bold text-danger">
-                                ${item.total_terlambat}
-                            </td>
-                        </tr>
-                    `);
-                });
+            renderLateTable(response.data);
+            renderAlpaTable(response.data);
         },
         error: function(xhr) {
             console.error('Gagal:', xhr.responseText);
         }
     });
+
+    function renderLateTable(data) {
+
+        const tbody = $('#late-summary tbody');
+        tbody.empty();
+
+        const filtered = data
+            .filter(item => item.total_terlambat >= 4)
+            .sort((a, b) => b.total_terlambat - a.total_terlambat);
+
+        if (filtered.length === 0) {
+            tbody.append(`
+                <tr>
+                    <td colspan="3" class="text-center text-muted">
+                        Tidak ada karyawan dengan keterlambatan ≥ 4
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        filtered.forEach((item, index) => {
+            tbody.append(`
+                <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td class="text-center fw-bold">
+                        ${item.total_terlambat} kali
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    function renderAlpaTable(data) {
+
+        const tbody = $('#alpa-summary tbody');
+        tbody.empty();
+
+        const filtered = data
+            .filter(item => item.total_alpa > 0)
+            .sort((a, b) => b.total_alpa - a.total_alpa);
+
+        if (filtered.length === 0) {
+            tbody.append(`
+                <tr>
+                    <td colspan="3" class="text-center text-muted">
+                        Tidak ada karyawan dengan alpa
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        filtered.forEach((item, index) => {
+            tbody.append(`
+                <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td class="text-center fw-bold">
+                        ${item.total_alpa} kali
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+
+
 
 
 </script>

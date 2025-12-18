@@ -185,6 +185,7 @@ class DashboardController extends Controller
         $results = $employees->map(function ($emp) use ($startDate, $endDate, $tglMerah) {
 
             $totalTerlambat = 0;
+            $totalAlpa = 0;
 
             $dates = PublicHelper::dateInMonth(
                 $startDate->toDateString(),
@@ -193,7 +194,6 @@ class DashboardController extends Controller
 
             foreach ($dates as $date) {
 
-                // filter log attendance PER TANGGAL
                 $logHariIni = collect($emp->log_attendances)
                     ->filter(
                         fn($l) =>
@@ -203,7 +203,7 @@ class DashboardController extends Controller
                     ->toArray();
 
                 $akumulasiHarian = PublicHelper::getAkumulasi(
-                    [$date], // ⬅️ 1 TANGGAL SAJA
+                    [$date],
                     $logHariIni,
                     $emp->master_schedules->toArray(),
                     $emp->data_izins->toArray(),
@@ -212,12 +212,14 @@ class DashboardController extends Controller
                 );
 
                 $totalTerlambat += $akumulasiHarian['terlambat'] ?? 0;
+                $totalAlpa      += $akumulasiHarian['alpa'] ?? 0;
             }
 
             return [
                 'id' => $emp->id,
                 'name' => $emp->name,
-                'total_terlambat' => $totalTerlambat
+                'total_terlambat' => $totalTerlambat,
+                'total_alpa'      => $totalAlpa,
             ];
         });
 
