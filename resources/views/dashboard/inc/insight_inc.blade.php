@@ -7,6 +7,21 @@
         line-height: 16px;
         font-size: 14px !important;
     }
+
+    .table-scroll {
+        max-height: 400px;       /* 🔥 atur tinggi sesuai kebutuhan */
+        overflow-y: auto;
+    }
+
+    /* opsional: biar scroll lebih halus */
+    .table-scroll::-webkit-scrollbar {
+        width: 6px !important;
+    }
+    .table-scroll::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,.2) !important;
+        border-radius: 4px !important;
+    }
+
 </style>
 @endsection
 
