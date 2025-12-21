@@ -13,7 +13,6 @@
         overflow-y: scroll;
     }
 
-    /* opsional: biar scroll lebih halus */
     .table-scroll::-webkit-scrollbar {
         width: 10px !important;
     }
@@ -23,7 +22,6 @@
     }
 
     .table-loader {
-        position: absolute;
         inset: 0;                 /* top right bottom left = 0 */
         background: rgba(255, 255, 255, 0.8);
         z-index: 10;

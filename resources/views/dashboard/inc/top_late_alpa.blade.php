@@ -8,12 +8,12 @@
                         <h6>Data Jumlah Keterlambatan ≥ 4</h6>
                     </div>
 
-                    <div class="table-responsive mt-4 table-scroll position-relative">
+                    <div class="text-center loader-mask">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                    <div class="table-responsive mt-4 table-scroll">
                         <table class="table table-hover mb-0 table-centered table-nowrap" id="late-summary">
                             <tbody>
-                                <div class="text-center loader-mask">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                </div>
                             </tbody>
                         </table>
                     </div>
@@ -33,11 +33,11 @@
                         <h6>Data Jumlah Alpa</h6>
                     </div>
 
+                    <div class="text-center loader-mask">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
                     <div class="table-responsive mt-4 table-scroll">
                         <table class="table table-hover mb-0 table-centered table-nowrap" id="alpa-summary">
-                            <div class="text-center loader-mask">
-                                <div class="spinner-border text-primary" role="status"></div>
-                            </div>
                             <tbody></tbody>
                         </table>
                     </div>
