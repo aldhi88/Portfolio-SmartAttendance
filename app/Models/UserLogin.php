@@ -27,6 +27,6 @@ class UserLogin extends Authenticatable
 
     public function getIsPengawasAttribute()
     {
-        return in_array($this->user_role_id, [200, 400]);
+        return in_array($this->user_role_id, [200, 400, 500]);
     }
 }

@@ -178,6 +178,14 @@
 
                 </div>
             </div>
+            <div class="col-12 text-right my-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class=" fas fa-check  mr-1"></i> Simpan Data
+                </button>
+                <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">
+                    Kembali <i class="fas fa-angle-right ml-1"></i>
+                </a>
+            </div>
 
             <div class="col">
                 <label>Pilih Jadwal Kerja :</label>
