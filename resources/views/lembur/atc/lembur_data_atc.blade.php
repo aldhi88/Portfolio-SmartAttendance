@@ -47,8 +47,9 @@
                     `;
 
                     if(
-                        row.laporan_lembur_checkin != '-' &&
-                        row.laporan_lembur_checkout != '-'
+                        // row.laporan_lembur_checkin != '-' &&
+                        // row.laporan_lembur_checkout != '-'
+                        row.status === 'Disetujui'
                     ){
                         let printPdfUrl = "print-pdf/"+row.id;
                         html += `
