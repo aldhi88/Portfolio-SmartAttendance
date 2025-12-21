@@ -206,6 +206,7 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('dt', 'indexLemburDT')->name('indexLemburDT');
                 Route::get('create', 'lemburCreate')->name('lemburCreate');
                 Route::get('edit/{id}', 'lemburEdit')->name('lemburEdit');
+                Route::get('print-pdf/{id}', 'PrintPdf')->name('PrintPdf');
 
             });
         });

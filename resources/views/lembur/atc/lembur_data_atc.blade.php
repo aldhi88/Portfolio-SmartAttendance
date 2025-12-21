@@ -18,7 +18,7 @@
         columnDefs: [
             // { className: 'text-left', targets: [3] },
             { className: 'px-0', targets: [1] },
-            { className: 'text-left text-nowrap', targets: [4,7] },
+            { className: 'text-left text-nowrap', targets: [3,4,7] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
         ajax: '{{ route("lembur.indexLemburDT") }}',
@@ -46,9 +46,18 @@
                                 </a>
                     `;
 
-                    if(data.master_employee_id==100){
-
+                    if(
+                        row.laporan_lembur_checkin != '-' &&
+                        row.laporan_lembur_checkout != '-'
+                    ){
+                        let printPdfUrl = "print-pdf/"+row.id;
+                        html += `
+                                <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
+                                    <i class="fas fa-print fa-fw"></i> Print Surat Lembur
+                                </a>
+                        `;
                     }
+
 
                     if (data.status === 'Proses' || data.status === 'Ditolak') {
                         const dtJson = {
