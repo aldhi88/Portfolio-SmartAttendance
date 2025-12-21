@@ -22,6 +22,14 @@
         border-radius: 4px !important;
     }
 
+    .table-loader {
+        position: absolute;
+        inset: 0;                 /* top right bottom left = 0 */
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 10;
+    }
+
+
 </style>
 @endsection
 
@@ -166,6 +174,8 @@
 
     }
 
+
+
     $.ajax({
         url: '{{ route("dashboard.getMonthlyLateSummary") }}',
         method: 'POST',
@@ -188,6 +198,9 @@
 
             renderLateTable(response.data);
             renderAlpaTable(response.data);
+        },
+        complete: function () {
+            $('.loader-mask').remove();
         },
         error: function(xhr) {
             console.error('Gagal:', xhr.responseText);
