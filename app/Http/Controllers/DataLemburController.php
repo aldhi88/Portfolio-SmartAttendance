@@ -22,12 +22,33 @@ class DataLemburController extends Controller
         return view('index', compact('data'));
     }
 
-    public function indexLemburDT(DataLemburFace $dataLemburRepo)
+    public function indexLemburDT(
+        DataLemburFace $dataLemburRepo,
+        Request $request
+    )
     {
         if(Auth::user()->is_pengawas){
             $data = $dataLemburRepo->getDataByPengawas(0);
         }else{
             $data = $dataLemburRepo->getDataDT(0);
+        }
+
+        if(isset($request->month)){
+            if($request->month != ''){
+                $data->whereMonth('tanggal', $request->month);
+            }
+        }
+        if(isset($request->year)){
+            if($request->year != ''){
+                $data->whereYear('tanggal', $request->year);
+            }
+        }
+        if(isset($request->master_organization_id)){
+            if($request->master_organization_id != ''){
+                $data->whereHas('data_employees', function($q) use ($request){
+                    $q->where('master_organization_id', $request->master_organization_id);
+                });
+            }
         }
 
         // dd($data->get()->toArray());
@@ -63,8 +84,7 @@ class DataLemburController extends Controller
     public function printPdf(
         $id,
         DataEmployeeFace $dataEmployeeRepo
-    )
-    {
+    ){
 
         // dd($id);
         $data = DataLembur::query()

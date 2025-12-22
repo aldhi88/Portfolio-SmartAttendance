@@ -13,6 +13,82 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <form class="p-3 bg-light rounded" method="get">
+
+                                <div class="row">
+                                    <div class="col-12 col-md-2">
+                                        <div class="form-group">
+                                            <label>Bulan</label>
+                                            <select name="month" class="form-control ex-filter">
+                                                @foreach ($dt['indoMonthList'] as $key => $item)
+                                                    <option value="{{ $key }}"
+                                                        {{ (int)$key === (int)request('month', now()->month) ? 'selected' : '' }}>
+                                                        {{ $item }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-2">
+                                        <div class="form-group">
+                                            <label>Tahun</label>
+                                            <select name="year" class="form-control ex-filter">
+                                                @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
+                                                    <option value="{{ $i }}"
+                                                        {{ (int)$i === (int)request('year', now()->year) ? 'selected' : '' }}>
+                                                        {{ $i }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md">
+                                        <div class="form-group">
+                                            <label>Perusahaan</label>
+                                            <select name="master_organization_id" class="form-control ex-filter">
+                                                <option value="">Semua</option>
+                                                @foreach ($dt['organization'] as $item)
+                                                    <option value="{{ $item['id'] }}"
+                                                        {{ (string)$item['id'] === (string)request('master_organization_id') ? 'selected' : '' }}>
+                                                        {{ $item['name'] }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md">
+                                        <div class="form-group mb-0 pb-0">
+                                            <label style="visibility: hidden">Action</label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <button type="submit" class="btn btn-info btn-block">Tampilkan Data</button>
+                                            </div>
+                                            <div class="col">
+                                                <a href="{{ route('lembur.indexLembur') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row" wire:ignore>
         <div class="col">
             <div class="card">

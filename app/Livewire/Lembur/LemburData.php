@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Lembur;
 
+use App\Helpers\PublicHelper;
 use App\Repositories\Interfaces\DataLemburFace;
+use App\Repositories\Interfaces\MasterOrganizationFace;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -10,10 +12,18 @@ use Livewire\Component;
 class LemburData extends Component
 {
     protected $dataLemburRepo;
-    public function boot(DataLemburFace $dataLemburRepo)
+    protected $masterOrganizationRepo;
+    public function boot(
+        DataLemburFace $dataLemburRepo,
+        MasterOrganizationFace $masterOrganizationRepo,
+    )
     {
         $this->dataLemburRepo = $dataLemburRepo;
+        $this->masterOrganizationRepo = $masterOrganizationRepo;
+
     }
+
+    public $dt = [];
 
     // delete section
     public $deleteId;
@@ -75,6 +85,12 @@ class LemburData extends Component
         }
 
         $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+    }
+
+    public function mount()
+    {
+        $this->dt['indoMonthList'] = PublicHelper::indoMonthList();
+        $this->dt['organization'] = $this->masterOrganizationRepo->getAll()->toArray();
     }
 
     public $pass;

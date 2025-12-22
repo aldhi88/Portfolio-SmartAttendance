@@ -21,7 +21,27 @@
             { className: 'text-left text-nowrap', targets: [3,4,7] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
-        ajax: '{{ route("lembur.indexLemburDT") }}',
+        ajax: {
+            url: '{{ route("lembur.indexLemburDT") }}',
+            data: function (d) {
+
+                const params = new URLSearchParams(window.location.search);
+
+                // helper: ambil dari URL, kalau tidak ada ambil dari select
+                const getParam = (key, selector) => {
+                    return params.has(key)
+                        ? params.get(key)
+                        : $(selector).val();
+                };
+
+                d.month = getParam('month', '[name="month"]');
+                d.year  = getParam('year', '[name="year"]');
+                d.master_organization_id = getParam(
+                    'master_organization_id',
+                    '[name="master_organization_id"]'
+                );
+            }
+        },
         columns: [
             { data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
