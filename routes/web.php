@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataEmployeeController;
 use App\Http\Controllers\DataLemburController;
+use App\Http\Controllers\DataLemburVendorController;
 use App\Http\Controllers\DataLiburController;
 use App\Http\Controllers\DataPengawasEmployeeController;
 use App\Http\Controllers\DataVendorController;
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
     if(Auth::check()){
+        if(Auth::user()->is_vendor){
+            return redirect()->route('lembur-vendor.indexLembur');
+        }
         return redirect()->route('dashboard.index');
     }
     return redirect()->route('auth.formLogin');
@@ -206,6 +210,17 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('dt', 'indexLemburDT')->name('indexLemburDT');
                 Route::get('create', 'lemburCreate')->name('lemburCreate');
                 Route::get('edit/{id}', 'lemburEdit')->name('lemburEdit');
+                Route::get('print-pdf/{id}', 'PrintPdf')->name('PrintPdf');
+
+            });
+        });
+    });
+
+    Route::prefix('lembur-vendor')->group(function () {
+        Route::name('lembur-vendor.')->group(function () {
+            Route::controller(DataLemburVendorController::class)->group(function () {
+                Route::get('index', 'indexLembur')->name('indexLembur');
+                Route::get('dt', 'indexLemburDT')->name('indexLemburDT');
                 Route::get('print-pdf/{id}', 'PrintPdf')->name('PrintPdf');
 
             });

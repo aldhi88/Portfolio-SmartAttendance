@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
 
-class DataLemburController extends Controller
+class DataLemburVendorController extends Controller
 {
     public function indexLembur()
     {
         $data['tab_title'] = "Data Lembur | ".config('app.name');
         $data['page_title'] = "Data Lembur";
         $data['page_desc'] = "Manajemen data lembur";
-        $data['lw'] = "lembur.lembur-data";
+        $data['lw'] = "lembur-vendor.lembur-vendor-data";
         return view('index', compact('data'));
     }
 
@@ -28,10 +28,6 @@ class DataLemburController extends Controller
     )
     {
         $data = $dataLemburRepo->getDataDT(0);
-        if(Auth::user()->is_pengawas){
-            $data = $dataLemburRepo->getDataByPengawas(0);
-        }
-
         if(isset($request->month)){
             if($request->month != ''){
                 $data->whereMonth('tanggal', $request->month);
@@ -42,13 +38,13 @@ class DataLemburController extends Controller
                 $data->whereYear('tanggal', $request->year);
             }
         }
-        if(isset($request->master_organization_id)){
-            if($request->master_organization_id != ''){
-                $data->whereHas('data_employees', function($q) use ($request){
-                    $q->where('master_organization_id', $request->master_organization_id);
-                });
-            }
-        }
+
+        $orgId = Auth::user()->data_vendors->master_organization_id;
+        $data->whereHas('data_employees', function($q) use ($orgId){
+            $q->where('master_organization_id', $orgId);
+        });
+
+        // dd($data->get()->toArray());
 
         return DataTables::of($data)
             ->addColumn('laporan_lembur_checkin', function ($data) {
@@ -58,24 +54,6 @@ class DataLemburController extends Controller
                 return ReportLemburHelper::getLemburCheckout($data->toArray());
             })
             ->toJson();
-    }
-    public function lemburCreate()
-    {
-        $data['tab_title'] = "Form Data Lembur | ".config('app.name');
-        $data['page_title'] = "Form Data Lembur";
-        $data['page_desc'] = "Menambah data izin libur karyawan";
-        $data['lw'] = "lembur.data-lembur-create";
-        return view('index', compact('data'));
-    }
-
-    public function lemburEdit($id)
-    {
-        $data['id'] = $id;
-        $data['tab_title'] = "Form Edit Data Lembur | ".config('app.name');
-        $data['page_title'] = "Form Edit Data Lembur";
-        $data['page_desc'] = "Edit data lembur karyawan";
-        $data['lw'] = "lembur.data-lembur-edit";
-        return view('index', compact('data'));
     }
 
     public function printPdf(

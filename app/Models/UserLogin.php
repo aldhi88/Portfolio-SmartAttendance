@@ -14,7 +14,11 @@ class UserLogin extends Authenticatable
     use HasApiTokens;
     use SoftDeletes;
     protected $guarded = [];
-    protected $appends = ['is_pengawas'];
+    protected $appends = [
+        'is_pengawas',
+        'is_vendor',
+        'is_superuser'
+    ];
 
     public function user_roles(): BelongsTo
     {
@@ -24,9 +28,21 @@ class UserLogin extends Authenticatable
     {
         return $this->hasOne(DataEmployee::class, 'user_login_id', 'id');
     }
+    public function data_vendors(): HasOne
+    {
+        return $this->hasOne(DataVendor::class, 'user_login_id', 'id');
+    }
 
     public function getIsPengawasAttribute()
     {
         return in_array($this->user_role_id, [200, 400, 500]);
+    }
+    public function getIsVendorAttribute()
+    {
+        return in_array($this->user_role_id, [600]);
+    }
+    public function getIsSuperuserAttribute()
+    {
+        return in_array($this->user_role_id, [100]);
     }
 }

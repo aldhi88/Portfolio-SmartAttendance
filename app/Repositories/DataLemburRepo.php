@@ -63,9 +63,6 @@ class DataLemburRepo implements DataLemburFace
     public function getDataByPengawas($data)
     {
         return DataLembur::query()
-            // ->whereHas('data_employees.pengawas', function ($q) {
-            //     $q->where('pengawas_id', Auth::user()->data_employees->id);
-            // })
             ->where('pengawas1', Auth::user()->data_employees->id)
             ->with([
                 'data_employees',

@@ -7,12 +7,7 @@
             <div id="sidebar-menu">
                 <!-- Left Menu Start -->
 
-                @if (
-                    Auth::user()->user_role_id == 100 ||
-                    Auth::user()->user_role_id == 200 ||
-                    Auth::user()->user_role_id == 400 ||
-                    Auth::user()->user_role_id == 500
-                )
+                @if (Auth::user()->is_pengawas || Auth::user()->is_superuser)
 
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title">Smart Absensi</li>
@@ -165,14 +160,20 @@
                 @endif
 
 
-                @if (Auth::user()->user_role_id == 600)
+                @if (Auth::user()->is_vendor)
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title">Smart Absensi</li>
 
                         <li>
-                            <a href="{{ route('dashboard.index') }}" class="waves-effect">
-                                <i class="ri-history-line"></i>
-                                <span>Data Lembur</span>
+                            <a href="{{ route('lembur-vendor.indexLembur') }}" class="waves-effect">
+                                <i class="ri-file-line"></i>
+                                <span>Data Pengajuan Lembur</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-file-line"></i>
+                                <span>Laporan Data Lembur</span>
                             </a>
                         </li>
 
