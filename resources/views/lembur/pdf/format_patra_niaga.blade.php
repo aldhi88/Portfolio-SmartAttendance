@@ -154,9 +154,9 @@
             <td colspan="3" style="height: 70px"></td>
         </tr>
         <tr>
-            <td>{{ $data['pengawas1']['name'] }}</td>
-            <td></td>
             <td>{{ $data['data_employees']['name'] }}</td>
+            <td></td>
+            <td>{{ $data['pengawas1']['name'] }}</td>
         </tr>
     </table>
 
