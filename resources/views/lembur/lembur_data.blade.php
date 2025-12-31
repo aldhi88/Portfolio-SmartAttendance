@@ -40,7 +40,7 @@
                                         <div class="form-group">
                                             <label>Tahun</label>
                                             <select name="year" class="form-control ex-filter">
-                                                @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
+                                                @for ($i = date('Y')+1; $i >= date('Y') - 10; $i--)
                                                     <option value="{{ $i }}"
                                                         {{ (int)$i === (int)request('year', now()->year) ? 'selected' : '' }}>
                                                         {{ $i }}
