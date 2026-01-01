@@ -52,7 +52,6 @@ class DataLemburCreate extends Component
             $this->form['status_pengawas2'] = "Disetujui";
         }
 
-
         if ($this->dataLemburRepo->create($this->form)) {
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->reset('form');

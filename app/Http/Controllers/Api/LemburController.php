@@ -62,10 +62,6 @@ class LemburController extends Controller
             'pengawas2'                       => $validated['pengawas2'] ?? null,
             'security'                        => $validated['security'] ?? null,
             'korlap'                          => $validated['korlap'] ?? null,
-
-            // sama seperti web
-            'approved_by'                     => $validated['pengawas1'],
-            'status'                          => 'Proses',
         ];
 
         // dd($data);
