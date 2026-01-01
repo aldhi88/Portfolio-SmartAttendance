@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Lembur;
 
+use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use Carbon\Carbon;
@@ -146,6 +147,7 @@ class DataLemburEdit extends Component
     {
         $this->form = $this->dataLemburRepo->getByCol('id', $this->pass['id']);
         $this->query = $this->form['data_employees']['name'];
+        $this->pass['format'] = DataLembur::formatOrg($this->form['data_employees']['master_organization_id']);
         $this->queryPekerjaan = $this->form['pekerjaan'];
         unset(
             $this->form['id'],

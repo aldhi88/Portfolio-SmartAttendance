@@ -21,7 +21,7 @@
                     font-size: 18px
                     ">SURAT PERINTAH KERJA</span>
                 <br>
-                <span><strong>No.__________/PND448000/IV/{{ date('Y') }}-SO</strong></span>
+                <span><strong>No. {{ $data['nomor'] }}</strong></span>
             </td>
             <td style="vertical-align: middle">
                 <div style="text-align: right">
