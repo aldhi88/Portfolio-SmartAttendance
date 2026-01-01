@@ -17,6 +17,7 @@ class DataLembur extends Model
                 'format_patra_niaga' => [1],
                 'format_ptc' => [2, 3, 11],
                 'format_ptc_security' => [9],
+                'format_patlog' => [5],
             ])
             ->filter(fn($values) => in_array($id, $values))
             ->keys()
