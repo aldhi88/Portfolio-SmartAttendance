@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Lembur;
 
+use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use Carbon\Carbon;
@@ -112,6 +113,8 @@ class DataLemburCreate extends Component
     {
         $item = collect($this->results);
         $name = ($item->where('id', $id)->first())['name'];
+        $orgId = ($item->where('id', $id)->first())['master_organization_id'];
+        $this->pass['format'] = DataLembur::formatOrg($orgId);
         $this->query = $name;
         $this->form['data_employee_id'] = $id;
         $this->results = [];
@@ -138,6 +141,7 @@ class DataLemburCreate extends Component
     {
         $this->form['data_employee_id'] = false;
         $this->genTtdLembur();
+        $this->pass['format'] = null;
     }
 
     public $pass;

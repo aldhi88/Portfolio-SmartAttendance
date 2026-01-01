@@ -26,9 +26,10 @@
                                         <div class="form-group">
                                             <label>Bulan</label>
                                             <select name="month" class="form-control ex-filter">
+                                                <option value="">Semua Bulan</option>
                                                 @foreach ($dt['indoMonthList'] as $key => $item)
                                                     <option value="{{ $key }}"
-                                                        {{ (int)$key === (int)request('month', now()->month) ? 'selected' : '' }}>
+                                                        {{ (int)$key === (int)request('month') ? 'selected' : '' }}>
                                                         {{ $item }}
                                                     </option>
                                                 @endforeach
@@ -40,9 +41,10 @@
                                         <div class="form-group">
                                             <label>Tahun</label>
                                             <select name="year" class="form-control ex-filter">
-                                                @for ($i = date('Y'); $i >= date('Y') - 10; $i--)
+                                                <option value="">Semua Tahun</option>
+                                                @for ($i = date('Y')+1; $i >= date('Y') - 10; $i--)
                                                     <option value="{{ $i }}"
-                                                        {{ (int)$i === (int)request('year', now()->year) ? 'selected' : '' }}>
+                                                        {{ (int)$i === (int)request('year') ? 'selected' : '' }}>
                                                         {{ $i }}
                                                     </option>
                                                 @endfor
@@ -59,7 +61,7 @@
                                                 <button type="submit" class="btn btn-info btn-block">Tampilkan Data</button>
                                             </div>
                                             <div class="col">
-                                                <a href="{{ route('lembur.indexLembur') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
+                                                <a href="{{ route('lembur-vendor.indexLembur') }}" type="button" class="btn btn-secondary btn-block">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -83,16 +85,17 @@
                             <thead>
                             <tr>
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
-                                <th rowspan="2" class="text-center" width="10">No</th>
-                                <th rowspan="2" class="text-center">Karyawan</th>
-                                <th rowspan="2" class="text-center">Perusahaan</th>
-                                <th rowspan="2" class="text-center">Tanggal</th>
-                                <th rowspan="2" class="text-center">Status</th>
-                                <th rowspan="2" class="text-center">Pengawas <br> Penandatangan</th>
+                                <th rowspan="2" class="text-center" style="min-width: 250px">Tanggal & <br> No.Surat</th>
+                                <th rowspan="2" class="text-center">Karyawan <br> (Perusahaan)</th>
+                                <th class="text-center" colspan="4">Pengawas/ <br>Penandatangan</th>
                                 <th class="text-center" colspan="3">Laporan Absensi Lembur</th>
                                 <th class="text-center" colspan="2">Ketentuan Absensi</th>
                             </tr>
                             <tr>
+                                <th class="text-center">Pengawas Tertinggi</th>
+                                <th class="text-center">Pengawas 2</th>
+                                <th class="text-center">Security</th>
+                                <th class="text-center">Korlap</th>
                                 <th class="text-center">Check In</th>
                                 <th class="text-center">Check Out</th>
                                 <th class="text-center">Total Jam</th>
@@ -103,6 +106,7 @@
 
                             <thead id="header-filter">
                                 <tr>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>

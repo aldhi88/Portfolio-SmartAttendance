@@ -14,11 +14,11 @@
 <script>
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
-        order: [[1, 'asc']],
+        order: [[2, 'desc'],[1, 'desc']],
         columnDefs: [
             // { className: 'text-left', targets: [3] },
             { className: 'px-0', targets: [1] },
-            { className: 'text-left text-nowrap', targets: [3,4,7] },
+            { className: 'text-left text-nowrap', targets: [3] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
         ajax: {
@@ -49,7 +49,7 @@
                     return el;
                 }
             },
-            { data: null, name: 'created_at', orderable: false, searchable: false,
+            { data: null, name: 'created_at', orderable: true, searchable: false,
                 render: function(data, type, row) {
                     let editUrl = "edit/"+row.id;
                     let html = `
@@ -66,21 +66,40 @@
                                 </a>
                     `;
 
-                    if(
-                        // row.laporan_lembur_checkin != '-' &&
-                        // row.laporan_lembur_checkout != '-'
-                        row.status === 'Disetujui'
-                    ){
-                        let printPdfUrl = "print-pdf/"+row.id;
+                    const hasLemburTime =
+                        row.laporan_lembur_checkin !== '-' &&
+                        row.laporan_lembur_checkout !== '-';
+
+                    const pengawas1Ok =
+                        row.pengawas1 === null || row.status_pengawas1 === 'Disetujui';
+
+                    const pengawas2Ok =
+                        row.pengawas2 === null || row.status_pengawas2 === 'Disetujui';
+
+                    if (hasLemburTime && pengawas1Ok && pengawas2Ok) {
+                        let printPdfUrl = "print-pdf/" + row.id;
                         html += `
-                                <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
-                                    <i class="fas fa-print fa-fw"></i> Print Surat Lembur
-                                </a>
+                            <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
+                                <i class="fas fa-print fa-fw"></i> Print Surat Lembur
+                            </a>
                         `;
                     }
 
 
-                    if (data.status === 'Proses' || data.status === 'Ditolak') {
+
+                    const hasPengawas1 = row.pengawas1 !== null;
+                    const hasPengawas2 = row.pengawas2 !== null;
+
+                    const pengawas1Approved = !hasPengawas1 || row.status_pengawas1 === 'Disetujui';
+                    const pengawas2Approved = !hasPengawas2 || row.status_pengawas2 === 'Disetujui';
+
+                    const allApproved = pengawas1Approved && pengawas2Approved;
+                    const anyPending =
+                        (hasPengawas1 && row.status_pengawas1 !== 'Disetujui') ||
+                        (hasPengawas2 && row.status_pengawas2 !== 'Disetujui');
+
+
+                    if (anyPending) {
                         const dtJson = {
                             msg: `Anda yakin menyetujui data izin ${data.data_employees.name}?`,
                             id: data.id,
@@ -96,7 +115,7 @@
                             </a>
                         `;
                     }
-                    if (data.status === 'Disetujui') {
+                    if (allApproved) {
                         const dtJson = {
                             msg: `Anda yakin menolak data izin ${data.data_employees.name}?`,
                             id: data.id,
@@ -131,23 +150,26 @@
                     return html;
                 }
             },
-            { data: null, name: 'DT_RowIndex', orderable: false, searchable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + meta.settings._iDisplayStart + 1;
-                }
-            },
-            { data: 'data_employees.name', name: 'data_employees.name', orderable: false, searchable:false },
-            { data: 'data_employees.master_organizations.name', name: 'data_employees.master_organizations.name', orderable: false, searchable:false },
             { data: 'tanggal', name: 'tanggal', orderable: true, searchable:false,
                 render: function (data, type, row, meta) {
-                    return moment(row.tanggal).locale('id').format('DD MMMM YYYY');
+                    return `
+                        ${moment(row.tanggal).locale('id').format('DD/MM/YYYY')} <br>
+                        <strong>${row.nomor}</strong>
+                    `;
                 }
             },
-            { data: 'status', name: 'status', orderable: false, searchable:false,
+            { data: 'data_employees.name', name: 'data_employees.name', orderable: true, searchable:false,
+                render: function (data, type, row, meta) {
+                    return `
+                        ${data} <br>
+                        (${row.data_employees.master_organizations.name})
+                    `;
+                }
+            },
+            { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     let color;
-                    let status = row.status;
-                    switch (status) {
+                    switch (row.status_pengawas1) {
                         case "Proses":
                             color = "secondary";
                             break;
@@ -157,34 +179,43 @@
                         default:
                             color = "danger";
                         }
-                    return `<span class="badge badge-${color} w-100" style="font-size:13px">${status}</span>`;
+
+                    return `
+                        ${row.pengawas1?.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas1}</span>
+                    `;
                 }
             },
-            { data: 'pengawas', name: null, orderable: false, searchable:false,
+            { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
-                    const items = [
-                        { name: row.pengawas1?.name },
-                        { name: row.pengawas2?.name },
-                        { name: row.security?.name },
-                        { name: row.korlap },
-                    ];
+                    let color;
+                    switch (row.status_pengawas2) {
+                        case "Proses":
+                            color = "secondary";
+                            break;
+                        case "Disetujui":
+                            color = "success";
+                            break;
+                        default:
+                            color = "danger";
+                        }
 
-                    const html = items
-                        .filter(item => item.name)
-                        .map(item => `
-                            <div class="small">
-                                <i class="fas fa-user fa-fw me-1"></i>
-                                ${item.name}
-                            </div>
-                        `)
-                        .join('');
-
-                    return html
-                        ? `<div class="d-flex flex-column gap-1">${html}</div>`
-                        : '';
+                    return `
+                        ${row.pengawas2?.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas2}</span>
+                    `;
                 }
             },
-
+            { data: null, name: null, orderable: false, searchable:false,
+                render: function (data, type, row, meta) {
+                    return row.security?.name
+                }
+            },
+            { data: null, name: null, orderable: false, searchable:false,
+                render: function (data, type, row, meta) {
+                    return row.korlap;
+                }
+            },
             { data: 'laporan_lembur_checkin', name: 'laporan_lembur_checkin', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     if (data === '-') {
@@ -216,7 +247,6 @@
 
                 }
             },
-
             { data: 'total_jam_lembuar', name: 'total_jam_lembuar', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     const inVal  = row.laporan_lembur_checkin;
@@ -239,7 +269,6 @@
                         : `${hours}<span class="small">jam</span> <br>${minutes}<span class="small">menit</span>`;
                 }
             },
-
             { data: 'waktu', name: 'waktu', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     moment.locale('id');

@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="col-12 col-md-5">
                         <div style="position: relative;" class="form-group">
-                            <label>Nama Karyawan</label>
+                            <label>Nama Karyawan</label> {{$pass['format']}}
                             <input type="text" class="form-control @error('form.mask') is-invalid @enderror @error('employee_invalid') is-invalid @enderror" placeholder="Ketik nama..." wire:model.live.debounce.400ms="query">
                             <input type="hidden" wire:model="form.data_employee_id">
                             @error('form.mask')

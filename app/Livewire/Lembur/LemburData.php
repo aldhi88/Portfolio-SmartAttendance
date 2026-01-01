@@ -3,6 +3,7 @@
 namespace App\Livewire\Lembur;
 
 use App\Helpers\PublicHelper;
+use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,9 @@ class LemburData extends Component
     public function boot(
         DataLemburFace $dataLemburRepo,
         MasterOrganizationFace $masterOrganizationRepo,
-    )
-    {
+    ) {
         $this->dataLemburRepo = $dataLemburRepo;
         $this->masterOrganizationRepo = $masterOrganizationRepo;
-
     }
 
     public $dt = [];
@@ -34,14 +33,14 @@ class LemburData extends Component
     }
     public function wireDelete()
     {
-        if($this->dataLemburRepo->delete($this->deleteId)){
-            $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmDelete');
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil dihapus.']);
+        if ($this->dataLemburRepo->delete($this->deleteId)) {
+            $this->dispatch('reloadDT', data: 'dtTable');
+            $this->dispatch('closeModal', id: 'modalConfirmDelete');
+            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data berhasil dihapus.']);
             return;
         }
 
-        $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public $deleteMultipleId;
@@ -52,13 +51,13 @@ class LemburData extends Component
     }
     public function deleteMultiple()
     {
-        if($this->dataLemburRepo->deleteMultiple($this->deleteMultipleId)){
-            $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmDeleteMultiple');
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Semua data yang dipilih berhasil dihapus.']);
+        if ($this->dataLemburRepo->deleteMultiple($this->deleteMultipleId)) {
+            $this->dispatch('reloadDT', data: 'dtTable');
+            $this->dispatch('closeModal', id: 'modalConfirmDeleteMultiple');
+            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Semua data yang dipilih berhasil dihapus.']);
             return;
         }
-        $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
     // end delete section
 
@@ -70,21 +69,76 @@ class LemburData extends Component
     }
     public function wireProses($proses)
     {
-        $data['status'] = $proses;
-        // if(!Auth::user()->data_employees){
-        //     $this->dispatch('closeModal',id:'modalConfirmSetuju');
-        //     $this->dispatch('alert', data:['type' => 'error',  'message' => 'User ini tidak ada akses.']);
-        //     return;
-        // }
-        $data['approved_by'] = Auth::user()->data_employees?->id ?? null;
-        if($this->dataLemburRepo->process($this->prosesId, $data)){
-            $this->dispatch('reloadDT',data:'dtTable');
-            $this->dispatch('closeModal',id:'modalConfirmSetuju');
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil diproses.']);
+        $user = Auth::user();
+        $employeeId = $user->data_employees?->id;
+
+        $lembur = DataLembur::find($this->prosesId);
+
+        if (!$lembur) {
+            $this->dispatch('alert', data: [
+                'type' => 'error',
+                'message' => 'Data tidak ditemukan.'
+            ]);
             return;
         }
 
-        $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $data = [];
+
+        // SUPERUSER
+        if ($user->is_superuser) {
+
+            if ($lembur->pengawas1 !== null) {
+                $data['status_pengawas1'] = $proses;
+            }
+
+            if ($lembur->pengawas2 !== null) {
+                $data['status_pengawas2'] = $proses;
+            }
+        }
+        // PENGAWAS BIASA
+        else {
+
+            if ($lembur->pengawas1 === $employeeId) {
+                $data['status_pengawas1'] = $proses;
+            }
+
+            if ($lembur->pengawas2 === $employeeId) {
+                $data['status_pengawas2'] = $proses;
+            }
+
+            if (empty($data)) {
+                $this->dispatch('alert', data: [
+                    'type' => 'error',
+                    'message' => 'Anda tidak berhak memproses data ini.'
+                ]);
+                return;
+            }
+        }
+
+        if ($this->dataLemburRepo->process($this->prosesId, $data)) {
+            $this->dispatch('reloadDT', data: 'dtTable');
+            $this->dispatch('closeModal', id: 'modalConfirmSetuju');
+            $this->dispatch('alert', data: [
+                'type' => 'success',
+                'message' => 'Data berhasil diproses.'
+            ]);
+            return;
+        }
+
+        $this->dispatch('alert', data: [
+            'type' => 'error',
+            'message' => 'Terjadi masalah, hubungi administrator.'
+        ]);
+        // $data['status'] = $proses;
+        // $data['approved_by'] = Auth::user()->data_employees?->id ?? null;
+        // if($this->dataLemburRepo->process($this->prosesId, $data)){
+        //     $this->dispatch('reloadDT',data:'dtTable');
+        //     $this->dispatch('closeModal',id:'modalConfirmSetuju');
+        //     $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil diproses.']);
+        //     return;
+        // }
+
+        // $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public function mount()

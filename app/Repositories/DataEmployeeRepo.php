@@ -118,22 +118,19 @@ class DataEmployeeRepo implements DataEmployeeFace
 
         if (Auth::user()->is_pengawas) {
             $pengawasId = Auth::user()->data_employees->id;
-            return DataEmployee::select('id', 'name')
+            return DataEmployee::select('id', 'name','master_organization_id')
                 ->where('name', 'like', '%' . $name . '%')
                 ->where(function ($q) use ($pengawasId) {
                     $q->whereHas('pengawas', function ($q2) use ($pengawasId) {
                         $q2->where('pengawas_id', $pengawasId);
                     });
-                    // $q->whereHas('pengawas', function ($q2) use ($pengawasId) {
-                    //     $q2->where('pengawas_id', $pengawasId);
-                    // })->orWhereDoesntHave('pengawas');
                 })
                 ->limit(10)
                 ->get()
                 ->toArray();
         }
 
-        return DataEmployee::select('id', 'name')
+        return DataEmployee::select('id', 'name','master_organization_id')
             ->where('name', 'like', '%' . $name . '%')
             ->limit(10)
             ->get()

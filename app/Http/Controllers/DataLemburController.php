@@ -100,14 +100,10 @@ class DataLemburController extends Controller
             ->first()
             ->toArray();
         // dd($data);
-        $formatPdf = [
-            1 => 'format_patra_niaga',
-            2 => 'format_ptc',
-            3 => 'format_ptc',
-            9 => 'format_ptc',
-        ];
 
-        $view = 'lembur.pdf.'.$formatPdf[$data['data_employees']['master_organization_id']];
+        $bladeView = DataLembur::formatOrg($data['data_employees']['master_organization_id']);
+
+        $view = 'lembur.pdf.'.$bladeView;
         // dd($view);
         // $pdf = Pdf::loadView($view)
         //     ->setPaper('A4', 'portrait');

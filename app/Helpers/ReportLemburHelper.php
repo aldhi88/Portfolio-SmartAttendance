@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\DataAttendanceClaim;
 use App\Models\LogAttendance;
 
 class ReportLemburHelper
@@ -25,13 +26,21 @@ class ReportLemburHelper
 
     public static function getLogAttd($data, $type)
     {
-        $query = LogAttendance::query()
-            ->where('data_employee_id', $data['data_employee_id'])
-            ->whereBetween('time', [$data['start'], $data['end']]);
+        $columnMethod = $type === 'in' ? 'min' : 'max';
 
-        $result = $type === 'in'
-            ? $query->min('time')
-            : $query->max('time');
+        $baseFilter = [
+            ['data_employee_id', '=', $data['data_employee_id']],
+        ];
+
+        $result = LogAttendance::where($baseFilter)
+            ->whereBetween('time', [$data['start'], $data['end']])
+            ->{$columnMethod}('time');
+
+        if (!$result) {
+            $result = DataAttendanceClaim::where($baseFilter)
+                ->whereBetween('time', [$data['start'], $data['end']])
+                ->{$columnMethod}('time');
+        }
 
         return $result ?? '-';
     }
