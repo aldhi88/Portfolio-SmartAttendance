@@ -206,14 +206,14 @@
                     `;
                 }
             },
-            { data: null, name: null, orderable: false, searchable:false,
+            { data: 'id', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
-                    return row.security?.name
+                    return row.security ? row.security.name : '-';
                 }
             },
-            { data: null, name: null, orderable: false, searchable:false,
+            { data: 'korlap', name: 'korlap', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
-                    return row.korlap;
+                    return data;
                 }
             },
             { data: 'laporan_lembur_checkin', name: 'laporan_lembur_checkin', orderable: false, searchable:false,

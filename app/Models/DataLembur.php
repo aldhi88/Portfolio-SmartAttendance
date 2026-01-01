@@ -24,6 +24,18 @@ class DataLembur extends Model
             ->first() ?? null;
     }
 
+    public static function orgIdByFormat($format)
+    {
+        $data = [
+            'format_patra_niaga' => [1],
+            'format_ptc' => [2, 3, 11],
+            'format_ptc_security' => [9],
+            'format_patlog' => [5],
+        ];
+
+        return $data[$format];
+    }
+
     public function data_employee_admins(): BelongsTo
     {
         return $this->belongsTo(DataEmployee::class, 'approved_by', 'id');

@@ -47,8 +47,11 @@ class DataLemburCreate extends Component
             ->addHours(2)
             ->format('Y-m-d H:i:s');
 
-        $this->form['approved_by'] = $this->form['pengawas1'];
-        $this->form['status'] = "Disetujui";
+        $this->form['status_pengawas1'] = "Disetujui";
+        if(isset($this->form['pengawas2']) && $this->form['pengawas2']!=""){
+            $this->form['status_pengawas2'] = "Disetujui";
+        }
+
 
         if ($this->dataLemburRepo->create($this->form)) {
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);

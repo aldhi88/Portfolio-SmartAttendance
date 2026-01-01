@@ -2,8 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Models\DataEmployee;
 use App\Models\DataIzin;
 use App\Models\DataLembur;
+use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -37,14 +39,63 @@ class DataLemburRepo implements DataLemburFace
 
     public function create($data)
     {
+        $orgId = DataEmployee::where('id', $data['data_employee_id'])
+            ->value('master_organization_id');
+
+        $year = now()->year;
+        $format = DataLembur::formatOrg($orgId);
+
+        // 🎯 tentukan LIKE pattern & posisi sequence
+        if (in_array($format, ['format_ptc', 'format_ptc_security'])) {
+            $like = "%/PND448000/{$year}-S8";
+            $seqFromFront = true;
+        } elseif ($format === 'format_patra_niaga') {
+            $like = "%/PND448000/IV/{$year}-SO";
+            $seqFromFront = true;
+        } else {
+            $like = "{$year}-%";
+            $seqFromFront = false;
+        }
+
+        // 🔍 ambil nomor terakhir
+        $lastNomor = DataLembur::where('nomor', 'like', $like)
+            ->orderBy('nomor', 'desc')
+            ->value('nomor');
+
+        // 🔢 ambil sequence lama
+        if ($lastNomor) {
+            if ($seqFromFront) {
+                $lastSeq = (int) explode('/', $lastNomor)[0];
+            } else {
+                $lastSeq = (int) explode('-', $lastNomor)[1];
+            }
+        } else {
+            $lastSeq = 0;
+        }
+
+        $seq = str_pad($lastSeq + 1, 4, '0', STR_PAD_LEFT);
+
+        // 🧾 bentuk nomor baru
+        if (in_array($format, ['format_ptc', 'format_ptc_security'])) {
+            $nomor = "{$seq}/PND448000/{$year}-S8";
+        } elseif ($format === 'format_patra_niaga') {
+            $nomor = "{$seq}/PND448000/IV/{$year}-SO";
+        } else {
+            $nomor = "{$year}-{$seq}";
+        }
+
+        $data['nomor'] = $nomor;
+
         try {
             DataLembur::create($data);
             return true;
         } catch (\Exception $e) {
-            Log::error("Insert data_leburs failed", ['error' => $e->getMessage()]);
+            Log::error('Insert data_lemburs failed', ['error' => $e->getMessage()]);
             return false;
         }
     }
+
+
 
     public function getDataDT($data)
     {
