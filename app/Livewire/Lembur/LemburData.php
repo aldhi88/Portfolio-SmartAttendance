@@ -6,6 +6,8 @@ use App\Helpers\PublicHelper;
 use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
+use App\Repositories\LogGpsRepo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -23,6 +25,64 @@ class LemburData extends Component
     }
 
     public $dt = [];
+
+    public $lemburIn;
+    public $lemburOut;
+    // claim proses
+    public function wireSubmitClaim($employeeId)
+    {
+        if (is_null($this->lemburIn) && is_null($this->lemburOut)) {
+            $this->addError('error', 'Waktu masuk dan pulang harus diisi.');
+            return;
+        }
+
+        $lemburIn  = Carbon::parse($this->lemburIn);
+        $lemburOut = Carbon::parse($this->lemburOut);
+
+        if ($lemburIn->greaterThanOrEqualTo($lemburOut)) {
+            $this->addError(
+                'error',
+                'Waktu pulang lembur harus lebih besar dari waktu masuk lembur.'
+            );
+            return;
+        }
+
+        $data = [
+            [
+                'data_employee_id' => $employeeId,
+                'created_by' => Auth::id(),
+                'time' => $lemburIn,
+            ],
+            [
+                'data_employee_id' => $employeeId,
+                'created_by' => Auth::id(),
+                'time' => $lemburOut,
+            ],
+        ];
+
+        if(LogGpsRepo::bulkInsert($data)){
+            $this->dispatch('closeModal', id: 'modalConfirmClaim');
+            $this->dispatch('reloadDT', data: 'dtTable');
+            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data berhasil dihapus.']);
+            return;
+        }
+
+        $this->addError(
+            'error',
+            'Terjadi kesalahan di server.'
+        );
+    }
+    public function claimRules()
+    {
+        return [
+            "lembur.time_in" => "required",
+            "lembur.time_out" => "required",
+        ];
+    }
+    public $validationAttributes = [
+        "lembur.time_in" => "Waktu Masuk Lembur",
+        "lembur.time_out" => "Waktu Pulang Lembur",
+    ];
 
     // delete section
     public $deleteId;
@@ -129,16 +189,6 @@ class LemburData extends Component
             'type' => 'error',
             'message' => 'Terjadi masalah, hubungi administrator.'
         ]);
-        // $data['status'] = $proses;
-        // $data['approved_by'] = Auth::user()->data_employees?->id ?? null;
-        // if($this->dataLemburRepo->process($this->prosesId, $data)){
-        //     $this->dispatch('reloadDT',data:'dtTable');
-        //     $this->dispatch('closeModal',id:'modalConfirmSetuju');
-        //     $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data berhasil diproses.']);
-        //     return;
-        // }
-
-        // $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public function mount()

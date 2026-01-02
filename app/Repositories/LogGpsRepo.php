@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\LogGps;
 use App\Repositories\Interfaces\LogGpsFace;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class LogGpsRepo implements LogGpsFace
 {
@@ -13,8 +14,25 @@ class LogGpsRepo implements LogGpsFace
         return LogGps::create($data);
     }
 
-    // public function getLastTimeByMachine($data)
-    // {
-    //     return LogAttendance::where('master_machine_id', $data)->max('time');
-    // }
+    public static function getLogByEmployeeId($data)
+    {
+
+        return LogGps::where('data_employee_id', $data['employeeId'])
+            ->whereBetween('created_at', [
+                $data['start'], $data['end']
+            ])
+            ->get()
+            ->toArray();
+    }
+
+    public static function bulkInsert($data)
+    {
+        try {
+            LogGps::insert($data);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Insert bulk log_gps failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
 }

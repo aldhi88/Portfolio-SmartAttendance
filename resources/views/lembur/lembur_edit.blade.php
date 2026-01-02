@@ -199,54 +199,56 @@
                                 </div>
                             </div>
                         </div>
+
+                    @else
+                        <div class="row">
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Manager ITD / Pengawas 1</label>
+                                    <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
+                                        <option value="">- Pilih -</option>
+                                        @foreach ($ttd['pengawas'] as $item)
+                                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('form.pengawas1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Pengawas 2</label>
+                                    <select wire:model="form.pengawas2" class="form-control">
+                                        <option value="">- Pilih -</option>
+                                        @foreach ($ttd['pengawas'] as $item)
+                                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Security</label>
+                                    <select wire:model="form.security" class="form-control">
+                                        <option value="">- Pilih -</option>
+                                        @foreach ($ttd['security'] as $item)
+                                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="form-group">
+                                    <label>Koordinator Lapangan</label>
+                                    <input type="text" class="form-control" wire:model="form.korlap">
+                                </div>
+                            </div>
+                        </div>
                     @endif
-                @else
-                    <div class="row">
-                        <div class="col-12 col-md">
-                            <div class="form-group">
-                                <label>Manager ITD / Pengawas 1</label>
-                                <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
-                                    <option value="">- Pilih -</option>
-                                    @foreach ($ttd['pengawas'] as $item)
-                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('form.pengawas1')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-12 col-md">
-                            <div class="form-group">
-                                <label>Pengawas 2</label>
-                                <select wire:model="form.pengawas2" class="form-control">
-                                    <option value="">- Pilih -</option>
-                                    @foreach ($ttd['pengawas'] as $item)
-                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-md">
-                            <div class="form-group">
-                                <label>Security</label>
-                                <select wire:model="form.security" class="form-control">
-                                    <option value="">- Pilih -</option>
-                                    @foreach ($ttd['security'] as $item)
-                                        <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md">
-                            <div class="form-group">
-                                <label>Koordinator Lapangan</label>
-                                <input type="text" class="form-control" wire:model="form.korlap">
-                            </div>
-                        </div>
-                    </div>
+
                 @endif
 
                 <hr>

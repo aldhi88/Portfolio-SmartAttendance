@@ -6,6 +6,7 @@ use App\Helpers\ReportLemburHelper;
 use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
+use App\Repositories\LogGpsRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -59,6 +60,14 @@ class DataLemburController extends Controller
             })
             ->addColumn('format', function ($data) {
                 return DataLembur::formatOrg($data->data_employees->master_organization_id);
+            })
+            ->addColumn('log_gps', function ($data) {
+                $pass = [
+                    'employeeId' => $data->data_employee_id,
+                    'start' => $data->checkin_time_lembur,
+                    'end' => $data->checkout_deadline_time_lembur,
+                ];
+                return LogGpsRepo::getLogByEmployeeId($pass);
             })
             ->toJson();
     }

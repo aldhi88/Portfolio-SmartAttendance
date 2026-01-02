@@ -1,6 +1,8 @@
 @section('style')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
+    <link rel="stylesheet" href="{{ asset('assets/libs/flatpicker/flatpickr.min.css') }}">
+
 @endsection
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -8,6 +10,7 @@
     <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/libs/moment/locale/id.js') }}"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="{{ asset('assets/libs/flatpicker/flatpickr.js') }}"></script>
 @endsection
 
 @push('push-script')
@@ -128,7 +131,7 @@
                         html += `
                             <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger"
                             data-toggle="modal" data-target="#modalConfirmSetuju"
-                            data-dispatch="wireProses('Ditolak')"
+                            data-dispatch="wireLogGps(${data.id})"
                             href="javascript:void(0);">
                             <i class="fas fa-times fa-fw"></i> Tolak Izin lembur
                             </a>
@@ -136,20 +139,22 @@
                     }
 
                     // Klaim absen manual
-                    const dtJsonKlaim = {
-                        msg: `Anda yakin menyetujui data izin ${data.data_employees.name}?`,
-                        id: data.id,
-                        proses: 'Setujui'
-                    };
-                    html += `
-                        <a data-json='${JSON.stringify(dtJsonKlaim)}' class="dropdown-item text-danger"
-                        data-toggle="modal" data-target="#modalConfirmClaim"
-                        data-dispatch="wireProses('Disetujui')"
-                        href="javascript:void(0);">
-                        <i class="fas fa-exclamation-circle fa-fw"></i> Klaim Presensi Manual
-                        </a>
-                    `;
+                    if (allApproved) {
+                        const dtJsonKlaim = {
+                            msg: `Anda yakin menyetujui data izin ${data.data_employees.name}?`,
+                            proses: 'Setujui',
+                            log_gps: row.log_gps
+                        };
+                        html += `
+                            <a data-json='${JSON.stringify(dtJsonKlaim)}' class="dropdown-item text-danger"
+                            data-toggle="modal" data-target="#modalConfirmClaim"
+                            data-dispatch="wireSubmitClaim(${data.data_employee_id})"
+                            href="javascript:void(0);">
+                            <i class="fas fa-exclamation-circle fa-fw"></i> Klaim Presensi Manual
+                            </a>
+                        `;
 
+                    }
                     // Delete
                     const dtJson = {
                         msg: `Apakah anda yakin menghapus data izin ${row.data_employees.name}?`,

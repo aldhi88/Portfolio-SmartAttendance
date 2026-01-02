@@ -21,7 +21,7 @@ class DataLembur extends Model
             ])
             ->filter(fn($values) => in_array($id, $values))
             ->keys()
-            ->first() ?? null;
+            ->first() ?? 'other';
     }
 
     public static function orgIdByFormat($format)

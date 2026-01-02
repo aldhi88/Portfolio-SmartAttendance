@@ -32,16 +32,17 @@ class ReportLemburHelper
             ['data_employee_id', '=', $data['data_employee_id']],
         ];
 
-        $result = LogAttendance::where($baseFilter)
+        $result = DataAttendanceClaim::where($baseFilter)
             ->whereBetween('time', [$data['start'], $data['end']])
             ->{$columnMethod}('time');
 
         if (!$result) {
-            $result = DataAttendanceClaim::where($baseFilter)
+            $result = LogAttendance::where($baseFilter)
                 ->whereBetween('time', [$data['start'], $data['end']])
                 ->{$columnMethod}('time');
         }
 
         return $result ?? '-';
     }
+
 }
