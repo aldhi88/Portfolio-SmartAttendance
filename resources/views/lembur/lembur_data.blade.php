@@ -112,7 +112,7 @@
                                 <th class="text-center" colspan="2">Ketentuan Absensi</th>
                             </tr>
                             <tr>
-                                <th class="text-center">Pengawas Tertinggi</th>
+                                <th class="text-center">Manager ITD / <br> Pengawas 1</th>
                                 <th class="text-center">Pengawas 2</th>
                                 <th class="text-center">Security</th>
                                 <th class="text-center">Korlap</th>
@@ -155,6 +155,7 @@
     </div>
     @include('lembur.atc.lembur_data_atc')
     @include('lembur.atc.modal_setuju_confirm')
+    @include('lembur.atc.modal_claim_confirm')
     @include('components.modal.modal_confirm_delete_multiple')
     @include('components.modal.modal_confirm_delete')
 </div>

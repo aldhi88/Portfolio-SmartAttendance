@@ -85,8 +85,6 @@
                         `;
                     }
 
-
-
                     const hasPengawas1 = row.pengawas1 !== null;
                     const hasPengawas2 = row.pengawas2 !== null;
 
@@ -132,6 +130,22 @@
                         `;
                     }
 
+                    // Klaim absen manual
+                    const dtJsonKlaim = {
+                        msg: `Anda yakin menyetujui data izin ${data.data_employees.name}?`,
+                        id: data.id,
+                        proses: 'Setujui'
+                    };
+                    html += `
+                        <a data-json='${JSON.stringify(dtJsonKlaim)}' class="dropdown-item text-danger"
+                        data-toggle="modal" data-target="#modalConfirmClaim"
+                        data-dispatch="wireProses('Disetujui')"
+                        href="javascript:void(0);">
+                        <i class="fas fa-exclamation-circle fa-fw"></i> Klaim Presensi Manual
+                        </a>
+                    `;
+
+                    // Delete
                     const dtJson = {
                         msg: `Apakah anda yakin menghapus data izin ${row.data_employees.name}?`,
                         id: data.id
@@ -168,6 +182,10 @@
             },
             { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
+                    if (!row.pengawas1) {
+                        return '';
+                    }
+
                     let color;
                     switch (row.status_pengawas1) {
                         case "Proses":
@@ -178,16 +196,22 @@
                             break;
                         default:
                             color = "danger";
-                        }
+                    }
 
                     return `
-                        ${row.pengawas1?.name} <br>
-                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas1}</span>
+                        ${row.pengawas1.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">
+                            ${row.status_pengawas1}
+                        </span>
                     `;
                 }
             },
             { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
+                    if (!row.pengawas2) {
+                        return '';
+                    }
+
                     let color;
                     switch (row.status_pengawas2) {
                         case "Proses":
@@ -198,11 +222,13 @@
                             break;
                         default:
                             color = "danger";
-                        }
+                    }
 
                     return `
-                        ${row.pengawas2?.name} <br>
-                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas2}</span>
+                        ${row.pengawas2.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">
+                            ${row.status_pengawas2}
+                        </span>
                     `;
                 }
             },

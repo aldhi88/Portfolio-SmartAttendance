@@ -155,22 +155,22 @@
         <tr>
             <td style="width: 40%">
                 Mengetahui, <br>
-                {{ $data['pengawas2']['master_positions']['name'] }}
+                {{ $data['pengawas1']['master_positions']['name'] }}
             </td>
             <td style="width: 20%"></td>
             <td>
                 Dumai, {{ \Carbon\Carbon::parse(date('d M Y'))->locale('id')->translatedFormat('d F Y') }}
                 <br>
-                {{ $data['pengawas1']['master_positions']['name'] }}
+                {{ $data['pengawas2']['master_positions']['name'] }}
             </td>
         </tr>
         <tr>
             <td colspan="3" style="height: 80px"></td>
         </tr>
         <tr style="font-weight: bold; text-decoration: underline">
-            <td>{{ $data['pengawas2']['name'] }}</td>
-            <td></td>
             <td>{{ $data['pengawas1']['name'] }}</td>
+            <td></td>
+            <td>{{ $data['pengawas2']['name'] }}</td>
         </tr>
     </table>
 
