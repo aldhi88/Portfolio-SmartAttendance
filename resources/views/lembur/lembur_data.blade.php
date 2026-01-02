@@ -109,6 +109,7 @@
                                 <th rowspan="2" class="text-center">Karyawan <br> (Perusahaan)</th>
                                 <th class="text-center" colspan="4">Pengawas/ <br>Penandatangan</th>
                                 <th class="text-center" colspan="3">Laporan Absensi Lembur</th>
+                                <th rowspan="2" class="text-center" width="50">Yang Dikerjakan</th>
                                 <th class="text-center" colspan="2">Ketentuan Absensi</th>
                             </tr>
                             <tr>
@@ -129,6 +130,7 @@
                                     <th class="text-center">
                                         <input type="checkbox" class="check-data-all">
                                     </th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>

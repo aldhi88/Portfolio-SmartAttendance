@@ -21,6 +21,7 @@
         columnDefs: [
             // { className: 'text-left', targets: [3] },
             { className: 'px-0', targets: [1] },
+            { className: 'text-left', targets: [11] },
             { className: 'text-left text-nowrap', targets: [3] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
@@ -247,11 +248,7 @@
                     return row.security ? row.security.name : '-';
                 }
             },
-            { data: 'korlap', name: 'korlap', orderable: false, searchable:false,
-                render: function (data, type, row, meta) {
-                    return data;
-                }
-            },
+            { data: 'korlap', name: 'korlap', orderable: false, searchable:false},
             { data: 'laporan_lembur_checkin', name: 'laporan_lembur_checkin', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     if (data === '-') {
@@ -305,6 +302,7 @@
                         : `${hours}<span class="small">jam</span> <br>${minutes}<span class="small">menit</span>`;
                 }
             },
+            { data: 'pekerjaan', name: 'pekerjaan', orderable: false, searchable:false},
             { data: 'waktu', name: 'waktu', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     moment.locale('id');

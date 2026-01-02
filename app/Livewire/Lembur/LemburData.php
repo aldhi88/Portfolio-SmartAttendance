@@ -4,9 +4,9 @@ namespace App\Livewire\Lembur;
 
 use App\Helpers\PublicHelper;
 use App\Models\DataLembur;
+use App\Repositories\DataAttendanceClaimRepo;
 use App\Repositories\Interfaces\DataLemburFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
-use App\Repositories\LogGpsRepo;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -36,10 +36,10 @@ class LemburData extends Component
             return;
         }
 
-        $lemburIn  = Carbon::parse($this->lemburIn);
-        $lemburOut = Carbon::parse($this->lemburOut);
+        $carbonLemburIn  = Carbon::parse($this->lemburIn);
+        $carbonLemburOut = Carbon::parse($this->lemburOut);
 
-        if ($lemburIn->greaterThanOrEqualTo($lemburOut)) {
+        if ($carbonLemburIn->greaterThanOrEqualTo($carbonLemburOut)) {
             $this->addError(
                 'error',
                 'Waktu pulang lembur harus lebih besar dari waktu masuk lembur.'
@@ -47,20 +47,27 @@ class LemburData extends Component
             return;
         }
 
+        $now = now()->toDateTimeString();
         $data = [
             [
                 'data_employee_id' => $employeeId,
                 'created_by' => Auth::id(),
-                'time' => $lemburIn,
+                'time' => $this->lemburIn,
+                'type' => 'Lembur',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'data_employee_id' => $employeeId,
                 'created_by' => Auth::id(),
-                'time' => $lemburOut,
+                'time' => $this->lemburOut,
+                'type' => 'Lembur',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
         ];
 
-        if(LogGpsRepo::bulkInsert($data)){
+        if(DataAttendanceClaimRepo::bulkInsert($data)){
             $this->dispatch('closeModal', id: 'modalConfirmClaim');
             $this->dispatch('reloadDT', data: 'dtTable');
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data berhasil dihapus.']);

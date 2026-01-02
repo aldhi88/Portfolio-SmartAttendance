@@ -33,6 +33,7 @@ class ReportLemburHelper
         ];
 
         $result = DataAttendanceClaim::where($baseFilter)
+            ->where('type', 'Lembur')
             ->whereBetween('time', [$data['start'], $data['end']])
             ->{$columnMethod}('time');
 
