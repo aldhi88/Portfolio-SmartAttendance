@@ -161,6 +161,7 @@ class DataLemburEdit extends Component
     {
         $this->initEdit();
         $this->genTtdLembur();
+        // dd($this->all());
     }
 
     public $pass;
