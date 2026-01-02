@@ -51,8 +51,6 @@ class DataLemburEdit extends Component
             ->addHours(2)
             ->format('Y-m-d H:i:s');
 
-        $this->form['approved_by'] = $this->form['pengawas1'];
-
         $dtEdit['id'] = $this->pass['id'];
         $dtEdit['form'] = $this->form;
 
