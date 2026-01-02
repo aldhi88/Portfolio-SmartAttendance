@@ -15,7 +15,7 @@
                             <h1 class="mb-3">
                                 <i class="ri-error-warning-line rounded-circle p-3 badge-soft-danger"></i>
                             </h1>
-                            <h4>Konfirmasi Klaim Presensi Lembur Manual {{$prosesId}}</h4>
+                            <h4>Konfirmasi Klaim Presensi Lembur Manual</h4>
                         </div>
                     </div>
                     <hr>
@@ -57,8 +57,29 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    @push('push-style')
+    <style>
+    .flatpickr-calendar { z-index: 2000 !important; }
+    </style>
+    @endpush
+
+
+
     @push('push-script')
     <script>
+        // ✅ Pasang sekali saja: cegah Bootstrap modal "narik fokus" dari flatpickr
+        if (!window.__fpBsModalFix) {
+            window.__fpBsModalFix = true;
+
+            $(document).on('focusin', function(e) {
+                // Bootstrap 4 enforceFocus ngeblok element di luar modal
+                // kalau fokus masuk ke flatpickr, stop propagation biar gak ketutup
+                if ($(e.target).closest('.flatpickr-calendar').length) {
+                    e.stopImmediatePropagation();
+                }
+            });
+        }
+
         $('#modalConfirmClaim').on('shown.bs.modal', function(e) {
             const modal   = this;
             const startEl = modal.querySelector("input[name=start]");
@@ -70,50 +91,78 @@
                 if (btn) btn.disabled = !ok;
             };
 
-            // anti double-init saat modal dibuka berkali-kali
+            // anti double-init
             if (startEl && startEl._flatpickr) startEl._flatpickr.destroy();
             if (endEl && endEl._flatpickr) endEl._flatpickr.destroy();
 
-            // ===== RESET nilai lama setiap modal dibuka =====
+            // reset nilai lama
             if (startEl) startEl.value = '';
             if (endEl) endEl.value = '';
             @this.set('lemburIn', null, false);
             @this.set('lemburOut', null, false);
 
-            // awalnya tombol disabled
             if (btn) btn.disabled = true;
+
+            const repositionAll = () => {
+                startEl?._flatpickr?.positionCalendar();
+                endEl?._flatpickr?.positionCalendar();
+            };
 
             flatpickr(startEl, {
                 enableTime: true,
+                enableSeconds: true,
                 dateFormat: "Y-m-d H:i:ss",
                 time_24hr: true,
                 defaultHour: 0,
                 defaultMinute: 0,
-                appendTo: modal,
+                defaultSecond: 0,
+
+                // ✅ posisi paling akurat
+                appendTo: document.body,
+
+                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+
                 onChange: function(selectedDates, dateStr) {
                     @this.set('lemburIn', dateStr, false);
 
                     if (selectedDates?.[0] && endEl?._flatpickr) {
                         endEl._flatpickr.set('minDate', selectedDates[0]);
                     }
+
                     updateSubmitState();
+                    setTimeout(repositionAll, 0);
                 }
             });
 
             flatpickr(endEl, {
                 enableTime: true,
+                enableSeconds: true,
                 dateFormat: "Y-m-d H:i:ss",
                 time_24hr: true,
                 defaultHour: 23,
                 defaultMinute: 59,
-                appendTo: modal,
+                defaultSecond: 0,
+
+                appendTo: document.body,
+
+                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+
                 onChange: function(selectedDates, dateStr) {
                     @this.set('lemburOut', dateStr, false);
                     updateSubmitState();
+                    setTimeout(repositionAll, 0);
                 }
             });
 
-            // kode kamu yang lain tetap...
+            // kalau modal scroll, posisi ikut dibenerin (Chrome sering butuh ini)
+            const modalBody = modal.querySelector('.modal-body');
+            if (modalBody) {
+                if (modal._fpScrollHandler) modalBody.removeEventListener('scroll', modal._fpScrollHandler);
+                modal._fpScrollHandler = () => repositionAll();
+                modalBody.addEventListener('scroll', modal._fpScrollHandler, { passive: true });
+            }
+
+            // ===== kode kamu yang lain tetap... =====
             const data = $(e.relatedTarget).data('json');
             let logs = data.log_gps;
             $(modal).find('#log-gps-count').text(logs.length);
@@ -133,6 +182,9 @@
         });
     </script>
     @endpush
+
+
+
 
 
 
