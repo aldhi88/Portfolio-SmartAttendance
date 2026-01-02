@@ -109,7 +109,7 @@
                         <div class="row">
                             <div class="col-12 col-md">
                                 <div class="form-group">
-                                    <label>Pengawas Tertinggi</label>
+                                    <label>Manager ITD</label>
                                     <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
                                         <option value="">- Pilih -</option>
                                         @foreach ($ttd['pengawas'] as $item)
@@ -123,7 +123,7 @@
                             </div>
                             <div class="col-12 col-md">
                                 <div class="form-group">
-                                    <label>Pengawas 2</label>
+                                    <label>Pengawas</label>
                                     <select wire:model="form.pengawas2" class="form-control">
                                         <option value="">- Pilih -</option>
                                         @foreach ($ttd['pengawas'] as $item)
@@ -150,7 +150,7 @@
                         <div class="row">
                             <div class="col-12 col-md">
                                 <div class="form-group">
-                                    <label>Pengawas Tertinggi</label>
+                                    <label>Manager ITD</label>
                                     <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
                                         <option value="">- Pilih -</option>
                                         @foreach ($ttd['pengawas'] as $item)
@@ -164,7 +164,7 @@
                             </div>
                             <div class="col-12 col-md">
                                 <div class="form-group">
-                                    <label>Pengawas 2</label>
+                                    <label>Pengawas</label>
                                     <select wire:model="form.pengawas2" class="form-control">
                                         <option value="">- Pilih -</option>
                                         @foreach ($ttd['pengawas'] as $item)
@@ -178,7 +178,7 @@
                         <div class="row">
                             <div class="col-12 col-md">
                                 <div class="form-group">
-                                    <label>Pengawas Tertinggi</label>
+                                    <label>Pengawas</label>
                                     <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
                                         <option value="">- Pilih -</option>
                                         @foreach ($ttd['pengawas'] as $item)
@@ -204,7 +204,7 @@
                     <div class="row">
                         <div class="col-12 col-md">
                             <div class="form-group">
-                                <label>Pengawas Tertinggi</label>
+                                <label>Manager ITD / Pengawas 1</label>
                                 <select wire:model="form.pengawas1" class="form-control @error('form.pengawas1') is-invalid @enderror">
                                     <option value="">- Pilih -</option>
                                     @foreach ($ttd['pengawas'] as $item)
