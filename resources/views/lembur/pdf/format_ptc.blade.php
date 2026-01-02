@@ -27,7 +27,7 @@
                     font-size: 18px
                     ">SURAT PERMINTAAN KERJA LEMBUR</span>
                 <br>
-                <span><strong>No.__________/PND448000/{{ date('Y') }}-S8</strong></span>
+                <span><strong>No.{{ $data['nomor'] }}</strong></span>
             </td>
         </tr>
     </table>
