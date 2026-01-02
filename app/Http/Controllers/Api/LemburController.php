@@ -59,9 +59,9 @@ class LemburController extends Controller
 
             'pekerjaan'                       => $validated['pekerjaan'],
             'pengawas1'                       => $validated['pengawas1'],
-            'pengawas2'                       => $validated['pengawas2'] ?? "",
-            'security'                        => $validated['security'] ?? "",
-            'korlap'                          => $validated['korlap'] ?? "",
+            'pengawas2'                       => $validated['pengawas2'] ?? null,
+            'security'                        => $validated['security'] ?? null,
+            'korlap'                          => $validated['korlap'] ?? null,
         ];
 
         // dd($data);

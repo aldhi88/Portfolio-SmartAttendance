@@ -58,7 +58,8 @@ class DataLemburRepo implements DataLemburFace
         }
 
         // 🔍 ambil nomor terakhir
-        $lastNomor = DataLembur::where('nomor', 'like', $like)
+        $lastNomor = DataLembur::withTrashed()
+            ->where('nomor', 'like', $like)
             ->orderBy('nomor', 'desc')
             ->value('nomor');
 
