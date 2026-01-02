@@ -45,7 +45,7 @@ class DataLemburRepo implements DataLemburFace
         $year = now()->year;
         $format = DataLembur::formatOrg($orgId);
 
-        // 🎯 tentukan LIKE pattern & posisi sequence
+        // tentukan LIKE pattern & posisi sequence
         if (in_array($format, ['format_ptc', 'format_ptc_security'])) {
             $like = "%/PND448000/{$year}-S8";
             $seqFromFront = true;
@@ -57,13 +57,13 @@ class DataLemburRepo implements DataLemburFace
             $seqFromFront = false;
         }
 
-        // 🔍 ambil nomor terakhir
+        // ambil nomor terakhir
         $lastNomor = DataLembur::withTrashed()
             ->where('nomor', 'like', $like)
             ->orderBy('nomor', 'desc')
             ->value('nomor');
 
-        // 🔢 ambil sequence lama
+        // ambil sequence lama
         if ($lastNomor) {
             if ($seqFromFront) {
                 $lastSeq = (int) explode('/', $lastNomor)[0];
@@ -76,7 +76,7 @@ class DataLemburRepo implements DataLemburFace
 
         $seq = str_pad($lastSeq + 1, 4, '0', STR_PAD_LEFT);
 
-        // 🧾 bentuk nomor baru
+        // bentuk nomor baru
         if (in_array($format, ['format_ptc', 'format_ptc_security'])) {
             $nomor = "{$seq}/PND448000/{$year}-S8";
         } elseif ($format === 'format_patra_niaga') {
