@@ -57,6 +57,9 @@ class DataLemburController extends Controller
             ->addColumn('laporan_lembur_checkout', function ($data) {
                 return ReportLemburHelper::getLemburCheckout($data->toArray());
             })
+            ->addColumn('format', function ($data) {
+                return DataLembur::formatOrg($data->data_employees->master_organization_id);
+            })
             ->toJson();
     }
     public function lemburCreate()

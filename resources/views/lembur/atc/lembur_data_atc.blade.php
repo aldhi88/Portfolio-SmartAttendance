@@ -78,11 +78,13 @@
 
                     if (hasLemburTime && pengawas1Ok && pengawas2Ok) {
                         let printPdfUrl = "print-pdf/" + row.id;
-                        html += `
-                            <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
-                                <i class="fas fa-print fa-fw"></i> Print Surat Lembur
-                            </a>
-                        `;
+                        if(row.format == 'format_patra_niaga' || row.format=='format_ptc'){
+                            html += `
+                                <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
+                                    <i class="fas fa-print fa-fw"></i> Print Surat Lembur
+                                </a>
+                            `;
+                        }
                     }
 
                     const hasPengawas1 = row.pengawas1 !== null;
