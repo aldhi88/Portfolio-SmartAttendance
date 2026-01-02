@@ -40,7 +40,7 @@
         <tr>
             <td style="width: 150px">Nama</td>
             <td style="width: 10px">:</td>
-            <td>{{ $data['pengawas1']['name'] }}</td>
+            <td>{{ $data['pengawas2']['name'] }}</td>
         </tr>
         <tr>
             <td>Nopek</td>
@@ -50,7 +50,7 @@
         <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>{{ $data['pengawas1']['master_positions']['name'] }}</td>
+            <td>{{ $data['pengawas2']['master_positions']['name'] }}</td>
         </tr>
     </table>
 
