@@ -20,6 +20,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/mobile', function () {
+    return redirect()->away(env('MOBILE_URL'));
+});
+
 Route::get('/', function(){
     if(Auth::check()){
         if(Auth::user()->is_vendor){

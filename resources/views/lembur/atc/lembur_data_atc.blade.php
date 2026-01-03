@@ -2,7 +2,18 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/libs/flatpicker/flatpickr.min.css') }}">
-
+    <style>
+        .truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;      /* jumlah baris */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-width: 300px;           /* sesuaikan lebar kolom */
+            cursor: pointer;
+        }
+    </style>
 @endsection
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -302,7 +313,16 @@
                         : `${hours}<span class="small">jam</span> <br>${minutes}<span class="small">menit</span>`;
                 }
             },
-            { data: 'pekerjaan', name: 'pekerjaan', orderable: false, searchable:false},
+            { data: 'pekerjaan', name: 'pekerjaan', orderable: false, searchable: false,
+                render: function (data, type, row) {
+                    if (!data) return '-';
+                    return `
+                        <div class="truncate-2" title="${data}">
+                            ${data}
+                        </div>
+                    `;
+                }
+            },
             { data: 'waktu', name: 'waktu', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     moment.locale('id');
