@@ -98,7 +98,8 @@
             <td></td>
             <td>
                 <strong>
-                    Total : {{ $data['data_lembur']['hours'] }} Jam
+                    Total :
+                    {{ $data['data_lembur']['hours'] }} Jam
                     {{ ($data['data_lembur']['minutes']>0)?$data['data_lembur']['minutes'].' Menit':null }}
                 </strong>
             </td>
@@ -107,18 +108,12 @@
             <td></td>
             <td></td>
             <td>
-                {{-- @php
-                    $totalMinutes = $start->diffInMinutes($end);
-                    $hours = intdiv($totalMinutes, 60);
-                    $minutes = $totalMinutes % 60;
+                <strong>
+                    Total Jam Lembur Bulan Berjalan :
+                    {{ $data['data_lembur']['monthly_hours'] }} Jam
+                    {{ ($data['data_lembur']['monthly_minutes']>0)?$data['data_lembur']['monthly_minutes'].' Menit':null }}
+                </strong>
 
-                    if ($minutes === 0) {
-                        $durasi = $hours . ' Jam';
-                    } else {
-                        $durasi = $hours . ' Jam ' . $minutes . ' Menit';
-                    }
-                @endphp
-                <strong>Total Jam Lembur Bulan Berjalan : {{ $durasi }}</strong> --}}
             </td>
         </tr>
         <tr>
