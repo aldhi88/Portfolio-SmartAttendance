@@ -51,6 +51,8 @@ class DataLemburController extends Controller
             }
         }
 
+        // dd($data->get()->toArray());
+
         return DataTables::of($data)
             ->addColumn('laporan_lembur_checkin', function ($data) {
                 return ReportLemburHelper::getLemburCheckin($data->toArray());

@@ -170,6 +170,7 @@ class EmployeeEdit extends Component
             ->values()
             ->toArray();
 
+        $uploadedFiles = [];
         if (!empty($this->dtForm['ttd'])) {
             $ttdFile = $this->dtForm['ttd'];
             $ttdName = uniqid('ttd_', true) . '.' . $ttdFile->extension();
@@ -197,24 +198,26 @@ class EmployeeEdit extends Component
         try {
             DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin, $flatten, $uploadedFiles) {
 
-                foreach ($uploadedFiles as $file) {
-                    $file['file']->storeAs(
-                        dirname($file['path']),
-                        basename($file['path']),
-                        'public'
-                    );
-                }
-
-                foreach ($uploadedFiles as $key => $file) {
-                    if (!empty($file['old'])) {
-                        Storage::disk('public')->delete(
-                            "employees/{$key}/" . $file['old']
+                if(count($uploadedFiles)!=0){
+                    foreach ($uploadedFiles as $file) {
+                        $file['file']->storeAs(
+                            dirname($file['path']),
+                            basename($file['path']),
+                            'public'
                         );
                     }
-                }
 
-                foreach ($uploadedFiles as $key => $file) {
-                    $dtEmployee[$key] = $file['name'];
+                    foreach ($uploadedFiles as $key => $file) {
+                        if (!empty($file['old'])) {
+                            Storage::disk('public')->delete(
+                                "employees/{$key}/" . $file['old']
+                            );
+                        }
+                    }
+
+                    foreach ($uploadedFiles as $key => $file) {
+                        $dtEmployee[$key] = $file['name'];
+                    }
                 }
 
                 // dd($dtEmployee, $dtRel, $dtLogin, $flatten);
