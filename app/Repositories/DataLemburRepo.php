@@ -101,6 +101,7 @@ class DataLemburRepo implements DataLemburFace
     public function getDataDT($data)
     {
         return DataLembur::query()
+            ->select('data_lemburs.*')
             ->with([
                 'data_employees',
                 'data_employees.master_organizations:id,name',

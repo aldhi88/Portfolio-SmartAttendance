@@ -186,7 +186,7 @@
                     return html;
                 }
             },
-            { data: 'tanggal', name: 'tanggal', orderable: true, searchable:false,
+            { data: 'tanggal', name: 'tanggal', orderable: true, searchable:true,
                 render: function (data, type, row, meta) {
                     return `
                         ${moment(row.tanggal).locale('id').format('DD/MM/YYYY')} <br>
@@ -194,7 +194,7 @@
                     `;
                 }
             },
-            { data: 'data_employees.name', name: 'data_employees.name', orderable: true, searchable:false,
+            { data: 'data_employees.name', name: 'data_employees.name', orderable: false, searchable:true,
                 render: function (data, type, row, meta) {
                     return `
                         ${data} <br>
