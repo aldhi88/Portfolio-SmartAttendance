@@ -178,6 +178,42 @@
 
                 </div>
             </div>
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md">
+                        <div class="form-group">
+                            <label>Tanda Tangan</label>
+                            <div class="custom-file">
+                                <input wire:model="dtForm.ttd" type="file" class="custom-file-input @error('dtForm.ttd') is-invalid @enderror">
+                                <input type="hidden" wire:model="dtForm.ttd_old">
+                                <label class="custom-file-label" for="customFile">{{ $pass['ttd'] }}</label>
+                                @error('dtForm.ttd')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                @if (!empty($dtForm['ttd_old']))
+                                <img src="{{ asset('storage/employees/ttd/' . $dtForm['ttd_old']) }}" alt="" class="img-fluid mt-2" width="100">
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="form-group">
+                            <label>Paraf</label>
+                            <div class="custom-file">
+                                <input wire:model="dtForm.paraf" type="file" class="custom-file-input @error('dtForm.paraf') is-invalid @enderror">
+                                <input type="hidden" wire:model="dtForm.paraf_old">
+                                <label class="custom-file-label" for="customFile">{{ $pass['paraf'] }}</label>
+                            </div>
+                            @error('dtForm.paraf')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if (!empty($dtForm['paraf_old']))
+                            <img src="{{ asset('storage/employees/paraf/' . $dtForm['paraf_old']) }}" alt="" class="img-fluid mt-2" width="100">
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-12 text-right my-3">
                 <button type="submit" class="btn btn-primary">
                     <i class=" fas fa-check  mr-1"></i> Simpan Data

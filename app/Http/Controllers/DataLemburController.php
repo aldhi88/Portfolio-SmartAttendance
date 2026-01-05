@@ -111,7 +111,10 @@ class DataLemburController extends Controller
             ])
             ->first()
             ->toArray();
-        // dd($data);
+        // $data['pengawas1']['ttd'] = asset('storage/employees/ttd/'.$data['pengawas1']['ttd']);
+        $data['pengawas1']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas1']['ttd']);
+        $data['pengawa21']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas2']['ttd']);
+        // dd($path, file_exists($path));
 
         $bladeView = DataLembur::formatOrg($data['data_employees']['master_organization_id']);
 

@@ -155,22 +155,36 @@
         <tr>
             <td style="width: 40%">
                 Mengetahui, <br>
-                {{ $data['pengawas1']['master_positions']['name'] }}
+                {{ $data['pengawas2']['master_positions']['name'] }}
             </td>
             <td style="width: 20%"></td>
             <td>
                 Dumai, {{ \Carbon\Carbon::parse(date('d M Y'))->locale('id')->translatedFormat('d F Y') }}
                 <br>
-                {{ $data['pengawas2']['master_positions']['name'] }}
+                {{ $data['pengawas1']['master_positions']['name'] }}
             </td>
         </tr>
         <tr>
-            <td colspan="3" style="height: 80px"></td>
+            <td colspan="3" style="height: 0px"></td>
         </tr>
         <tr style="font-weight: bold; text-decoration: underline">
-            <td>{{ $data['pengawas1']['name'] }}</td>
+            <td>
+                @if (is_null($data['pengawas2']['ttd']))
+                    <div style="height: 100px"></div>
+                @else
+                    <img src="{{ $data['pengawas2']['path_ttd'] }}" alt="" class="img-fluid" height="100"><br>
+                @endif
+                {{ $data['pengawas2']['name'] }}
+            </td>
             <td></td>
-            <td>{{ $data['pengawas2']['name'] }}</td>
+            <td>
+                @if (is_null($data['pengawas1']['ttd']))
+                    <div style="height: 100px"></div>
+                @else
+                    <img src="{{ $data['pengawas1']['path_ttd'] }}" alt="" class="img-fluid" height="100"><br>
+                @endif
+                {{ $data['pengawas1']['name'] }}
+            </td>
         </tr>
     </table>
 

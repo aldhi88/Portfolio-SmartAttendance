@@ -16,12 +16,16 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class EmployeeEdit extends Component
 {
+    use WithFileUploads;
+
     protected $masterOrganizationRepo;
     protected $masterPositionRepo;
     protected $masterLocationRepo;
@@ -144,7 +148,11 @@ class EmployeeEdit extends Component
             'user_logins',
             'username',
             'password',
-            'role'
+            'role',
+            'ttd',
+            'paraf',
+            'ttd_old',
+            'paraf_old',
         ])->toArray();
 
         $dtLogin['nickname']     = $this->dtForm['name'];
@@ -162,9 +170,53 @@ class EmployeeEdit extends Component
             ->values()
             ->toArray();
 
+        if (!empty($this->dtForm['ttd'])) {
+            $ttdFile = $this->dtForm['ttd'];
+            $ttdName = uniqid('ttd_', true) . '.' . $ttdFile->extension();
+
+            $uploadedFiles['ttd'] = [
+                'file' => $ttdFile,
+                'path' => 'employees/ttd/' . $ttdName,
+                'old'  => $this->dtForm['ttd_old'] ?? null,
+                'name' => $ttdName,
+            ];
+        }
+
+        if (!empty($this->dtForm['paraf'])) {
+            $parafFile = $this->dtForm['paraf'];
+            $parafName = uniqid('paraf_', true) . '.' . $parafFile->extension();
+
+            $uploadedFiles['paraf'] = [
+                'file' => $parafFile,
+                'path' => 'employees/paraf/' . $parafName,
+                'old'  => $this->dtForm['paraf_old'] ?? null,
+                'name' => $parafName,
+            ];
+        }
 
         try {
-            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin, $flatten) {
+            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin, $flatten, $uploadedFiles) {
+
+                foreach ($uploadedFiles as $file) {
+                    $file['file']->storeAs(
+                        dirname($file['path']),
+                        basename($file['path']),
+                        'public'
+                    );
+                }
+
+                foreach ($uploadedFiles as $key => $file) {
+                    if (!empty($file['old'])) {
+                        Storage::disk('public')->delete(
+                            "employees/{$key}/" . $file['old']
+                        );
+                    }
+                }
+
+                foreach ($uploadedFiles as $key => $file) {
+                    $dtEmployee[$key] = $file['name'];
+                }
+
                 // dd($dtEmployee, $dtRel, $dtLogin, $flatten);
                 if (!is_null($this->dtForm['user_login_id'])) {
                     $this->userLoginRepository->update($this->dtForm['user_login_id'], $dtLogin);
@@ -246,11 +298,14 @@ class EmployeeEdit extends Component
             ) {
                 $this->genScheduleTime($id);
             }
-            // else {
-            //     unset($this->dtScheduleBebas[$id]);
-            // }
         }
 
+        if ($property == "dtForm.ttd") {
+            $this->pass['ttd'] = $this->dtForm['ttd']->getClientOriginalName();
+        }
+        if ($property == "dtForm.paraf") {
+            $this->pass['paraf'] = $this->dtForm['paraf']->getClientOriginalName();
+        }
     }
 
     public function genScheduleTime($id)
@@ -308,8 +363,6 @@ class EmployeeEdit extends Component
             'checkout_time' => $data['checkout_time'] ?? null,
             'checkout_deadline_time' => $data['checkout_deadline_time'] ?? null,
         ];
-
-
     }
 
     public $dtForm = [];
@@ -324,7 +377,8 @@ class EmployeeEdit extends Component
             "dtForm.master_location_id" => "required",
             "dtForm.master_function_id" => "required",
             "activedSchedules.id" => "required",
-            "dtForm.status" => "required",
+            "dtForm.ttd" => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            "dtForm.paraf" => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             "dtForm.effective_at" => "",
             "dtForm.expired_at" => "",
             "dtForm.username" => "required|unique:user_logins,username,{$this->dtForm['user_login_id']},id,deleted_at,NULL",
@@ -346,6 +400,8 @@ class EmployeeEdit extends Component
         "dtForm.status" => "Status",
         "dtForm.username" => "Username Login",
         "dtForm.password" => "Password Login",
+        "dtForm.ttd" => "File Tanda Tangan",
+        "dtForm.paraf" => "File Paraf",
     ];
 
     protected $messages = [
@@ -377,11 +433,14 @@ class EmployeeEdit extends Component
     public $dtScheduleBebas = [];
     public function genDataEdit()
     {
-
+        $this->pass['ttd'] = "Pilih file gambar tanda tangan";
+        $this->pass['paraf'] = "Pilih file gambar paraf";
         $this->dtForm = $this->dataEmployeeRepo->getByKey($this->pass['editId'])->toArray();
         $this->dtForm['username'] = "";
         $this->dtForm['username'] = null;
         $this->dtForm['role'] = null;
+        $this->dtForm['ttd_old'] = $this->dtForm['ttd'];
+        $this->dtForm['paraf_old'] = $this->dtForm['paraf'];
         if ($this->dtForm['user_logins']) {
             $this->dtForm['username'] = $this->dtForm['user_logins']['username'];
             $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
