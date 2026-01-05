@@ -131,17 +131,31 @@ class DataLemburController extends Controller
 
         $monthlyMinutes = DataLembur::query()
             ->where('data_employee_id', $employeeId)
-            ->whereBetween('tanggal', [$startMonth->toDateString(), $endMonth->toDateString()])
+            ->whereBetween('tanggal', [
+                $startMonth->toDateString(),
+                $endMonth->toDateString()
+            ])
             ->get()
             ->sum(function ($row) {
-                $start = Carbon::parse(ReportLemburHelper::getLemburCheckin($row))->locale('id');
-                $end   = Carbon::parse(ReportLemburHelper::getLemburCheckout($row))->locale('id');
+
+                $rowArray = $row->toArray();
+
+                $checkin  = ReportLemburHelper::getLemburCheckin($rowArray);
+                $checkout = ReportLemburHelper::getLemburCheckout($rowArray);
+
+                if ($checkin === '-' || $checkout === '-') {
+                    return 0;
+                }
+
+                $start = Carbon::parse($checkin);
+                $end   = Carbon::parse($checkout);
 
                 $totalMinutes = $start->diffInMinutes($end);
+
                 return intdiv($totalMinutes, 30) * 30;
             });
 
-        $data['data_lembur']['monthly_hours'] = intdiv($monthlyMinutes, 60);
+        $data['data_lembur']['monthly_hours']   = intdiv($monthlyMinutes, 60);
         $data['data_lembur']['monthly_minutes'] = $monthlyMinutes % 60;
 
         // dd($data);
