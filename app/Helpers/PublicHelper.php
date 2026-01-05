@@ -638,31 +638,62 @@ class PublicHelper
 
     public static function getTimeRuleTetap($dt, $tglCek)
     {
-        $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($dt['work_time']);
-        $return['checkin_start']  = $tglCek->copy()->setTimeFromTimeString($dt['checkin_time']);
+        $checkinStart = $dt['checkin_time'];
+        $checkinOntime = $dt['work_time'];
+        $checkinEnd = $dt['checkin_deadline_time'];
+        $checkoutStart = $dt['checkout_time'];
+        $checkoutEnd = $dt['checkout_deadline_time'];
+        // format waktu ke tanggal+waktu
+        $return['checkin_start'] = $tglCek->copy()->setTimeFromTimeString($checkinStart);
 
-        if ($return['checkin_start']->gt($return['checkin_ontime'])) {
-            $return['checkin_start']->subDay();
+        $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($checkinOntime);
+        if ($return['checkin_ontime']->lt($return['checkin_start'])) {
+            $return['checkin_ontime']->addDay();
         }
-
-        $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($dt['checkin_deadline_time']);
-        if ($return['checkin_end']->lt($return['checkin_ontime'])) {
+        $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($checkinEnd);
+        if ($return['checkin_end']->lt($return['checkin_start'])) {
             $return['checkin_end']->addDay();
         }
-
-        $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($dt['checkout_time']);
-        if ($return['checkout_start']->lt($return['checkin_ontime'])) {
+        $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($checkoutStart);
+        if ($return['checkout_start']->lt($return['checkin_start'])) {
             $return['checkout_start']->addDay();
         }
-
-        $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($dt['checkout_deadline_time']);
-        if ($return['checkout_end']->lt($return['checkin_ontime'])) {
+        $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($checkoutEnd);
+        if ($return['checkout_end']->lt($return['checkin_start'])) {
             $return['checkout_end']->addDay();
         }
-
         return $return;
     }
 
+    // public static function getTimeRuleRotasi($shiftTimeList, $tglCek, $shiftIndex)
+    // {
+
+    //     $shift = $shiftTimeList[$shiftIndex];
+
+    //     $return['checkin_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_time']);
+
+    //     $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($shift['work_time']);
+    //     if ($return['checkin_ontime']->lt($return['checkin_start'])) {
+    //         $return['checkin_ontime']->addDay();
+    //     }
+
+    //     $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_deadline_time']);
+    //     if ($return['checkin_end']->lt($return['checkin_start'])) {
+    //         $return['checkin_end']->addDay();
+    //     }
+
+    //     $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_time']);
+    //     if ($return['checkout_start']->lt($return['checkin_start'])) {
+    //         $return['checkout_start']->addDay();
+    //     }
+
+    //     $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_deadline_time']);
+    //     if ($return['checkout_end']->lt($return['checkin_start'])) {
+    //         $return['checkout_end']->addDay();
+    //     }
+
+    //     return $return;
+    // }
 
     public static function getTimeRuleRotasi($shiftTimeList, $tglCek, $shiftIndex)
     {
@@ -692,7 +723,6 @@ class PublicHelper
 
         return $return;
     }
-
 
 
 
