@@ -10,13 +10,14 @@ use App\Repositories\LogGpsRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use DataTables;
 
 class DataLemburController extends Controller
 {
     public function indexLembur()
     {
-        $data['tab_title'] = "Data Lembur | ".config('app.name');
+        $data['tab_title'] = "Data Lembur | " . config('app.name');
         $data['page_title'] = "Data Lembur";
         $data['page_desc'] = "Manajemen data lembur";
         $data['lw'] = "lembur.lembur-data";
@@ -26,26 +27,25 @@ class DataLemburController extends Controller
     public function indexLemburDT(
         DataLemburFace $dataLemburRepo,
         Request $request
-    )
-    {
+    ) {
         $data = $dataLemburRepo->getDataDT(0);
-        if(Auth::user()->is_pengawas){
+        if (Auth::user()->is_pengawas) {
             $data = $dataLemburRepo->getDataByPengawas(0);
         }
 
-        if(isset($request->month)){
-            if($request->month != ''){
+        if (isset($request->month)) {
+            if ($request->month != '') {
                 $data->whereMonth('tanggal', $request->month);
             }
         }
-        if(isset($request->year)){
-            if($request->year != ''){
+        if (isset($request->year)) {
+            if ($request->year != '') {
                 $data->whereYear('tanggal', $request->year);
             }
         }
-        if(isset($request->master_organization_id)){
-            if($request->master_organization_id != ''){
-                $data->whereHas('data_employees', function($q) use ($request){
+        if (isset($request->master_organization_id)) {
+            if ($request->master_organization_id != '') {
+                $data->whereHas('data_employees', function ($q) use ($request) {
                     $q->where('master_organization_id', $request->master_organization_id);
                 });
             }
@@ -73,7 +73,7 @@ class DataLemburController extends Controller
     }
     public function lemburCreate()
     {
-        $data['tab_title'] = "Form Data Lembur | ".config('app.name');
+        $data['tab_title'] = "Form Data Lembur | " . config('app.name');
         $data['page_title'] = "Form Data Lembur";
         $data['page_desc'] = "Menambah data izin libur karyawan";
         $data['lw'] = "lembur.data-lembur-create";
@@ -83,7 +83,7 @@ class DataLemburController extends Controller
     public function lemburEdit($id)
     {
         $data['id'] = $id;
-        $data['tab_title'] = "Form Edit Data Lembur | ".config('app.name');
+        $data['tab_title'] = "Form Edit Data Lembur | " . config('app.name');
         $data['page_title'] = "Form Edit Data Lembur";
         $data['page_desc'] = "Edit data lembur karyawan";
         $data['lw'] = "lembur.data-lembur-edit";
@@ -93,9 +93,8 @@ class DataLemburController extends Controller
     public function printPdf(
         $id,
         DataEmployeeFace $dataEmployeeRepo
-    ){
+    ) {
 
-        // dd($id);
         $data = DataLembur::query()
             ->where('id', $id)
             ->with([
@@ -111,23 +110,26 @@ class DataLemburController extends Controller
             ])
             ->first()
             ->toArray();
-        // $data['pengawas1']['ttd'] = asset('storage/employees/ttd/'.$data['pengawas1']['ttd']);
         $data['pengawas1']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas1']['ttd']);
-        $data['pengawa21']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas2']['ttd']);
-        // dd($path, file_exists($path));
+        $data['pengawas2']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas2']['ttd']);
+        $data['data_lembur']['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($data);
+        $data['data_lembur']['laporan_lembur_checkout'] = ReportLemburHelper::getLemburCheckout($data);
+        $data['data_lembur']['start_carbon'] = Carbon::parse($data['data_lembur']['laporan_lembur_checkin'])->locale('id');
+        $data['data_lembur']['end_carbon']   = Carbon::parse($data['data_lembur']['laporan_lembur_checkout'])->locale('id');
+        $totalMinutes = $data['data_lembur']['start_carbon']->diffInMinutes($data['data_lembur']['end_carbon']);
+        $roundedMinutes = intdiv($totalMinutes, 30) * 30;
+        $data['data_lembur']['hours'] = intdiv($roundedMinutes, 60);
+        $data['data_lembur']['minutes'] = $roundedMinutes % 60;
 
         $bladeView = DataLembur::formatOrg($data['data_employees']['master_organization_id']);
-
-        $view = 'lembur.pdf.'.$bladeView;
+        $view = 'lembur.pdf.' . $bladeView;
         // dd($view);
         // $pdf = Pdf::loadView($view)
         //     ->setPaper('A4', 'portrait');
-
         $pdf = Pdf::loadView($view, compact('data'))
-            ->setPaper('A4', 'portrait')
-        ;
+            ->setPaper('A4', 'portrait');
 
         // return $pdf->download(uniqid().'.pdf');
-        return $pdf->stream(uniqid().'.pdf');
+        return $pdf->stream(uniqid() . '.pdf');
     }
 }
