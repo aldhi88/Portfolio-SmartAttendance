@@ -83,23 +83,20 @@
             <td>:</td>
             <td>
                 @php
-                    $start = \Carbon\Carbon::parse($data['work_time_lembur'])->locale('id');
-                    $end   = \Carbon\Carbon::parse($data['checkout_time_lembur'])->locale('id');
-                    if ($start->isSameDay($end)) {
+                    if ($data['data_lembur']['start_carbon']->isSameDay($data['data_lembur']['end_carbon'])) {
                         $hasil = sprintf(
-                            '%s WIB sampai %s WIB',
-                            $start->format('H:i:s'),
-                            $end->format('H:i:s')
+                            '%s WIB s/d %s WIB',
+                            $data['data_lembur']['start_carbon']->format('H:i:s'),
+                            $data['data_lembur']['end_carbon']->format('H:i:s')
                         );
                     } else {
                         $hasil = sprintf(
                             '%s WIB sampai %s %s WIB',
-                            $start->format('H:i:s'),
-                            $end->translatedFormat('d F Y'),
-                            $end->format('H:i:s')
+                            $data['data_lembur']['start_carbon']->format('H:i:s'),
+                            $data['data_lembur']['end_carbon']->translatedFormat('d F Y'),
+                            $data['data_lembur']['end_carbon']->format('H:i:s')
                         );
                     }
-
                     echo $hasil;
                 @endphp
             </td>
@@ -108,19 +105,10 @@
             <td>Total Waktu</td>
             <td>:</td>
             <td>
-                @php
-                    $totalMinutes = $start->diffInMinutes($end);
-                    $hours = intdiv($totalMinutes, 60);
-                    $minutes = $totalMinutes % 60;
-
-                    if ($minutes === 0) {
-                        $durasi = $hours . ' jam';
-                    } else {
-                        $durasi = $hours . ' jam ' . $minutes . ' menit';
-                    }
-
-                    echo $durasi;
-                @endphp
+                <strong>
+                    {{ $data['data_lembur']['hours'] }} Jam
+                    {{ ($data['data_lembur']['minutes']>0)?$data['data_lembur']['minutes'].' Menit':null }}
+                </strong>
             </td>
         </tr>
 
@@ -239,19 +227,10 @@
             <td>Total Jam Aktual</td>
             <td>:</td>
             <td>
-                @php
-                    $totalMinutes = $start->diffInMinutes($end);
-                    $hours = intdiv($totalMinutes, 60);
-                    $minutes = $totalMinutes % 60;
-
-                    if ($minutes === 0) {
-                        $durasi = $hours . ' jam';
-                    } else {
-                        $durasi = $hours . ' jam ' . $minutes . ' menit';
-                    }
-
-                    echo $durasi;
-                @endphp
+                <strong>
+                    {{ $data['data_lembur']['hours'] }} Jam
+                    {{ ($data['data_lembur']['minutes']>0)?$data['data_lembur']['minutes'].' Menit':null }}
+                </strong>
             </td>
         </tr>
     </table>
