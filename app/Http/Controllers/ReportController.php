@@ -289,7 +289,14 @@ class ReportController extends Controller
                 },
                 'data_lemburs' => function ($q) use ($range) {
                     $q->select('id', 'data_employee_id', 'tanggal')
-                        ->where('status', 'Disetujui')
+                        ->where(function ($sub) {
+                            $sub->whereNull('pengawas1')
+                                ->orWhere('status_pengawas1', 'Disetujui');
+                        })
+                        ->where(function ($sub) {
+                            $sub->whereNull('pengawas2')
+                                ->orWhere('status_pengawas2', 'Disetujui');
+                        })
                         ->whereBetween('tanggal', [
                             $range['start_cast']->toDateString(),
                             $range['end_cast']->toDateString(),
