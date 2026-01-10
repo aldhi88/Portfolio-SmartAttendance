@@ -36,7 +36,21 @@
         border: 0;
         vertical-align: top;
         text-align: left;
+    }
 
-        /* border: solid 1px #000; */
+    .table-border {
+        border-collapse: collapse;
+    }
+
+    .table-border,
+    .table-border th,
+    .table-border td {
+        border: 1px solid black;
+    }
+
+    .table-padding-sm td,
+    .table-padding-sm th {
+        padding: 4px;
+        /* bisa diganti sesuai kebutuhan */
     }
 </style>

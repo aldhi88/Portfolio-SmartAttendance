@@ -83,7 +83,7 @@
                         );
                     } else {
                         $hasil = sprintf(
-                            '%s WIB sampai %s %s WIB',
+                            '%s WIB s/d %s %s WIB',
                             $data['data_lembur']['start_carbon']->format('H:i:s'),
                             $data['data_lembur']['end_carbon']->translatedFormat('d F Y'),
                             $data['data_lembur']['end_carbon']->format('H:i:s')
@@ -170,6 +170,160 @@
                 {{ $data['pengawas1']['name'] }}
             </td>
         </tr>
+    </table>
+
+    <div style="page-break-before: always;"></div>
+
+    <table>
+        <tr>
+            <td style="text-align: right">
+                <div>
+                    <img src="{{ public_path('assets/images/logo-ptc.png') }}" width="150" alt=""
+                    style="filter: grayscale(100%);">
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div>Dumai, {{ \Carbon\Carbon::parse(date('d M Y'))->locale('id')->translatedFormat('d F Y') }}</div>
+    <div style="height: 30px"></div>
+    <div>Dengan ini mengijinkan/menugaskan :</div>
+    <table>
+        <tr>
+            <td style="width: 170px">Nama</td>
+            <td style="width: 20px">:</td>
+            <td style="font-weight: bold;border-bottom: 1px dotted #333;">{{ $data['data_employees']['name'] }}</td>
+        </tr>
+        <tr>
+            <td>No. Pekerja</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">{{ $data['data_employees']['number'] }}</td>
+        </tr>
+        <tr>
+            <td>Pangkat/Golongan</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">Biasa</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">{{ $data['data_employees']['master_positions']['name'] }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="height: 20px"></td>
+        </tr>
+        <tr>
+            <td>Untuk Melaksanakan</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">{{ $data['pekerjaan'] }}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td></td>
+            <td style="border-bottom: 1px dotted #333;"></td>
+        </tr>
+        <tr>
+            <td>Proyek/Kegiatan</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">-</td>
+        </tr>
+        <tr>
+            <td>Tanggal</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">{{ \Carbon\Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td>Terhitung mulai jam</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">
+                <strong>{{ $data['data_lembur']['start_carbon']->format('H:i:s') }} WIB</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>Sampai dengan jam</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">
+                @php
+                    if ($data['data_lembur']['start_carbon']->isSameDay($data['data_lembur']['end_carbon'])) {
+                        $hasil = sprintf(
+                            '%s WIB',
+                            $data['data_lembur']['end_carbon']->format('H:i:s')
+                        );
+                    } else {
+                        $hasil = sprintf(
+                            '%s %s WIB',
+                            $data['data_lembur']['end_carbon']->translatedFormat('d F Y'),
+                            $data['data_lembur']['end_carbon']->format('H:i:s')
+                        );
+                    }
+                @endphp
+                <strong>{{ $hasil }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>Tempat</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">Dumai</td>
+        </tr>
+        <tr>
+            <td>Biaya ditanggung oleh</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;">Perusahaan</td>
+        </tr>
+        <tr>
+            <td>Cost Center</td>
+            <td>:</td>
+            <td style="border-bottom: 1px dotted #333;"><strong>2222I51214</strong></td>
+        </tr>
+    </table>
+
+    <div style="height: 10px"></div>
+    <table class="table-border table-padding-sm">
+        <tr>
+            <td colspan="4" style="height: 60px"><span style="text-decoration: underline">Keterangan lain :</span></td>
+        </tr>
+        <tr>
+            <td style="width: 25%">
+                Ybs
+                <div style="height: 100px"></div>
+                <div style="text-align: center"><strong>{{ $data['data_employees']['name'] }}</strong></div>
+            </td>
+            <td style="width: 25%">
+                Diketahui, <br>
+                Security .....................
+            </td>
+            <td style="width: 25%">
+                Mengetahui, <br>
+                Adm. Region Manager I
+            </td>
+            <td style="width: 25%">
+                Mengetahui, <br>
+                Manager MPS
+            </td>
+        </tr>
+    </table>
+    <div>Note: Wajib melapor hasil lembur keatasan yang bersangkutan</div>
+    <div style="height: 30px"></div>
+    <div>Ketentuan : </div>
+    <table>
+        @php
+            $desc = [
+                'Setiap pekerja lembur wajib mengisi SPKL',
+                'Pekerja lembur atas perintah atasan ybs',
+                'Membuat rekapan setiap bulan atas lembur masing - masing pekerja',
+                'Lembur di hitung mulai jam 16:00 menit',
+                'Apabila pekerja lembur kurang dari 30 menit dianggap tidak melaksanakan lembur',
+                'Apabila pekerja lembur lebih dari 30 menit, maka dihitung lembur mulai 16:00 menit'
+            ];
+        @endphp
+        @for ($i=0;$i<6;$i++)
+            <tr>
+                <td style="width: 70px"></td>
+                <td>0{{$i+1}}</td>
+                <td style="width: 10px">:</td>
+                <td>{{ $desc[$i] }}</td>
+            </tr>
+        @endfor
     </table>
 
 
