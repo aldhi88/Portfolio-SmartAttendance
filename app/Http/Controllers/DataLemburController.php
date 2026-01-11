@@ -168,7 +168,9 @@ class DataLemburController extends Controller
         $pdf = Pdf::loadView($view, compact('data'))
             ->setPaper('A4', 'portrait');
 
-        // return $pdf->download(uniqid().'.pdf');
-        return $pdf->stream(uniqid() . '.pdf');
+        if(env('APP_ENV')=='local'){
+            return $pdf->stream(uniqid() . '.pdf');
+        }
+        return $pdf->download(uniqid().'.pdf');
     }
 }
