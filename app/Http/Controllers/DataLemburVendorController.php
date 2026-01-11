@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ReportLemburHelper;
 use App\Models\DataLembur;
-use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
 
 class DataLemburVendorController extends Controller
