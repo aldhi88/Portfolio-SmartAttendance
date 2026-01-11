@@ -85,14 +85,14 @@
                             <thead>
                             <tr>
                                 <th rowspan="2" class="text-center" style="max-width: 5px"></th>
-                                <th rowspan="2" class="text-center" style="min-width: 250px">Tanggal & <br> No.Surat</th>
+                                <th rowspan="2" class="text-center">Tanggal & <br> No.Surat</th>
                                 <th rowspan="2" class="text-center">Karyawan <br> (Perusahaan)</th>
                                 <th class="text-center" colspan="4">Pengawas/ <br>Penandatangan</th>
                                 <th class="text-center" colspan="3">Laporan Absensi Lembur</th>
+                                <th rowspan="2" class="text-center" width="50">Yang Dikerjakan</th>
                                 <th class="text-center" colspan="2">Ketentuan Absensi</th>
-                            </tr>
                             <tr>
-                                <th class="text-center">Pengawas Tertinggi</th>
+                                <th class="text-center">Manager ITD / <br> Pengawas 1</th>
                                 <th class="text-center">Pengawas 2</th>
                                 <th class="text-center">Security</th>
                                 <th class="text-center">Korlap</th>
@@ -107,7 +107,12 @@
                             <thead id="header-filter">
                                 <tr>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                    <th class="text-center">
+                                        <input type="date" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
+                                    <th class="text-center">
+                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>

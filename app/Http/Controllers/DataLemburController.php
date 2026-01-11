@@ -96,7 +96,6 @@ class DataLemburController extends Controller
         $id,
         DataEmployeeFace $dataEmployeeRepo
     ) {
-
         $data = DataLembur::query()
             ->where('id', $id)
             ->with([
@@ -169,7 +168,7 @@ class DataLemburController extends Controller
         $pdf = Pdf::loadView($view, compact('data'))
             ->setPaper('A4', 'portrait');
 
-        return $pdf->download(uniqid().'.pdf');
-        // return $pdf->stream(uniqid() . '.pdf');
+        // return $pdf->download(uniqid().'.pdf');
+        return $pdf->stream(uniqid() . '.pdf');
     }
 }

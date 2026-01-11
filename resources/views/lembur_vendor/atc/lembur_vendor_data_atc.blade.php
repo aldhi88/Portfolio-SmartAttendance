@@ -17,8 +17,9 @@
         order: [[1, 'desc'],[0, 'desc']],
         columnDefs: [
             // { className: 'text-left', targets: [3] },
-            { className: 'px-0', targets: [1] },
-            { className: 'text-left text-nowrap', targets: [1,2] },
+            { className: 'px-0', targets: [0] },
+            { className: 'text-left', targets: [10] },
+            { className: 'text-left text-nowrap', targets: [2] },
             { className: 'text-center text-nowrap', targets: ['_all'] },
         ],
         ajax: {
@@ -60,7 +61,7 @@
                         row.pengawas2 === null || row.status_pengawas2 === 'Disetujui';
 
                     if (hasLemburTime && pengawas1Ok && pengawas2Ok) {
-                        let printPdfUrl = "print-pdf/" + row.id;
+                        let printPdfUrl = "/lembur/print-pdf/" + row.id;
                         html += `
                             <a class="dropdown-item" href="${printPdfUrl}" target="_blank">
                                 <i class="fas fa-print fa-fw"></i> Print Surat Lembur
@@ -72,7 +73,7 @@
                     return html;
                 }
             },
-            { data: 'tanggal', name: 'tanggal', orderable: true, searchable:false,
+            { data: 'tanggal', name: 'tanggal', orderable: true, searchable:true,
                 render: function (data, type, row, meta) {
                     return `
                         ${moment(row.tanggal).locale('id').format('DD/MM/YYYY')} <br>
@@ -80,7 +81,7 @@
                     `;
                 }
             },
-            { data: 'data_employees.name', name: 'data_employees.name', orderable: true, searchable:false,
+            { data: 'data_employees.name', name: 'data_employees.name', orderable: false, searchable:true,
                 render: function (data, type, row, meta) {
                     return `
                         ${data} <br>
@@ -90,6 +91,10 @@
             },
             { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
+                    if (!row.pengawas1) {
+                        return '';
+                    }
+
                     let color;
                     switch (row.status_pengawas1) {
                         case "Proses":
@@ -100,16 +105,22 @@
                             break;
                         default:
                             color = "danger";
-                        }
+                    }
 
                     return `
-                        ${row.pengawas1?.name} <br>
-                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas1}</span>
+                        ${row.pengawas1.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">
+                            ${row.status_pengawas1}
+                        </span>
                     `;
                 }
             },
             { data: null, name: null, orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
+                    if (!row.pengawas2) {
+                        return '';
+                    }
+
                     let color;
                     switch (row.status_pengawas2) {
                         case "Proses":
@@ -120,24 +131,22 @@
                             break;
                         default:
                             color = "danger";
-                        }
+                    }
 
                     return `
-                        ${row.pengawas2?.name} <br>
-                        <span class="badge badge-${color} px-3" style="font-size:13px">${row.status_pengawas2}</span>
+                        ${row.pengawas2.name} <br>
+                        <span class="badge badge-${color} px-3" style="font-size:13px">
+                            ${row.status_pengawas2}
+                        </span>
                     `;
                 }
             },
-            { data: null, name: null, orderable: false, searchable:false,
+            { data: 'id', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
-                    return row.security?.name
+                    return row.security ? row.security.name : '-';
                 }
             },
-            { data: null, name: null, orderable: false, searchable:false,
-                render: function (data, type, row, meta) {
-                    return row.korlap;
-                }
-            },
+            { data: 'korlap', name: 'korlap', orderable: false, searchable:false},
             { data: 'laporan_lembur_checkin', name: 'laporan_lembur_checkin', orderable: false, searchable:false,
                 render: function (data, type, row, meta) {
                     if (data === '-') {
@@ -189,6 +198,16 @@
                     return minutes === 0
                         ? `${hours}<span class="small">jam</span>`
                         : `${hours}<span class="small">jam</span> <br>${minutes}<span class="small">menit</span>`;
+                }
+            },
+            { data: 'pekerjaan', name: 'pekerjaan', orderable: false, searchable: false,
+                render: function (data, type, row) {
+                    if (!data) return '-';
+                    return `
+                        <div class="truncate-2" title="${data}">
+                            ${data}
+                        </div>
+                    `;
                 }
             },
             { data: 'waktu', name: 'waktu', orderable: false, searchable:false,

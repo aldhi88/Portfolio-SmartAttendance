@@ -28,13 +28,13 @@ class DataLemburVendorController extends Controller
     )
     {
         $data = $dataLemburRepo->getDataDT(0);
-        if(isset($request->month)){
-            if($request->month != ''){
+        if (isset($request->month)) {
+            if ($request->month != '') {
                 $data->whereMonth('tanggal', $request->month);
             }
         }
-        if(isset($request->year)){
-            if($request->year != ''){
+        if (isset($request->year)) {
+            if ($request->year != '') {
                 $data->whereYear('tanggal', $request->year);
             }
         }
@@ -53,43 +53,9 @@ class DataLemburVendorController extends Controller
             ->addColumn('laporan_lembur_checkout', function ($data) {
                 return ReportLemburHelper::getLemburCheckout($data->toArray());
             })
+            ->addColumn('format', function ($data) {
+                return DataLembur::formatOrg($data->data_employees->master_organization_id);
+            })
             ->toJson();
-    }
-
-    public function printPdf(
-        $id,
-        DataEmployeeFace $dataEmployeeRepo
-    ){
-
-        // dd($id);
-        $data = DataLembur::query()
-            ->where('id', $id)
-            ->with([
-                'pengawas1',
-                'pengawas1.master_positions:id,name',
-                'pengawas2',
-                'pengawas2.master_positions:id,name',
-                'security',
-                'security.master_positions:id,name',
-                'data_employees',
-                'data_employees.master_organizations:id,name',
-                'data_employees.master_positions:id,name',
-            ])
-            ->first()
-            ->toArray();
-        // dd($data);
-        $bladeView = DataLembur::formatOrg($data['data_employees']['master_organization_id']);
-
-        $view = 'lembur.pdf.'.$bladeView;
-        // dd($view);
-        // $pdf = Pdf::loadView($view)
-        //     ->setPaper('A4', 'portrait');
-
-        $pdf = Pdf::loadView($view, compact('data'))
-            ->setPaper('A4', 'portrait')
-        ;
-
-        // return $pdf->download(uniqid().'.pdf');
-        return $pdf->stream(uniqid().'.pdf');
     }
 }

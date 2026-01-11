@@ -92,7 +92,7 @@
                         row.pengawas2 === null || row.status_pengawas2 === 'Disetujui';
 
                     if (hasLemburTime && pengawas1Ok && pengawas2Ok) {
-                        let printPdfUrl = "print-pdf/" + row.id;
+                        let printPdfUrl = "/lembur/print-pdf/" + row.id;
                         if(
                             row.format == 'format_patra_niaga' ||
                             row.format=='format_ptc' ||
