@@ -95,7 +95,8 @@
                         let printPdfUrl = "print-pdf/" + row.id;
                         if(
                             row.format == 'format_patra_niaga' ||
-                            row.format=='format_ptc'
+                            row.format=='format_ptc' ||
+                            row.format=='format_ptc_security'
                         ){
                             html += `
                                 <a class="dropdown-item" href="${printPdfUrl}" target="_blank">

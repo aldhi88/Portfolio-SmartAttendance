@@ -109,6 +109,7 @@ class DataLemburController extends Controller
                 'data_employees',
                 'data_employees.master_organizations:id,name',
                 'data_employees.master_positions:id,name',
+                'data_employees.master_locations:id,name',
             ])
             ->first()
             ->toArray();
@@ -168,7 +169,7 @@ class DataLemburController extends Controller
         $pdf = Pdf::loadView($view, compact('data'))
             ->setPaper('A4', 'portrait');
 
-        // return $pdf->download(uniqid().'.pdf');
-        return $pdf->stream(uniqid() . '.pdf');
+        return $pdf->download(uniqid().'.pdf');
+        // return $pdf->stream(uniqid() . '.pdf');
     }
 }

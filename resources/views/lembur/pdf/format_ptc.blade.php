@@ -60,6 +60,11 @@
             <td>:</td>
             <td>{{ $data['data_employees']['master_positions']['name'] }}</td>
         </tr>
+        <tr>
+            <td>Pekerjaan Dilemburkan</td>
+            <td>:</td>
+            <td>{{ $data['pekerjaan'] }}</td>
+        </tr>
     </table>
 
     <div style="height: 10px"></div>
