@@ -53,4 +53,11 @@
         padding: 4px;
         /* bisa diganti sesuai kebutuhan */
     }
+
+    .vm {
+        vertical-align: middle !important;
+    }
+    .hc {
+        text-align: center !important;
+    }
 </style>

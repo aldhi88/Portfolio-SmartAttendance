@@ -287,4 +287,86 @@ class DataLemburController extends Controller
         }
         return $pdf->download(uniqid() . '.pdf');
     }
+
+    public function PrintPdfRekapBulanan2(
+        $id,
+        $month,
+        $year,
+        DataEmployeeFace $dataEmployeeRepo
+    ) {
+        $dt['monthList'] = PublicHelper::indoMonthList();
+        $dt['manager'] = DataEmployeeRepo::getManager();
+        $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
+
+        $dt['attr'] = [
+            'month' => $month,
+            'monthLabel' => $dt['monthList'][$month],
+            'year' => $year,
+            'monthList' => $dt['monthList']
+        ];
+
+        $dt['emp'] = DataEmployee::where('master_organization_id', $id)
+            ->whereHas('data_lemburs', function ($query) use ($month, $year) {
+                $query->whereMonth('tanggal', $month)
+                    ->whereYear('tanggal', $year)
+                    ->whereNotNull('status_pengawas1')
+                    ->where(function ($q) {
+                        $q->whereNull('pengawas2')
+                            ->orWhereNotNull('status_pengawas2');
+                    });
+            })
+            ->with([
+                'master_organizations',
+                'master_positions',
+                'data_lemburs' => function ($query) use ($month, $year) {
+                    $query->whereMonth('tanggal', $month)
+                        ->whereYear('tanggal', $year)
+                        ->whereNotNull('status_pengawas1')
+                        ->where(function ($q) {
+                            $q->whereNull('pengawas2')
+                                ->orWhereNotNull('status_pengawas2');
+                        });
+                }
+            ])
+            ->get()
+            ->toArray();
+
+        // dd($dt['emp']);
+
+
+
+        foreach ($dt['emp'] as $key => $value) {
+            foreach ($value['data_lemburs'] as $i => $v) {
+                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($v);
+                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] = ReportLemburHelper::getLemburCheckout($v);
+
+                if (
+                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] === '-' ||
+                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] === '-') {
+                    unset($dt['emp'][$key]['data_lemburs'][$i]);
+                    continue;
+                }
+
+                $dt['emp'][$key]['data_lemburs'][$i]['start_carbon'] = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'])->locale('id');
+                $dt['emp'][$key]['data_lemburs'][$i]['end_carbon']   = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'])->locale('id');
+                $totalMinutes = $dt['emp'][$key]['data_lemburs'][$i]['start_carbon']
+                    ->diffInMinutes($dt['emp'][$key]['data_lemburs'][$i]['end_carbon']);
+                $roundedMinutes = intdiv($totalMinutes, 30) * 30;
+                $dt['emp'][$key]['data_lemburs'][$i]['total_jam'] = $roundedMinutes / 60;
+            }
+            $dt['emp'][$key]['data_lemburs'] = array_values($dt['emp'][$key]['data_lemburs']);
+            if (count($dt['emp'][$key]['data_lemburs']) === 0) {
+                    unset($dt['emp'][$key]);
+                }
+        }
+        $dt['emp'] = array_values($dt['emp']);
+
+        $pdf = Pdf::loadView('lembur.pdf.bulanan_patra_niaga2', compact('dt'))
+            ->setPaper('A4', 'portrait');
+
+        if (env('APP_ENV') == 'local') {
+            return $pdf->stream(uniqid() . '.pdf');
+        }
+        return $pdf->download(uniqid() . '.pdf');
+    }
 }

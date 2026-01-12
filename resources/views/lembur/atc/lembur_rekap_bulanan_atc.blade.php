@@ -52,15 +52,13 @@
                     let year  = getParam('year', '[name="year"]');
 
                     let printPdfUrl = `/lembur/rekap-bulanan/print-pdf/${row.id}/${month}/${year}`;
+                    let printPdfUrl2 = `/lembur/rekap-bulanan2/print-pdf/${row.id}/${month}/${year}`;
 
                     let linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}">Rekap Bulanan</a>`;
 
                     if(orgId==1){
-                        linkPrint += `<a class="dropdown-item" href="#">Justifikasi Kelebihan Jam</a>`;
+                        linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl2}">Justifikasi Kelebihan Jam</a>`;
                     }
-
-
-
 
                     let html = `
                         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
