@@ -289,9 +289,13 @@
         </tr>
         <tr>
             <td style="width: 25%">
-                Ybs
-                <div style="height: 100px"></div>
-                <div style="text-align: center"><strong>{{ $data['data_employees']['name'] }}</strong></div>
+                Ybs <br>
+                @if (is_null($data['data_employees']['ttd']))
+                    <div style="height: 100px"></div>
+                @else
+                    <img src="{{ public_path('storage/employees/ttd/' . $data['data_employees']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
+                @endif
+                <div style="text-align: left"><strong>{{ $data['data_employees']['name'] }}</strong></div>
             </td>
             <td style="width: 25%">
                 Diketahui, <br>
