@@ -310,7 +310,11 @@
                     </tr>
                     <tr style="font-weight: bold;">
                         <td>
-                            <div style="height: 100px"></div>
+                            @if (is_null($data['data_employees']['ttd']))
+                                <div style="height: 100px"></div>
+                            @else
+                                <img src="{{ public_path('storage/employees/ttd/' . $data['data_employees']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
+                            @endif
                             <div style="border-bottom: 0.1px solid black;padding-bottom: 5px">
                                 {{ $data['data_employees']['name'] }}
                             </div>
