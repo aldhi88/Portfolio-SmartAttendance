@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\PublicHelper;
 use App\Helpers\ReportLemburHelper;
+use App\Models\DataEmployee;
 use App\Models\DataLembur;
+use App\Repositories\DataEmployeeRepo;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
+use App\Repositories\Interfaces\MasterOrganizationFace;
 use App\Repositories\LogGpsRepo;
+use App\Repositories\MasterOrganizationRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -92,6 +97,27 @@ class DataLemburController extends Controller
         return view('index', compact('data'));
     }
 
+    public function rekapBulanan()
+    {
+        $data['tab_title'] = "Rekap Lembur Bulanan | " . config('app.name');
+        $data['page_title'] = "Rekap Lembur Bulanan";
+        $data['page_desc'] = "Laporan data lembur bulanan";
+        $data['lw'] = "lembur.lembur-rekap-bulanan";
+        return view('index', compact('data'));
+    }
+
+    public function rekapBulananDT(Request $request)
+    {
+        $param = [
+            'month' => $request->month,
+            'year' => $request->year,
+        ];
+        $data = MasterOrganizationRepo::getOrgLemburBulanan($param);
+        return DataTables::of($data)
+            ->smart(false)
+            ->toJson();
+    }
+
     public function printPdf(
         $id,
         DataEmployeeFace $dataEmployeeRepo
@@ -168,9 +194,66 @@ class DataLemburController extends Controller
         $pdf = Pdf::loadView($view, compact('data'))
             ->setPaper('A4', 'portrait');
 
-        if(env('APP_ENV')=='local'){
+        if (env('APP_ENV') == 'local') {
             return $pdf->stream(uniqid() . '.pdf');
         }
-        return $pdf->download(uniqid().'.pdf');
+        return $pdf->download(uniqid() . '.pdf');
+    }
+
+    public function PrintPdfRekapBulanan(
+        $id,
+        $month,
+        $year,
+        DataEmployeeFace $dataEmployeeRepo
+    ) {
+        $dt['monthList'] = PublicHelper::indoMonthList();
+        $dt['manager'] = DataEmployeeRepo::getManager();
+        $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
+
+        $dt['attr'] = [
+            'month' => $month,
+            'monthLabel' => $dt['monthList'][$month],
+            'year' => $year,
+            'monthList' => $dt['monthList']
+        ];
+
+        $dt['emp'] = DataEmployee::where('master_organization_id', $id)
+            ->whereHas('data_lemburs', function ($query) use ($month, $year) {
+                $query->whereMonth('tanggal', $month)
+                    ->whereYear('tanggal', $year);
+            })
+            ->with([
+                'master_organizations',
+                'master_positions',
+                'data_lemburs' => function ($query) use ($month, $year) {
+                    $query->whereMonth('tanggal', $month)
+                        ->whereYear('tanggal', $year);
+                }
+            ])
+
+            ->get()
+            ->toArray();
+
+
+        foreach ($dt['emp'] as $key => $value) {
+            foreach ($value['data_lemburs'] as $i => $v) {
+                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($v);
+                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] = ReportLemburHelper::getLemburCheckout($v);
+                $dt['emp'][$key]['data_lemburs'][$i]['start_carbon'] = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'])->locale('id');
+                $dt['emp'][$key]['data_lemburs'][$i]['end_carbon']   = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'])->locale('id');
+                $totalMinutes = $dt['emp'][$key]['data_lemburs'][$i]['start_carbon']
+                    ->diffInMinutes($dt['emp'][$key]['data_lemburs'][$i]['end_carbon']);
+                $roundedMinutes = intdiv($totalMinutes, 30) * 30;
+                $dt['emp'][$key]['data_lemburs'][$i]['total_jam'] = $roundedMinutes / 60;
+            }
+        }
+        // dd($dt);
+        $pdf = Pdf::loadView('lembur.pdf.bulanan_patra_niaga', compact('dt'))
+            ->setPaper('A4', 'portrait');
+
+        if (env('APP_ENV') == 'local') {
+            return $pdf->stream(uniqid() . '.pdf');
+        }
+        return $pdf->download(uniqid() . '.pdf');
     }
 }

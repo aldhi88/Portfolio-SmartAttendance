@@ -91,7 +91,7 @@
                         );
                     } else {
                         $hasil = sprintf(
-                            '%s WIB sampai %s %s WIB',
+                            '%s WIB s/d %s %s WIB',
                             $data['data_lembur']['start_carbon']->format('H:i:s'),
                             $data['data_lembur']['end_carbon']->translatedFormat('d F Y'),
                             $data['data_lembur']['end_carbon']->format('H:i:s')

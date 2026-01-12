@@ -215,7 +215,9 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('create', 'lemburCreate')->name('lemburCreate');
                 Route::get('edit/{id}', 'lemburEdit')->name('lemburEdit');
                 Route::get('print-pdf/{id}', 'PrintPdf')->name('PrintPdf');
-
+                Route::get('rekap-bulanan', 'rekapBulanan')->name('rekapBulanan');
+                Route::get('rekap-bulanan/dt', 'rekapBulananDT')->name('rekapBulananDT');
+                Route::get('/rekap-bulanan/print-pdf/{id}/{month}/{year}', 'printPdfRekapBulanan')->name('printPdfRekapBulanan');
             });
         });
     });

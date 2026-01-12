@@ -16,6 +16,30 @@ class MasterOrganizationRepo implements MasterOrganizationFace
         $this->dataEmployee = $dataEmployee;
     }
 
+    public static function getOrgLemburBulanan($param)
+    {
+        return MasterOrganization::query()
+            ->withCount([
+                'data_employees as data_lembur_employee_count' => function ($q) use($param) {
+                    $q->whereHas('data_lemburs', function ($l) use($param) {
+                        $l->whereNotNull('status_pengawas1')
+                            ->where(function ($w) {
+                                $w->whereNull('pengawas2')
+                                    ->orWhereNotNull('status_pengawas2');
+                            })
+                            ->whereMonth('tanggal', $param['month'])
+                            ->whereYear('tanggal', $param['year']);
+                            ;
+                    });
+                }
+            ]);
+    }
+
+    public static function allOrg()
+    {
+        return MasterOrganization::all();
+    }
+
     public function getByKey($id)
     {
         return MasterOrganization::find($id);
@@ -46,7 +70,7 @@ class MasterOrganizationRepo implements MasterOrganizationFace
 
     public function delete($id)
     {
-        if(!$this->dataEmployee->isExistByCol('master_organization_id', $id)){
+        if (!$this->dataEmployee->isExistByCol('master_organization_id', $id)) {
             try {
                 MasterOrganization::find($id)->delete();
                 return true;
@@ -75,7 +99,7 @@ class MasterOrganizationRepo implements MasterOrganizationFace
         }
     }
 
-    public function update($id,$data)
+    public function update($id, $data)
     {
         try {
             MasterOrganization::find($id)->update($data);

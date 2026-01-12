@@ -78,6 +78,7 @@
                             <ul class="sub-menu" aria-expanded="false">
                                 <li class="child"><a href="{{ route('lembur.indexLembur') }}">Data Pengajuan Lembur</a></li>
                                 <li class="child"><a href="{{ route('lembur.lemburCreate') }}">Tambah Data Lembur</a></li>
+                                <li class="child"><a href="{{ route('lembur.rekapBulanan') }}">Laporan Bulanan</a></li>
                                 <li class="child"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
                                 <li class="child"><a href="#">Laporan Data Lembur</a></li>
                             </ul>

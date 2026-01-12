@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Log;
 class DataEmployeeRepo implements DataEmployeeFace
 {
 
+    public static function getManager()
+    {
+        return DataEmployee::query()
+            ->where('master_position_id', 14)
+            ->with('master_positions')
+            ->first()
+            ->toArray();
+    }
+
     public function apiGetById($request)
     {
         $dt = DataEmployee::query()
