@@ -99,9 +99,9 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            { data: 'data_employees', name: null, orderable: false, searchable:false,
+            { data: 'data_employees.name', name: 'data_employees.name', orderable: false, searchable:true,
                 render: function(data, type, row, meta){
-                    let karyawan = `<h6 class="my-0 py-0">${data.name}</h6>`;
+                    let karyawan = `<h6 class="my-0 py-0">${row.data_employees.name}</h6>`;
                     let pic = '-';
                     if(row.approved_by != null){
                         pic = `<span class="text-muted">${row.data_employee_admins.name}</span>`;

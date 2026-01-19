@@ -47,7 +47,9 @@
                                     </th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                    <th class="text-center">
+                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                    </th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>

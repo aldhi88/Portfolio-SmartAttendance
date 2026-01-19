@@ -58,6 +58,7 @@ class DataLiburIzinRepo implements DataLiburIzinFace
     public function getDataIzinDT($data)
     {
         return DataIzin::query()
+            ->select('data_izins.*')
             ->with([
                 'data_employees',
                 'data_employee_admins',
@@ -69,6 +70,7 @@ class DataLiburIzinRepo implements DataLiburIzinFace
     public function getDataIzinByPengawasDT($data)
     {
         return DataIzin::query()
+            ->select('data_izins.*')
             ->whereHas('data_employees.pengawas', function ($q) {
                 $q->where('pengawas_id', Auth::user()->data_employees->id);
             })
