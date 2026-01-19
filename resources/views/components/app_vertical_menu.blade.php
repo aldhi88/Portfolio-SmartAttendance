@@ -57,19 +57,6 @@
                             </ul>
                         </li>
 
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class=" ri-file-list-3-line"></i>
-                                <span>Laporan</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
-                                <li><a href="{{ route('report.rank') }}">Rekap Passing Grade</a></li>
-                                <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
-                                <li><a href="{{ route('laporan.indexLogGps') }}">Log Lokasi</a></li>
-                            </ul>
-                        </li>
-
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-history-line"></i>
@@ -81,6 +68,19 @@
                                 <li class="child"><a href="{{ route('lembur.rekapBulanan') }}">Laporan Bulanan</a></li>
                                 <li class="child"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
                                 <li class="child"><a href="#">Laporan Data Lembur</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class=" ri-file-list-3-line"></i>
+                                <span>Laporan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
+                                <li><a href="{{ route('report.rank') }}">Rekap Passing Grade</a></li>
+                                <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
+                                <li><a href="{{ route('laporan.indexLogGps') }}">Log Lokasi</a></li>
                             </ul>
                         </li>
 
