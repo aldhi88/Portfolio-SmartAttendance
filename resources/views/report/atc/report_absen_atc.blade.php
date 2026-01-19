@@ -107,8 +107,10 @@
                     }
 
                     var type = '';
-                    if(abs.type==='Rotasi' || abs.type==='Hybrid'){
-                        type = '<br><small>'+abs.shift+'</small>';
+                    if(abs.type==='Rotasi' || abs.type==='Hybrid' ){
+                        if(abs.label_in != 'lembur'){
+                            type = '<br><small>'+abs.shift+'</small>';
+                        }
                     }
 
                     return `
@@ -151,7 +153,9 @@
                     var type = '';
 
                     if(abs.type==='Rotasi' || abs.type==='Hybrid'){
-                        type = '<br><small>'+abs.shift+'</small>';
+                        if(abs.label_out != 'lembur'){
+                            type = '<br><small>'+abs.shift+'</small>';
+                        }
                     }
                     return `
                         ${abs.time_out}<br>

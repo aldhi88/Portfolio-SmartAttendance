@@ -72,7 +72,12 @@ class ReportController extends Controller
                     });
             },
             'data_lemburs' => function ($q) use ($range) {
-                $q->select('id', 'data_employee_id', 'tanggal')
+                $q->select(
+                        'id', 'data_employee_id',
+                        'tanggal','checkin_time_lembur',
+                        'work_time_lembur','checkin_deadline_time_lembur',
+                        'checkout_time_lembur','checkout_deadline_time_lembur',
+                    )
                     ->where(function ($sub) {
                         $sub->whereNull('pengawas1')
                             ->orWhere('status_pengawas1', 'Disetujui');

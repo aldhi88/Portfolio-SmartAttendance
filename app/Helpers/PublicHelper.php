@@ -187,10 +187,16 @@ class PublicHelper
         if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
             }
 
             $dt['return']['label_in'] = 'tgl merah';
@@ -203,15 +209,19 @@ class PublicHelper
         if (!in_array($dayIndex, $hariKerja)) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
             }
             return $dt['return'];
         }
-
-
 
         // ===========Proses waktu kerja============
         $timeRule = self::getTimeRuleTetap($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon']);
@@ -296,10 +306,16 @@ class PublicHelper
         if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
             }
 
             $dt['return']['label_in'] = 'tgl merah';
@@ -313,10 +329,16 @@ class PublicHelper
             if (count($dt['lembur']) > 0) {
                 $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
                 if ($dtLembur) {
-                    $dt['return']['label_in'] = 'lembur';
-                    $dt['return']['label_out'] = 'lembur';
-                    $dt['return']['status'] = 'lembur';
-                    return $dt['return'];
+                    $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                    $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                    if ($timeIn !== '-' && $timeOut !== '-') {
+                        $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                        $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                        $dt['return']['label_in'] = 'lembur';
+                        $dt['return']['label_out'] = 'lembur';
+                        $dt['return']['status'] = 'lembur';
+                        return $dt['return'];
+                    }
                 }
             }
             return $dt['return'];
@@ -393,6 +415,16 @@ class PublicHelper
         if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
                 $dt['return']['label_in'] = 'lembur';
                 $dt['return']['label_out'] = 'lembur';
                 $dt['return']['status'] = 'lembur';
@@ -411,6 +443,16 @@ class PublicHelper
         if (!array_key_exists($dayIndex, $hariKerja)) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
                 $dt['return']['label_in'] = 'lembur';
                 $dt['return']['label_out'] = 'lembur';
                 $dt['return']['status'] = 'lembur';
@@ -523,6 +565,16 @@ class PublicHelper
         if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
                 $dt['return']['label_in'] = 'lembur';
                 $dt['return']['label_out'] = 'lembur';
                 $dt['return']['status'] = 'lembur';
@@ -539,6 +591,16 @@ class PublicHelper
         if (!$jadwalBebas) {
             $dtLembur = self::checkLembur($dt['lembur'] ?? [], $dt['tglCekCarbon'], $dt['return']);
             if ($dtLembur) {
+                $timeIn = ReportLemburHelper::getLemburCheckin($dtLembur);
+                $timeOut = ReportLemburHelper::getLemburCheckout($dtLembur);
+                if ($timeIn !== '-' && $timeOut !== '-') {
+                    $dt['return']['time_in']  = Carbon::parse($timeIn)->format('H:i:s');
+                    $dt['return']['time_out'] = Carbon::parse($timeOut)->format('H:i:s');
+                    $dt['return']['label_in'] = 'lembur';
+                    $dt['return']['label_out'] = 'lembur';
+                    $dt['return']['status'] = 'lembur';
+                    return $dt['return'];
+                }
                 $dt['return']['label_in'] = 'lembur';
                 $dt['return']['label_out'] = 'lembur';
                 $dt['return']['status'] = 'lembur';
@@ -665,10 +727,10 @@ class PublicHelper
 
     public static function checkLembur($dtLembur, $tglCekCarbon, $dt)
     {
-        return collect($dtLembur)->contains(function ($item) use ($tglCekCarbon) {
-            return isset($item['tanggal']) &&
-                $tglCekCarbon->isSameDay(Carbon::parse($item['tanggal']));
-        });
+        return collect($dtLembur)->first(function ($item) use ($tglCekCarbon) {
+            return !empty($item['tanggal'])
+                && $tglCekCarbon->isSameDay(Carbon::parse($item['tanggal']));
+        }) ?? false;
     }
 
     public static function checkIzin($dtIzin, $timeRule, $dt)
@@ -739,35 +801,6 @@ class PublicHelper
         return $return;
     }
 
-    // public static function getTimeRuleRotasi($shiftTimeList, $tglCek, $shiftIndex)
-    // {
-
-    //     $shift = $shiftTimeList[$shiftIndex];
-
-    //     $return['checkin_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_time']);
-
-    //     $return['checkin_ontime'] = $tglCek->copy()->setTimeFromTimeString($shift['work_time']);
-    //     if ($return['checkin_ontime']->lt($return['checkin_start'])) {
-    //         $return['checkin_ontime']->addDay();
-    //     }
-
-    //     $return['checkin_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkin_deadline_time']);
-    //     if ($return['checkin_end']->lt($return['checkin_start'])) {
-    //         $return['checkin_end']->addDay();
-    //     }
-
-    //     $return['checkout_start'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_time']);
-    //     if ($return['checkout_start']->lt($return['checkin_start'])) {
-    //         $return['checkout_start']->addDay();
-    //     }
-
-    //     $return['checkout_end'] = $tglCek->copy()->setTimeFromTimeString($shift['checkout_deadline_time']);
-    //     if ($return['checkout_end']->lt($return['checkin_start'])) {
-    //         $return['checkout_end']->addDay();
-    //     }
-
-    //     return $return;
-    // }
 
     public static function getTimeRuleRotasi($shiftTimeList, $tglCek, $shiftIndex)
     {
