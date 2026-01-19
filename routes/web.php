@@ -217,8 +217,8 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('print-pdf/{id}', 'PrintPdf')->name('PrintPdf');
                 Route::get('rekap-bulanan', 'rekapBulanan')->name('rekapBulanan');
                 Route::get('rekap-bulanan/dt', 'rekapBulananDT')->name('rekapBulananDT');
-                Route::get('/rekap-bulanan/print-pdf/{id}/{month}/{year}', 'printPdfRekapBulanan')->name('printPdfRekapBulanan');
-                Route::get('/rekap-bulanan2/print-pdf/{id}/{month}/{year}', 'printPdfRekapBulanan2')->name('printPdfRekapBulanan2');
+                Route::get('/rekap-bulanan/print-pdf/{id}/{month}/{year}/{type}', 'printPdfRekapBulanan')->name('printPdfRekapBulanan');
+                // Route::get('/rekap-bulanan2/print-pdf/{id}/{month}/{year}/{type}', 'printPdfRekapBulanan2')->name('printPdfRekapBulanan2');
             });
         });
     });

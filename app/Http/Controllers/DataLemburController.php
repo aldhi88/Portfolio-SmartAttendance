@@ -9,6 +9,7 @@ use App\Models\DataLembur;
 use App\Repositories\DataEmployeeRepo;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
+use App\Repositories\Interfaces\DataLiburFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
 use App\Repositories\LogGpsRepo;
 use App\Repositories\MasterOrganizationRepo;
@@ -204,8 +205,31 @@ class DataLemburController extends Controller
         $id,
         $month,
         $year,
-        DataEmployeeFace $dataEmployeeRepo
+        $type,
+        DataEmployeeFace $dataEmployeeRepo,
+        DataLiburFace $dataLiburRepo
     ) {
+
+        // dd($type);
+        // date day list
+        $start = Carbon::createFromDate((int)$year, (int)$month, 1)->startOfDay();
+        $now = Carbon::now();
+        $isCurrentMonth = ($start->year === $now->year) && ($start->month === $now->month);
+        $end = $isCurrentMonth
+            ? $now->copy()->endOfDay()
+            : $start->copy()->endOfMonth()->endOfDay();
+        $dt['listHari'] = [];
+        $dt['listTanggal'] = [];
+        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+            $dt['listHari'][] = $d->copy()->locale('id')->isoFormat('dddd'); // Kamis, Jumat, ...
+            $dt['listTanggal'][] = $d->format('d-M-Y');
+        }
+
+        $range['start_cast'] = $start;
+        $range['end_cast'] = $end;
+
+        // dd($dt);
+
         $dt['monthList'] = PublicHelper::indoMonthList();
         $dt['manager'] = DataEmployeeRepo::getManager();
         $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
@@ -230,6 +254,14 @@ class DataLemburController extends Controller
             ->with([
                 'master_organizations',
                 'master_positions',
+                'master_schedules:id,type,kode,day_work',
+                'master_schedules.data_schedule_bebas' => function ($q) use ($range) {
+                    $q->select('master_schedule_id', 'tanggal', 'day_work')
+                        ->whereBetween('tanggal', [
+                            $range['start_cast']->toDateString(),
+                            $range['end_cast']->toDateString(),
+                        ]);
+                },
                 'data_lemburs' => function ($query) use ($month, $year) {
                     $query->whereMonth('tanggal', $month)
                         ->whereYear('tanggal', $year)
@@ -238,23 +270,42 @@ class DataLemburController extends Controller
                             $q->whereNull('pengawas2')
                                 ->orWhereNotNull('status_pengawas2');
                         });
-                }
+                },
+                'data_izins' => function ($q) use ($range) {
+                    $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
+                        ->where('status', 'Disetujui')
+                        ->where(function ($sub) use ($range) {
+                            $sub->whereBetween('from', [$range['start_cast'], $range['end_cast']])
+                                ->orWhereBetween('to', [$range['start_cast'], $range['end_cast']]);
+                        });
+                },
+                'log_attendances' => function ($q) use ($range) {
+                    $q->select('data_employee_id', 'time')
+                        ->whereBetween('time', [
+                            $range['start_cast'],
+                            $range['end_cast']
+                        ])
+                    ;
+                },
             ])
             ->get()
             ->toArray();
 
         // dd($dt['emp']);
 
-
+        $dateInMonth = PublicHelper::dateInMonth($start, $end);
+        $tglMerah = $dataLiburRepo->getByDate($month, $year);
 
         foreach ($dt['emp'] as $key => $value) {
+            $param = [];
             foreach ($value['data_lemburs'] as $i => $v) {
                 $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($v);
                 $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] = ReportLemburHelper::getLemburCheckout($v);
 
                 if (
                     $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] === '-' ||
-                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] === '-') {
+                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] === '-'
+                ) {
                     unset($dt['emp'][$key]['data_lemburs'][$i]);
                     continue;
                 }
@@ -266,102 +317,38 @@ class DataLemburController extends Controller
                 $roundedMinutes = intdiv($totalMinutes, 30) * 30;
                 $dt['emp'][$key]['data_lemburs'][$i]['total_jam'] = $roundedMinutes / 60;
             }
+
+            $param['dateInMonth'] = $dateInMonth;
+            $param['tglMerah'] = $tglMerah;
+            $param['izin'] = $value['data_izins'];
+            $param['lembur'] = $value['data_lemburs'];
+            $param['log'] = $value['log_attendances'];
+            $param['jadwal'] = $value['master_schedules'];
+
+            $dt['emp'][$key]['absensi'] = PublicHelper::getDtAbsen($param);
+            $dt['emp'][$key]['absensi'] = collect($dt['emp'][$key]['absensi'])
+                ->mapWithKeys(function ($value, $key) {
+                    return [(int) $key-1 => $value];
+                })
+                ->toArray();
+
             $dt['emp'][$key]['data_lemburs'] = array_values($dt['emp'][$key]['data_lemburs']);
             if (count($dt['emp'][$key]['data_lemburs']) === 0) {
-                    unset($dt['emp'][$key]);
-                }
+                unset($dt['emp'][$key]);
+            }
         }
         $dt['emp'] = array_values($dt['emp']);
+
+        // dd($dt);
 
         $view = [
-            1 => 'bulanan_patra_niaga',
-            5 => 'bulanan_patra_logistik',
-            9 => 'bulanan_ptc_security',
+            'pn1' => 'bulanan_patra_niaga',
+            'pn2' => 'bulanan_patra_niaga2',
+            'pl1' => 'bulanan_patra_logistik_form',
+            'pl2' => 'bulanan_patra_logistik_timesheet',
         ];
 
-        $pdf = Pdf::loadView('lembur.pdf.' . $view[$id], compact('dt'))
-            ->setPaper('A4', 'portrait');
-
-        if (env('APP_ENV') == 'local') {
-            return $pdf->stream(uniqid() . '.pdf');
-        }
-        return $pdf->download(uniqid() . '.pdf');
-    }
-
-    public function PrintPdfRekapBulanan2(
-        $id,
-        $month,
-        $year,
-        DataEmployeeFace $dataEmployeeRepo
-    ) {
-        $dt['monthList'] = PublicHelper::indoMonthList();
-        $dt['manager'] = DataEmployeeRepo::getManager();
-        $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
-
-        $dt['attr'] = [
-            'month' => $month,
-            'monthLabel' => $dt['monthList'][$month],
-            'year' => $year,
-            'monthList' => $dt['monthList']
-        ];
-
-        $dt['emp'] = DataEmployee::where('master_organization_id', $id)
-            ->whereHas('data_lemburs', function ($query) use ($month, $year) {
-                $query->whereMonth('tanggal', $month)
-                    ->whereYear('tanggal', $year)
-                    ->whereNotNull('status_pengawas1')
-                    ->where(function ($q) {
-                        $q->whereNull('pengawas2')
-                            ->orWhereNotNull('status_pengawas2');
-                    });
-            })
-            ->with([
-                'master_organizations',
-                'master_positions',
-                'data_lemburs' => function ($query) use ($month, $year) {
-                    $query->whereMonth('tanggal', $month)
-                        ->whereYear('tanggal', $year)
-                        ->whereNotNull('status_pengawas1')
-                        ->where(function ($q) {
-                            $q->whereNull('pengawas2')
-                                ->orWhereNotNull('status_pengawas2');
-                        });
-                }
-            ])
-            ->get()
-            ->toArray();
-
-        // dd($dt['emp']);
-
-
-
-        foreach ($dt['emp'] as $key => $value) {
-            foreach ($value['data_lemburs'] as $i => $v) {
-                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($v);
-                $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] = ReportLemburHelper::getLemburCheckout($v);
-
-                if (
-                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] === '-' ||
-                    $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'] === '-') {
-                    unset($dt['emp'][$key]['data_lemburs'][$i]);
-                    continue;
-                }
-
-                $dt['emp'][$key]['data_lemburs'][$i]['start_carbon'] = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'])->locale('id');
-                $dt['emp'][$key]['data_lemburs'][$i]['end_carbon']   = Carbon::parse($dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkout'])->locale('id');
-                $totalMinutes = $dt['emp'][$key]['data_lemburs'][$i]['start_carbon']
-                    ->diffInMinutes($dt['emp'][$key]['data_lemburs'][$i]['end_carbon']);
-                $roundedMinutes = intdiv($totalMinutes, 30) * 30;
-                $dt['emp'][$key]['data_lemburs'][$i]['total_jam'] = $roundedMinutes / 60;
-            }
-            $dt['emp'][$key]['data_lemburs'] = array_values($dt['emp'][$key]['data_lemburs']);
-            if (count($dt['emp'][$key]['data_lemburs']) === 0) {
-                    unset($dt['emp'][$key]);
-                }
-        }
-        $dt['emp'] = array_values($dt['emp']);
-
-        $pdf = Pdf::loadView('lembur.pdf.bulanan_patra_niaga2', compact('dt'))
+        $pdf = Pdf::loadView('lembur.pdf.' . $view[$type], compact('dt'))
             ->setPaper('A4', 'portrait');
 
         if (env('APP_ENV') == 'local') {

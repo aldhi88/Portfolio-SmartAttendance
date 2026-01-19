@@ -104,13 +104,13 @@ class PublicHelper
                 continue;
             }
             // skip jika tanggal merah
-            if (in_array($tglStringYMD, $param['tglMerah'])) {
-                $return['label_in'] = 'tgl merah';
-                $return['label_out'] = 'tgl merah';
-                $return['status'] = 'tgl merah';
-                $result[$tglIndex] = $return;
-                continue;
-            }
+            // if (in_array($tglStringYMD, $param['tglMerah'])) {
+            //     $return['label_in'] = 'tgl merah';
+            //     $return['label_out'] = 'tgl merah';
+            //     $return['status'] = 'tgl merah';
+            //     $result[$tglIndex] = $return;
+            //     continue;
+            // }
 
             // dd($jadwalAktif);
 
@@ -121,6 +121,8 @@ class PublicHelper
                 $dtTetap['return'] = $return;
                 $dtTetap['jadwalAktif'] = $jadwalAktif;
                 $dtTetap['tglCekCarbon'] = $tglCekCarbon;
+                $dtTetap['tglStringYMD'] = $tglStringYMD;
+                $dtTetap['tglMerah'] = $param['tglMerah'];
                 $return = self::cekTetap($dtTetap);
                 $result[$tglIndex] = $return;
             }
@@ -132,6 +134,8 @@ class PublicHelper
                 $dtRotasi['return'] = $return;
                 $dtRotasi['jadwalAktif'] = $jadwalAktif;
                 $dtRotasi['tglCekCarbon'] = $tglCekCarbon;
+                $dtRotasi['tglStringYMD'] = $tglStringYMD;
+                $dtRotasi['tglMerah'] = $param['tglMerah'];
                 $return = self::cekRotasi($dtRotasi);
                 $result[$tglIndex] = $return;
             }
@@ -144,6 +148,8 @@ class PublicHelper
                 $dtHybrid['return'] = $return;
                 $dtHybrid['jadwalAktif'] = $jadwalAktif;
                 $dtHybrid['tglCekCarbon'] = $tglCekCarbon;
+                $dtHybrid['tglStringYMD'] = $tglStringYMD;
+                $dtHybrid['tglMerah'] = $param['tglMerah'];
                 $return = self::cekHybrid($dtHybrid);
                 $result[$tglIndex] = $return;
                 // dd(0);
@@ -157,6 +163,8 @@ class PublicHelper
                 $dtBebas['return'] = $return;
                 $dtBebas['jadwalAktif'] = $jadwalAktif;
                 $dtBebas['tglCekCarbon'] = $tglCekCarbon;
+                $dtBebas['tglStringYMD'] = $tglStringYMD;
+                $dtBebas['tglMerah'] = $param['tglMerah'];
                 $return = self::cekBebas($dtBebas);
                 $result[$tglIndex] = $return;
                 // dd(0);
@@ -174,6 +182,23 @@ class PublicHelper
         $dt['return']['type'] = 'Tetap';
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
         $hariKerja = $dt['jadwalAktif']['day_work']['day'];
+
+        // jika tanggal merah
+        if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
+            $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+                return $dt['return'];
+            }
+
+            $dt['return']['label_in'] = 'tgl merah';
+            $dt['return']['label_out'] = 'tgl merah';
+            $dt['return']['status'] = 'tgl merah';
+            return $dt['return'];
+        }
+
         // jika tidak hari kerja;
         if (!in_array($dayIndex, $hariKerja)) {
             $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
@@ -185,6 +210,8 @@ class PublicHelper
             }
             return $dt['return'];
         }
+
+
 
         // ===========Proses waktu kerja============
         $timeRule = self::getTimeRuleTetap($dt['jadwalAktif']['day_work']['time'], $dt['tglCekCarbon']);
@@ -265,6 +292,21 @@ class PublicHelper
         }
 
         $hariKeBrpDalamSatuShift = $hariKeBrpDalamSiklus % ($workDay + $offDay);  // 0-3
+        // jika tanggal merah
+        if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
+            $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+                return $dt['return'];
+            }
+
+            $dt['return']['label_in'] = 'tgl merah';
+            $dt['return']['label_out'] = 'tgl merah';
+            $dt['return']['status'] = 'tgl merah';
+            return $dt['return'];
+        }
         // jika tidak hari kerja;
         if ($hariKeBrpDalamSatuShift >= $workDay) {
             // ===========cek lembur============
@@ -347,6 +389,22 @@ class PublicHelper
         // dump($dt);
         $dt['return']['type'] = 'Hybrid';
 
+        // jika tanggal merah
+        if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
+            $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+                return $dt['return'];
+            }
+
+            $dt['return']['label_in'] = 'tgl merah';
+            $dt['return']['label_out'] = 'tgl merah';
+            $dt['return']['status'] = 'tgl merah';
+            return $dt['return'];
+        }
+
         // jika tidak hari kerja;
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
         $hariKerja = $dt['jadwalAktif']['day_work']['day'];
@@ -367,7 +425,7 @@ class PublicHelper
         $totalShift = count($dt['jadwalAktif']['day_work']['time']);
         // $diff = $startDate->diffInDays($dt['tglCekCarbon']); //salah sabtu minggu kehitung
         $diff = collect(CarbonPeriod::create($startDate, $dt['tglCekCarbon']))
-            ->filter(fn($d) => in_array($d->dayOfWeek, array_keys($hariKerja)))
+            ->filter(fn(Carbon $d) => in_array($d->dayOfWeek, array_keys($hariKerja)))
             ->count() - 1;
 
         $jumlahHariSiklus = ($workDay + $offDay) * $totalShift;
@@ -460,6 +518,22 @@ class PublicHelper
         $tanggalCek = $dt['tglCekCarbon']->format('Y-m-d');
         $jadwalBebas = collect($dt['jadwalAktif']['data_schedule_bebas'] ?? [])
             ->firstWhere('tanggal', $tanggalCek);
+
+        // jika tanggal merah
+        if (in_array($dt['tglStringYMD'], $dt['tglMerah'])) {
+            $dtLembur = self::checkLembur($dt['lembur'], $dt['tglCekCarbon'], $dt['return']);
+            if ($dtLembur) {
+                $dt['return']['label_in'] = 'lembur';
+                $dt['return']['label_out'] = 'lembur';
+                $dt['return']['status'] = 'lembur';
+                return $dt['return'];
+            }
+
+            $dt['return']['label_in'] = 'tgl merah';
+            $dt['return']['label_out'] = 'tgl merah';
+            $dt['return']['status'] = 'tgl merah';
+            return $dt['return'];
+        }
 
         // Jika tidak ada jadwal untuk tanggal itu → off (kecuali lembur)
         if (!$jadwalBebas) {

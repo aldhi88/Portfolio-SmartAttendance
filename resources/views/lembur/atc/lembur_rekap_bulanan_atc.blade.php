@@ -51,27 +51,34 @@
                     let month = getParam('month', '[name="month"]');
                     let year  = getParam('year', '[name="year"]');
 
+                    let linkPrint = '';
+                    let html = '';
                     let printPdfUrl = `/lembur/rekap-bulanan/print-pdf/${row.id}/${month}/${year}`;
-                    let printPdfUrl2 = `/lembur/rekap-bulanan2/print-pdf/${row.id}/${month}/${year}`;
-
-                    let linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}">Rekap Bulanan</a>`;
 
                     if(orgId==1){
-                        linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl2}">Justifikasi Kelebihan Jam</a>`;
+                        linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pn1">Rekap Bulanan</a>`;
+                        linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pn2">Justifikasi Kelebihan Jam</a>`;
+                    }
+                    if(orgId==5){
+                        linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl1">Rekap Form Pengajuan</a>`;
+                        linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl2">Rekap Timesheet Pengemudi</a>`;
                     }
 
-                    let html = `
-                        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-                            <div class="btn-group" role="group">
-                                <button id="btnGroupVerticalDrop1" type="button" class="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Print <i class="mdi mdi-chevron-down"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1" style="">
-                                ${linkPrint}
+                    if(linkPrint!=''){
+                        html += `
+                            <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupVerticalDrop1" type="button" class="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Print <i class="mdi mdi-chevron-down"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1" style="">
+                                    ${linkPrint}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
+
 
                     return html;
                 }
