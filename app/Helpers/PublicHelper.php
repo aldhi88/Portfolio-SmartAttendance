@@ -425,10 +425,6 @@ class PublicHelper
                     $dt['return']['status'] = 'lembur';
                     return $dt['return'];
                 }
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
             }
 
             $dt['return']['label_in'] = 'tgl merah';
@@ -453,10 +449,6 @@ class PublicHelper
                     $dt['return']['status'] = 'lembur';
                     return $dt['return'];
                 }
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
             }
             return $dt['return'];
         }
@@ -575,10 +567,6 @@ class PublicHelper
                     $dt['return']['status'] = 'lembur';
                     return $dt['return'];
                 }
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
-                return $dt['return'];
             }
 
             $dt['return']['label_in'] = 'tgl merah';
@@ -601,9 +589,6 @@ class PublicHelper
                     $dt['return']['status'] = 'lembur';
                     return $dt['return'];
                 }
-                $dt['return']['label_in'] = 'lembur';
-                $dt['return']['label_out'] = 'lembur';
-                $dt['return']['status'] = 'lembur';
             }
             return $dt['return'];
         }
