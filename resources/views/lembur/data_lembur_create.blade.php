@@ -173,6 +173,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label>Security</label>
+                                    <select wire:model="form.security" class="form-control">
+                                        <option value="">- Pilih -</option>
+                                        @foreach ($ttd['security'] as $item)
+                                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     @elseif($pass['format']=='format_patlog')
                         <div class="row">
                             <div class="col-12 col-md">

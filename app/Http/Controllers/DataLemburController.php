@@ -291,8 +291,6 @@ class DataLemburController extends Controller
             ->get()
             ->toArray();
 
-        // dd($dt['emp']);
-
         $dateInMonth = PublicHelper::dateInMonth($start, $end);
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
 
@@ -339,7 +337,7 @@ class DataLemburController extends Controller
         }
         $dt['emp'] = array_values($dt['emp']);
 
-        // dd($dt);
+        // dd($dt['emp']);
 
         $view = [
             'pn1' => 'bulanan_patra_niaga',
@@ -357,3 +355,4 @@ class DataLemburController extends Controller
         return $pdf->download(uniqid() . '.pdf');
     }
 }
+

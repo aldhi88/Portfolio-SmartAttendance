@@ -68,21 +68,96 @@
             <td class="hc vm">LEMBUR <br> NYATA</td>
             <td class="hc vm">LEMBUR <br> KONVERSI</td>
         </tr>
-
+        @php
+            $totaljam=0;
+        @endphp
         @foreach ($dt['listHari'] as $i=>$day)
             <tr>
                 <td class="hc">{{ $i+1 }}</td>
-                <td class="hc" style="color: {{ $day=='Sabtu'||$day=='Minggu'?'red':null }}">{{ $day }}</td>
-                <td class="hc" style="color: {{ $day=='Sabtu'||$day=='Minggu'?'red':null }}">{{ $dt['listTanggal'][$i] }}</td>
-                <td class="hc" style="color: {{ $day=='Sabtu'||$day=='Minggu'?'red':null }}">{{ $item['absensi'][$i]['time_in'] }}</td>
-                <td class="hc" style="color: {{ $day=='Sabtu'||$day=='Minggu'?'red':null }}">{{ $item['absensi'][$i]['time_out'] }}</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $day }}</td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $dt['listTanggal'][$i] }}</td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_in'] }}</td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_out'] }}</td>
+                <td></td>
+                <td class="hc">
+                    @php
+                        $selisih = '-';
+                        if(
+                            $item['absensi'][$i]['label_in']=='lembur' &&
+                            $item['absensi'][$i]['time_in']!='-' &&
+                            $item['absensi'][$i]['time_out']!='-'
+                        ){
+                            $start = \Carbon\Carbon::createFromFormat('H:i:s', $item['absensi'][$i]['time_in']);
+                            $end   = \Carbon\Carbon::createFromFormat('H:i:s', $item['absensi'][$i]['time_out']);
+                            if ($end->lessThan($start)) {
+                                $end->addDay();
+                            }
+                            $diffSeconds = $start->diffInSeconds($end);
+                            $roundedSeconds = intdiv($diffSeconds, 1800) * 1800;
+                            $selisih = $roundedSeconds / 3600;
+
+                            $totaljam+=$selisih;
+                        }
+
+                        echo $selisih;
+                    @endphp
+                </td>
+                <td></td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">
+                    @php
+                        if(
+                            $item['absensi'][$i]['label_in']=='lembur' &&
+                            $item['absensi'][$i]['time_in']!='-' &&
+                            $item['absensi'][$i]['time_out']!='-'
+                        ){
+                            $ket = $item['data_lemburs'][0]['pekerjaan'];
+                        }elseif ($item['absensi'][$i]['label_in']=='off') {
+                            $ket = 'OFF';
+                        }else{
+                            $ket = 'Operasional Kantor';
+                        }
+
+                        echo $ket;
+                    @endphp
+                </td>
             </tr>
         @endforeach
 
+        <tr style="background-color: rgb(220, 220, 220)">
+            <td colspan="6" class="hc">Total</td>
+            <td class="hc">{{ $totaljam }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    </table>
+
+    <table style="font-size: 7px">
+        <tr>
+            <td style="width: 40px">Catatan :</td>
+            <td style="width: 5px">-</td>
+            <td>Pengaturan jam kerja menyesuaikan ketetentuan Perusahaan</td>
+        </tr>
+        <tr>
+            <td style="width: 40px"></td>
+            <td style="width: 5px">-</td>
+            <td>Standar jam kerja Perusahaan adalah 9 jam sudah termasuk istirahat 1 jam untuk 1 hari kerja</td>
+        </tr>
+        <tr>
+            <td style="width: 40px"></td>
+            <td style="width: 5px">-</td>
+            <td>Batas maksimal jam lembur 72 jam konversi</td>
+        </tr>
+        <tr>
+            <td style="width: 40px"></td>
+            <td style="width: 5px">-</td>
+            <td>Pengajuan lembur diverifikasi oleh Koordinator Lapangan Penyedia Jasa, User/Manager Fungsi User/Pejabat Pengguna dan Asset Management/Asset Operation Region</td>
+        </tr>
+        <tr>
+            <td style="width: 40px"></td>
+            <td style="width: 5px">-</td>
+            <td>Dalam hal jam lembur konversi melebihi 72 jam, dapat diajukan maksimal s.d. 100 jam konversi dengan mengisi form pengajuan Rekapitulasi lembur yang ditandatangani oleh EGM/Level VP</td>
+        </tr>
     </table>
 </div>
 
