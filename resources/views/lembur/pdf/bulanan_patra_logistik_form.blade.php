@@ -159,11 +159,51 @@
             <td>Dalam hal jam lembur konversi melebihi 72 jam, dapat diajukan maksimal s.d. 100 jam konversi dengan mengisi form pengajuan Rekapitulasi lembur yang ditandatangani oleh EGM/Level VP</td>
         </tr>
     </table>
+
+    <div style="height: 10px"></div>
+    <table>
+        <tr>
+            <td class="hc" style="width: 20%;line-height: 14px">
+                <strong>Medan</strong>, <br><br>
+                Diusulkan oleh, <br>
+                Koordinator Lapangan
+            </td>
+            <td style="width: 60%"></td>
+            <td class="hc" style="width: 20%;line-height: 14px">
+                <span style="color: white;">----</span><br><br>
+                Diverifikasi Oleh,
+                <br>
+                User
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="hc">
+                <div style="height: 100px"></div>
+                {{ $item['ttd']['korlap'] }}
+            </td>
+            <td></td>
+            <td class="hc">
+                @if (is_null($item['ttd']['pengawas1']['ttd']))
+                    <div style="height: 100px"></div>
+                @else
+                    <img src="{{ public_path('storage/employees/ttd/' . $item['ttd']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
+                @endif
+                {{ $item['ttd']['pengawas1']['name'] }}
+            </td>
+        </tr>
+
+    </table>
 </div>
 
 @if ($key+1 < count($dt['emp']))
 <div style="page-break-before: always;"></div>
 @endif
+
+
+
 @endforeach
 
 

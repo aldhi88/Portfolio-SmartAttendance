@@ -263,6 +263,7 @@ class DataLemburController extends Controller
                             $range['end_cast']->toDateString(),
                         ]);
                 },
+                'data_lemburs.pengawas1',
                 'data_lemburs' => function ($query) use ($month, $year) {
                     $query->whereMonth('tanggal', $month)
                         ->whereYear('tanggal', $year)
@@ -296,6 +297,18 @@ class DataLemburController extends Controller
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
 
         foreach ($dt['emp'] as $key => $value) {
+            $pengawas1 = '-';
+            $korlap    = '-';
+            if(count($value['data_lemburs'])!=0){
+                $korlapItem = collect($value['data_lemburs'])->first(fn ($i) => !is_null($i['korlap']));
+                $pengawas1 = ($korlapItem['pengawas1'] ?? $value['data_lemburs'][0]['pengawas1']) ?? '-';
+                $korlap = $korlapItem['korlap'] ?? '-';
+            }
+
+
+            $dt['emp'][$key]['ttd']['pengawas1'] = $pengawas1;
+            $dt['emp'][$key]['ttd']['korlap'] = $korlap;
+            // dump($dt);
             $param = [];
             foreach ($value['data_lemburs'] as $i => $v) {
                 $dt['emp'][$key]['data_lemburs'][$i]['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($v);
