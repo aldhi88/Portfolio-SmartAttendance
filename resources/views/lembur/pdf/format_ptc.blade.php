@@ -290,6 +290,7 @@
         <tr>
             <td style="width: 25%">
                 Ybs <br>
+                <span style="color: white">--------------</span>
                 @if (is_null($data['data_employees']['ttd']))
                     <div style="height: 100px"></div>
                 @else
