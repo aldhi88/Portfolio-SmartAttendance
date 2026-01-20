@@ -301,12 +301,14 @@
             <td style="width: 25%">
                 Diketahui, <br>
                 Security IT Dumai
-                @if (is_null($data['security']['ttd']))
+                @if (is_null($data['security']) || is_null($data['security']['ttd']))
                     <div style="height: 100px"></div>
                 @else
                     <img src="{{ public_path('storage/employees/ttd/' . $data['security']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
                 @endif
+                @if (!is_null($data['security']))
                 <div style="text-align: left"><strong>{{ $data['security']['name'] }}</strong></div>
+                @endif
             </td>
             <td style="width: 25%">
                 Mengetahui, <br>

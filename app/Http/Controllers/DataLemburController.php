@@ -139,6 +139,7 @@ class DataLemburController extends Controller
             ])
             ->first()
             ->toArray();
+        // dd($data);
         $data['pengawas1']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas1']['ttd']);
         $data['pengawas2']['path_ttd'] = public_path('storage/employees/ttd/' . $data['pengawas2']['ttd']);
         $data['data_lembur']['laporan_lembur_checkin'] = ReportLemburHelper::getLemburCheckin($data);
