@@ -20,7 +20,7 @@
     border: solid 1px black;
     padding: 15px;
     ">
-    <div class="hc" style=""><strong>FORM PENGAJUAN LEMBUR PENGEMUDI OPERASIONAL POOL</strong></div>
+    <div class="hc" style=""><strong>TIMESHEET PENGEMUDI OPERASIONAL POOL</strong></div>
     <div style="height: 10px"></div>
     <table style="font-weight: bold; line-height: 16px">
         <tr>
@@ -58,15 +58,14 @@
             <td class="hc vm" rowspan="2">HARI</td>
             <td class="hc vm" rowspan="2">TANGGAL</td>
             <td class="hc vm" colspan="2">WAKTU KERJA</td>
-            <td class="hc vm" colspan="3">TOTAL JAM</td>
             <td class="hc vm" rowspan="2">KETERANGAN</td>
+            <td class="hc vm" colspan="2">PENERIMA LAYANAN</td>
         </tr>
         <tr>
             <td class="hc vm">MULAI</td>
             <td class="hc vm">SELESAI</td>
-            <td class="hc vm">KERJA</td>
-            <td class="hc vm">LEMBUR <br> NYATA</td>
-            <td class="hc vm">LEMBUR <br> KONVERSI</td>
+            <td class="hc vm">PARAF USER</td>
+            <td class="hc vm">FUNGSI</td>
         </tr>
         @php
             $totaljam=0;
@@ -78,31 +77,6 @@
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $dt['listTanggal'][$i] }}</td>
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_in'] }}</td>
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_out'] }}</td>
-                <td></td>
-                <td class="hc">
-                    @php
-                        $selisih = '-';
-                        if(
-                            $item['absensi'][$i]['label_in']=='lembur' &&
-                            $item['absensi'][$i]['time_in']!='-' &&
-                            $item['absensi'][$i]['time_out']!='-'
-                        ){
-                            $start = \Carbon\Carbon::createFromFormat('H:i:s', $item['absensi'][$i]['time_in']);
-                            $end   = \Carbon\Carbon::createFromFormat('H:i:s', $item['absensi'][$i]['time_out']);
-                            if ($end->lessThan($start)) {
-                                $end->addDay();
-                            }
-                            $diffSeconds = $start->diffInSeconds($end);
-                            $roundedSeconds = intdiv($diffSeconds, 1800) * 1800;
-                            $selisih = $roundedSeconds / 3600;
-
-                            $totaljam+=$selisih;
-                        }
-
-                        echo $selisih;
-                    @endphp
-                </td>
-                <td></td>
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">
                     @php
                         if(
@@ -120,15 +94,36 @@
                         echo $ket;
                     @endphp
                 </td>
+                <td class="hc">
+                    @if (
+                        !is_null($item['ttd']['pengawas1']['paraf']) &&
+                        $item['absensi'][$i]['label_in']=='lembur' &&
+                        $item['absensi'][$i]['time_in']!='-' &&
+                        $item['absensi'][$i]['time_out']!='-'
+                    )
+                        <img src="{{ public_path('storage/employees/paraf/' . $item['ttd']['pengawas1']['paraf']) }}" alt="" class="img-fluid" height="15"><br>
+                    @endif
+                </td>
+                <td class="hc">
+                    @if (
+                        !is_null($item['ttd']['pengawas1']['paraf']) &&
+                        $item['absensi'][$i]['label_in']=='lembur' &&
+                        $item['absensi'][$i]['time_in']!='-' &&
+                        $item['absensi'][$i]['time_out']!='-'
+                    )
+                        SSGA
+                    @endif
+                </td>
+
             </tr>
         @endforeach
 
-        <tr style="background-color: rgb(220, 220, 220)">
+        {{-- <tr style="background-color: rgb(220, 220, 220)">
             <td colspan="6" class="hc">Total</td>
             <td class="hc">{{ $totaljam }}</td>
             <td></td>
             <td></td>
-        </tr>
+        </tr> --}}
 
     </table>
 
@@ -143,21 +138,6 @@
             <td style="width: 5px">-</td>
             <td>Standar jam kerja Perusahaan adalah 9 jam sudah termasuk istirahat 1 jam untuk 1 hari kerja</td>
         </tr>
-        <tr>
-            <td style="width: 40px"></td>
-            <td style="width: 5px">-</td>
-            <td>Batas maksimal jam lembur 72 jam konversi</td>
-        </tr>
-        <tr>
-            <td style="width: 40px"></td>
-            <td style="width: 5px">-</td>
-            <td>Pengajuan lembur diverifikasi oleh Koordinator Lapangan Penyedia Jasa, User/Manager Fungsi User/Pejabat Pengguna dan Asset Management/Asset Operation Region</td>
-        </tr>
-        <tr>
-            <td style="width: 40px"></td>
-            <td style="width: 5px">-</td>
-            <td>Dalam hal jam lembur konversi melebihi 72 jam, dapat diajukan maksimal s.d. 100 jam konversi dengan mengisi form pengajuan Rekapitulasi lembur yang ditandatangani oleh EGM/Level VP</td>
-        </tr>
     </table>
 
     <div style="height: 10px"></div>
@@ -165,15 +145,21 @@
         <tr>
             <td class="hc" style="width: 20%;line-height: 14px">
                 <strong>Medan</strong>, <br><br>
-                Diusulkan oleh, <br>
-                Koordinator Lapangan
+                Dibuat Oleh, <br>
+                Driver
             </td>
-            <td style="width: 60%"></td>
+            <td style="width: 20%"></td>
+            <td class="hc" style="width: 20%;line-height: 14px">
+                <strong style="color: white">Medan</strong>, <br><br>
+                Diketahui Oleh <br>
+                User
+            </td>
+            <td style="width: 20%"></td>
             <td class="hc" style="width: 20%;line-height: 14px">
                 <span style="color: white;">----</span><br><br>
                 Diverifikasi Oleh,
                 <br>
-                User
+                Koordinator Lapangan
             </td>
         </tr>
         <tr>
@@ -182,7 +168,7 @@
         <tr>
             <td class="hc">
                 <div style="height: 100px"></div>
-                <strong>({{ $item['ttd']['korlap'] }})</strong>
+                <strong>({{ $item['name'] }})</strong>
             </td>
             <td></td>
             <td class="hc">
@@ -192,6 +178,11 @@
                     <img src="{{ public_path('storage/employees/ttd/' . $item['ttd']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
                 @endif
                 <strong>({{ $item['ttd']['pengawas1']['name'] }})</strong>
+            </td>
+            <td></td>
+            <td class="hc">
+                <div style="height: 100px"></div>
+                <strong>({{ $item['ttd']['korlap'] }})</strong>
             </td>
         </tr>
 
