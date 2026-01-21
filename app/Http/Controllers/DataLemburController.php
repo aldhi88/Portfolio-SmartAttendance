@@ -136,39 +136,40 @@ class DataLemburController extends Controller
     ) {
         $month = (int) $request->month;
         $year  = (int) $request->year;
+        $org   = (int) $request->org;
 
         $data = $dataEmployeeRepo->getDTKaryawan(0);
         $data->where('status', 'Aktif');
+        if ($org !== 0) {
+            $data->where('data_organization_id', $org);
+        }
+
+        $filterLembur = function ($query) use ($month, $year) {
+            $query->whereMonth('tanggal', $month)
+                ->whereYear('tanggal', $year)
+                ->whereNotNull('status_pengawas1')
+                ->where(function ($q) {
+                    $q->whereNull('pengawas2')
+                        ->orWhereNotNull('status_pengawas2');
+                });
+        };
+
+        $data->whereHas('data_lemburs', $filterLembur);
 
         $data->withCount([
-            'data_lemburs as total_hari_lembur' => function ($query) use ($month, $year) {
-                $query->whereMonth('tanggal', $month)
-                    ->whereYear('tanggal', $year)
-                    ->whereNotNull('status_pengawas1')
-                    ->where(function ($q) {
-                        $q->whereNull('pengawas2')
-                            ->orWhereNotNull('status_pengawas2');
-                    });
-            },
+            'data_lemburs as total_hari_lembur' => $filterLembur,
         ]);
 
         $data->with([
-            'data_lemburs' => function ($query) use ($month, $year) {
-                $query->whereMonth('tanggal', $month)
-                    ->whereYear('tanggal', $year)
-                    ->whereNotNull('status_pengawas1')
-                    ->where(function ($q) {
-                        $q->whereNull('pengawas2')
-                            ->orWhereNotNull('status_pengawas2');
-                    });
-            },
+            'data_lemburs' => $filterLembur,
         ]);
 
         return DataTables::of($data)
             ->addColumn('total_jam_lembur_aktual', function ($row) {
                 // langsung dapat angka desimal, misal 17.8
                 return ReportLemburHelper::getTotalJamLemburAktual(
-                    $row->data_lemburs,2 // precision 1 angka di belakang koma
+                    $row->data_lemburs,
+                    2 // precision 1 angka di belakang koma
                 );
             })
             ->toJson();
