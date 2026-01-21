@@ -255,6 +255,7 @@ class DataLemburController extends Controller
             ->with([
                 'master_organizations',
                 'master_positions',
+                'master_locations',
                 'master_schedules:id,type,kode,day_work',
                 'master_schedules.data_schedule_bebas' => function ($q) use ($range) {
                     $q->select('master_schedule_id', 'tanggal', 'day_work')
@@ -295,6 +296,7 @@ class DataLemburController extends Controller
 
         $dateInMonth = PublicHelper::dateInMonth($start, $end);
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
+        // dd($dt['emp']);
 
         foreach ($dt['emp'] as $key => $value) {
             $pengawas1 = '-';
@@ -305,9 +307,8 @@ class DataLemburController extends Controller
                 $korlap = $korlapItem['korlap'] ?? '-';
             }
 
-
-            $dt['emp'][$key]['ttd']['pengawas1'] = $pengawas1;
-            $dt['emp'][$key]['ttd']['korlap'] = $korlap;
+            $dt['emp'][$key]['pejabat']['pengawas1'] = $pengawas1;
+            $dt['emp'][$key]['pejabat']['korlap'] = $korlap;
             // dump($dt);
             $param = [];
             foreach ($value['data_lemburs'] as $i => $v) {
@@ -358,6 +359,7 @@ class DataLemburController extends Controller
             'pn2' => 'bulanan_patra_niaga2',
             'pl1' => 'bulanan_patra_logistik_form',
             'pl2' => 'bulanan_patra_logistik_timesheet',
+            'ptcs' => 'bulanan_ptc_security',
         ];
 
         $pdf = Pdf::loadView('lembur.pdf.' . $view[$type], compact('dt'))

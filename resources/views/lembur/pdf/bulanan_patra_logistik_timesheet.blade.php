@@ -96,17 +96,17 @@
                 </td>
                 <td class="hc">
                     @if (
-                        !is_null($item['ttd']['pengawas1']['paraf']) &&
+                        !is_null($item['pejabat']['pengawas1']['paraf']) &&
                         $item['absensi'][$i]['label_in']=='lembur' &&
                         $item['absensi'][$i]['time_in']!='-' &&
                         $item['absensi'][$i]['time_out']!='-'
                     )
-                        <img src="{{ public_path('storage/employees/paraf/' . $item['ttd']['pengawas1']['paraf']) }}" alt="" class="img-fluid" height="15"><br>
+                        <img src="{{ public_path('storage/employees/paraf/' . $item['pejabat']['pengawas1']['paraf']) }}" alt="" class="img-fluid" height="15"><br>
                     @endif
                 </td>
                 <td class="hc">
                     @if (
-                        !is_null($item['ttd']['pengawas1']['paraf']) &&
+                        !is_null($item['pejabat']['pengawas1']['paraf']) &&
                         $item['absensi'][$i]['label_in']=='lembur' &&
                         $item['absensi'][$i]['time_in']!='-' &&
                         $item['absensi'][$i]['time_out']!='-'
@@ -172,17 +172,17 @@
             </td>
             <td></td>
             <td class="hc">
-                @if (is_null($item['ttd']['pengawas1']['ttd']))
+                @if (is_null($item['pejabat']['pengawas1']['ttd']))
                     <div style="height: 100px"></div>
                 @else
-                    <img src="{{ public_path('storage/employees/ttd/' . $item['ttd']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
+                    <img src="{{ public_path('storage/employees/ttd/' . $item['pejabat']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
                 @endif
-                <strong>({{ $item['ttd']['pengawas1']['name'] }})</strong>
+                <strong>({{ $item['pejabat']['pengawas1']['name'] }})</strong>
             </td>
             <td></td>
             <td class="hc">
                 <div style="height: 100px"></div>
-                <strong>({{ $item['ttd']['korlap'] }})</strong>
+                <strong>({{ $item['pejabat']['korlap'] }})</strong>
             </td>
         </tr>
 

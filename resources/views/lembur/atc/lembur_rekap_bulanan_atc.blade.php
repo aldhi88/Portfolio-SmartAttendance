@@ -63,6 +63,9 @@
                         linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl1">Rekap Form Pengajuan</a>`;
                         linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl2">Rekap Timesheet Pengemudi</a>`;
                     }
+                    if(orgId==9){
+                        linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/ptcs">Mapping Lembur Bulanan</a>`;
+                    }
 
                     if(linkPrint!=''){
                         html += `

@@ -182,16 +182,16 @@
         <tr>
             <td class="hc">
                 <div style="height: 100px"></div>
-                <strong>({{ $item['ttd']['korlap'] }})</strong>
+                <strong>({{ $item['pejabat']['korlap'] }})</strong>
             </td>
             <td></td>
             <td class="hc">
-                @if (is_null($item['ttd']['pengawas1']['ttd']))
+                @if (is_null($item['pejabat']['pengawas1']['ttd']))
                     <div style="height: 100px"></div>
                 @else
-                    <img src="{{ public_path('storage/employees/ttd/' . $item['ttd']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
+                    <img src="{{ public_path('storage/employees/ttd/' . $item['pejabat']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
                 @endif
-                <strong>({{ $item['ttd']['pengawas1']['name'] }})</strong>
+                <strong>({{ $item['pejabat']['pengawas1']['name'] }})</strong>
             </td>
         </tr>
 
