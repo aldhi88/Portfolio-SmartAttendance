@@ -101,7 +101,11 @@
             </td>
             <td></td>
             <td>
-                <div style="height: 100px"></div>
+                @if (is_null($dt['manager']['ttd']))
+                    <div style="height: 100px"></div>
+                @else
+                    <img src="{{ $dt['manager']['path_ttd'] }}" alt="" class="img-fluid" height="100"><br>
+                @endif
                 {{ $dt['manager']['name'] }}
             </td>
         </tr>
