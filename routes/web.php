@@ -194,6 +194,9 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('dt', 'indexIzinDT')->name('indexIzinDT');
                 Route::get('create', 'izinCreate')->name('izinCreate');
                 Route::get('edit/{id}', 'izinEdit')->name('izinEdit');
+                Route::get('/passing-grade', 'passingGradeCuti')->name('passingGradeCuti');
+                Route::get('/passing-grade-cuti-dt', 'passingGradeCutiDT')->name('passingGradeCutiDT');
+
 
             });
         });

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\DataEmployee;
 use App\Models\DataIzin;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,16 @@ class DataLiburIzinRepo implements DataLiburIzinFace
             ])
             ->orderBy('from', 'DESC')
         ;
+    }
+
+    public static function getPassingGradeCuti()
+    {
+        return DataEmployee::query()
+            ->select('data_employees.*')
+            ->where('status', 'Aktif')
+            ->with([
+                'master_organizations'
+            ]);
     }
 
     public function getDataIzinByPengawasDT($data)

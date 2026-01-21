@@ -109,26 +109,18 @@
                         <table id="myTable" class="table table-bordered table-striped" style="width: 100%">
                             <thead>
                             <tr>
-                                <th rowspan="2" class="text-center" width="10">No</th>
-                                <th rowspan="2" class="text-center">Nama</th>
-                                <th rowspan="2" class="text-center">Perusahaan</th>
-                                <th colspan="2" class="text-center">Total</th>
-                                {{-- <th class="text-center">Jumlah Karyawan <br> Lembur</th> --}}
-                            </tr>
-                            <tr>
-                                <th class="text-center">Hari Lembur</th>
-                                <th class="text-center">Jam Lembur</th>
-                                {{-- <th class="text-center">Jumlah Karyawan <br> Lembur</th> --}}
+                                <th class="text-center" width="10">No</th>
+                                <th class="text-center">Nama</th>
+                                <th class="text-center">Perusahaan</th>
+                                <th class="text-center">Total Cuti</th>
                             </tr>
                             </thead>
-
                             <thead id="header-filter">
                                 <tr>
                                     <th class="text-center"></th>
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm search-col-dt">
                                     </th>
-                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                 </tr>
@@ -142,5 +134,5 @@
 
         </div>
     </div>
-    @include('lembur.atc.lembur_passing_grade_atc')
+    @include('libur.atc.libur_cuti_passing_grade_atc')
 </div>

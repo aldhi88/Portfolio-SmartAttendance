@@ -141,7 +141,7 @@ class DataLemburController extends Controller
         $data = $dataEmployeeRepo->getDTKaryawan(0);
         $data->where('status', 'Aktif');
         if ($org !== 0) {
-            $data->where('data_organization_id', $org);
+            $data->where('master_organization_id', $org);
         }
 
         $filterLembur = function ($query) use ($month, $year) {
@@ -174,52 +174,6 @@ class DataLemburController extends Controller
             })
             ->toJson();
     }
-
-
-
-    // public function passingGradeLemburDT(
-    //     Request $request,
-    //     DataEmployeeFace $dataEmployeeRepo
-    // )
-    // {
-    //     $month = $request->month;
-    //     $year = $request->year;
-
-    //     $data = $dataEmployeeRepo->getDTKaryawan(0);
-    //     $data->where('status','Aktif');
-    //     $data->withCount([
-    //         'data_lemburs as total_hari_lembur' => function ($query) use ($month, $year) {
-    //             $query->whereMonth('tanggal', $month)
-    //                 ->whereYear('tanggal', $year)
-    //                 ->whereNotNull('status_pengawas1')
-    //                 ->where(function ($q) {
-    //                     $q->whereNull('pengawas2')
-    //                     ->orWhereNotNull('status_pengawas2');
-    //                 });
-    //         }
-    //     ]);
-    //     $data->with([
-    //         'data_lemburs' => function ($query) use ($month, $year) {
-    //             $query->whereMonth('tanggal', $month)
-    //                 ->whereYear('tanggal', $year)
-    //                 ->whereNotNull('status_pengawas1')
-    //                 ->where(function ($q) {
-    //                     $q->whereNull('pengawas2')
-    //                         ->orWhereNotNull('status_pengawas2');
-    //                 });
-    //         },
-    //     ]);
-    //     // dd($data->get()->toArray());
-    //     return DataTables::of($data)
-    //         // ->addColumn('laporan_lembur_checkin', function ($data) {
-    //         //     return ReportLemburHelper::getLemburCheckin($data->data_lemburs->toArray());
-    //         // })
-    //         // ->addColumn('laporan_lembur_checkout', function ($data) {
-    //         //     return ReportLemburHelper::getLemburCheckout($data->data_lemburs->toArray());
-    //         // })
-    //         ->toJson()
-    //     ;
-    // }
 
     public function printPdf(
         $id,

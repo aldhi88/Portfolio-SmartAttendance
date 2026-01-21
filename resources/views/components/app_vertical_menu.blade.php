@@ -66,7 +66,6 @@
                                 <li class="child"><a href="{{ route('lembur.indexLembur') }}">Data Pengajuan Lembur</a></li>
                                 <li class="child"><a href="{{ route('lembur.lemburCreate') }}">Tambah Data Lembur</a></li>
                                 <li class="child"><a href="{{ route('lembur.rekapBulanan') }}">Laporan Bulanan</a></li>
-                                <li class="child"><a href="{{ route('lembur.passingGradeLembur') }}">Passing Grade Lembur</a></li>
                                 <li class="child"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
                             </ul>
                         </li>
@@ -78,7 +77,9 @@
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
                                 <li><a href="{{ route('report.absen') }}">Rekap Absensi</a></li>
-                                <li><a href="{{ route('report.rank') }}">Rekap Passing Grade</a></li>
+                                <li><a href="{{ route('report.rank') }}">Passing Grade Absensi</a></li>
+                                <li class="child"><a href="{{ route('lembur.passingGradeLembur') }}">Passing Grade Lembur</a></li>
+                                <li class="child"><a href="{{ route('izin.passingGradeCuti') }}">Passing Grade Cuti</a></li>
                                 <li><a href="{{ route('laporan.indexLogAbsen') }}">Log Absensi</a></li>
                                 <li><a href="{{ route('laporan.indexLogGps') }}">Log Lokasi</a></li>
                             </ul>
