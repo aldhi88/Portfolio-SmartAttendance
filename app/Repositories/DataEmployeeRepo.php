@@ -221,6 +221,7 @@ class DataEmployeeRepo implements DataEmployeeFace
     public function getDTKaryawan($data)
     {
         return DataEmployee::query()
+            ->select('data_employees.*')
             ->with([
                 'master_organizations:id,name',
                 'master_locations:id,name',

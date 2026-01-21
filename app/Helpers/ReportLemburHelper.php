@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Models\DataAttendanceClaim;
 use App\Models\LogAttendance;
+use Carbon\Carbon;
 
 class ReportLemburHelper
 {
@@ -13,6 +14,7 @@ class ReportLemburHelper
         $paramLog['start'] = $data['checkin_time_lembur'];
         $paramLog['end'] = $data['checkin_deadline_time_lembur'];
         $dataLogAttd = self::getLogAttd($paramLog, 'in');
+
         return $dataLogAttd;
     }
     public static function getLemburCheckout($data)
@@ -46,4 +48,54 @@ class ReportLemburHelper
         return $result ?? '-';
     }
 
+    public static function getTotalJamLemburAktual($lemburs, int $precision = 1): float
+    {
+        // Bisa Collection atau array
+        if ($lemburs instanceof Collection) {
+            $lemburs = $lemburs->all();
+        }
+
+        $totalMenit = 0;
+
+        foreach ($lemburs as $lembur) {
+            // pastikan array
+            if (!is_array($lembur)) {
+                if ($lembur instanceof \Illuminate\Database\Eloquent\Model) {
+                    $lembur = $lembur->toArray();
+                } else {
+                    $lembur = (array) $lembur;
+                }
+            }
+
+            $checkin  = self::getLemburCheckin($lembur);
+            $checkout = self::getLemburCheckout($lembur);
+
+            // kalau tidak ada absensi lembur -> skip
+            if (
+                !$checkin || $checkin === '-' ||
+                !$checkout || $checkout === '-'
+            ) {
+                continue;
+            }
+
+            try {
+                $in  = Carbon::parse($checkin);
+                $out = Carbon::parse($checkout);
+
+                // handle lembur nyebrang hari
+                if ($out->lt($in)) {
+                    $out->addDay();
+                }
+
+                $totalMenit += $in->diffInMinutes($out);
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        // konversi menit → jam desimal, misal 17.8
+        return $totalMenit > 0
+            ? round($totalMenit / 60, $precision)
+            : 0.0;
+    }
 }

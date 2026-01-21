@@ -218,6 +218,8 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('rekap-bulanan', 'rekapBulanan')->name('rekapBulanan');
                 Route::get('rekap-bulanan/dt', 'rekapBulananDT')->name('rekapBulananDT');
                 Route::get('/rekap-bulanan/print-pdf/{id}/{month}/{year}/{type}', 'printPdfRekapBulanan')->name('printPdfRekapBulanan');
+                Route::get('/passing-grade', 'passingGradeLembur')->name('passingGradeLembur');
+                Route::get('/passing-grade-lembur-dt', 'passingGradeLemburDT')->name('passingGradeLemburDT');
                 // Route::get('/rekap-bulanan2/print-pdf/{id}/{month}/{year}/{type}', 'printPdfRekapBulanan2')->name('printPdfRekapBulanan2');
             });
         });

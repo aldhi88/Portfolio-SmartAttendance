@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\PublicHelper;
 use App\Helpers\ReportLemburHelper;
+use App\Models\DataAttendanceClaim;
 use App\Models\DataEmployee;
 use App\Models\DataLembur;
+use App\Models\LogAttendance;
 use App\Repositories\DataEmployeeRepo;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLemburFace;
@@ -118,6 +120,105 @@ class DataLemburController extends Controller
             ->smart(false)
             ->toJson();
     }
+
+    public function passingGradeLembur()
+    {
+        $data['tab_title'] = "Passing Grade Lembur | " . config('app.name');
+        $data['page_title'] = "Passing Grade Lembur";
+        $data['page_desc'] = "Data passing grade lembur";
+        $data['lw'] = "lembur.lembur-passing-grade";
+        return view('index', compact('data'));
+    }
+
+    public function passingGradeLemburDT(
+        Request $request,
+        DataEmployeeFace $dataEmployeeRepo
+    ) {
+        $month = (int) $request->month;
+        $year  = (int) $request->year;
+
+        $data = $dataEmployeeRepo->getDTKaryawan(0);
+        $data->where('status', 'Aktif');
+
+        $data->withCount([
+            'data_lemburs as total_hari_lembur' => function ($query) use ($month, $year) {
+                $query->whereMonth('tanggal', $month)
+                    ->whereYear('tanggal', $year)
+                    ->whereNotNull('status_pengawas1')
+                    ->where(function ($q) {
+                        $q->whereNull('pengawas2')
+                            ->orWhereNotNull('status_pengawas2');
+                    });
+            },
+        ]);
+
+        $data->with([
+            'data_lemburs' => function ($query) use ($month, $year) {
+                $query->whereMonth('tanggal', $month)
+                    ->whereYear('tanggal', $year)
+                    ->whereNotNull('status_pengawas1')
+                    ->where(function ($q) {
+                        $q->whereNull('pengawas2')
+                            ->orWhereNotNull('status_pengawas2');
+                    });
+            },
+        ]);
+
+        return DataTables::of($data)
+            ->addColumn('total_jam_lembur_aktual', function ($row) {
+                // langsung dapat angka desimal, misal 17.8
+                return ReportLemburHelper::getTotalJamLemburAktual(
+                    $row->data_lemburs,2 // precision 1 angka di belakang koma
+                );
+            })
+            ->toJson();
+    }
+
+
+
+    // public function passingGradeLemburDT(
+    //     Request $request,
+    //     DataEmployeeFace $dataEmployeeRepo
+    // )
+    // {
+    //     $month = $request->month;
+    //     $year = $request->year;
+
+    //     $data = $dataEmployeeRepo->getDTKaryawan(0);
+    //     $data->where('status','Aktif');
+    //     $data->withCount([
+    //         'data_lemburs as total_hari_lembur' => function ($query) use ($month, $year) {
+    //             $query->whereMonth('tanggal', $month)
+    //                 ->whereYear('tanggal', $year)
+    //                 ->whereNotNull('status_pengawas1')
+    //                 ->where(function ($q) {
+    //                     $q->whereNull('pengawas2')
+    //                     ->orWhereNotNull('status_pengawas2');
+    //                 });
+    //         }
+    //     ]);
+    //     $data->with([
+    //         'data_lemburs' => function ($query) use ($month, $year) {
+    //             $query->whereMonth('tanggal', $month)
+    //                 ->whereYear('tanggal', $year)
+    //                 ->whereNotNull('status_pengawas1')
+    //                 ->where(function ($q) {
+    //                     $q->whereNull('pengawas2')
+    //                         ->orWhereNotNull('status_pengawas2');
+    //                 });
+    //         },
+    //     ]);
+    //     // dd($data->get()->toArray());
+    //     return DataTables::of($data)
+    //         // ->addColumn('laporan_lembur_checkin', function ($data) {
+    //         //     return ReportLemburHelper::getLemburCheckin($data->data_lemburs->toArray());
+    //         // })
+    //         // ->addColumn('laporan_lembur_checkout', function ($data) {
+    //         //     return ReportLemburHelper::getLemburCheckout($data->data_lemburs->toArray());
+    //         // })
+    //         ->toJson()
+    //     ;
+    // }
 
     public function printPdf(
         $id,
@@ -301,8 +402,8 @@ class DataLemburController extends Controller
         foreach ($dt['emp'] as $key => $value) {
             $pengawas1 = '-';
             $korlap    = '-';
-            if(count($value['data_lemburs'])!=0){
-                $korlapItem = collect($value['data_lemburs'])->first(fn ($i) => !is_null($i['korlap']));
+            if (count($value['data_lemburs']) != 0) {
+                $korlapItem = collect($value['data_lemburs'])->first(fn($i) => !is_null($i['korlap']));
                 $pengawas1 = ($korlapItem['pengawas1'] ?? $value['data_lemburs'][0]['pengawas1']) ?? '-';
                 $korlap = $korlapItem['korlap'] ?? '-';
             }
@@ -341,7 +442,7 @@ class DataLemburController extends Controller
             $dt['emp'][$key]['absensi'] = PublicHelper::getDtAbsen($param);
             $dt['emp'][$key]['absensi'] = collect($dt['emp'][$key]['absensi'])
                 ->mapWithKeys(function ($value, $key) {
-                    return [(int) $key-1 => $value];
+                    return [(int) $key - 1 => $value];
                 })
                 ->toArray();
 
@@ -371,4 +472,3 @@ class DataLemburController extends Controller
         return $pdf->download(uniqid() . '.pdf');
     }
 }
-
