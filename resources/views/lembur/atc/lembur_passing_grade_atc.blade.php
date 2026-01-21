@@ -9,7 +9,10 @@
 @push('push-script')
 <script>
     var dtTable = $('#myTable').DataTable({
-        processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
+        processing: true,serverSide: true,dom: 'lrtip',
+        pageLength: -1,
+        paging: false,
+        lengthChange: false,
         // order: [[4, 'desc']],
         columnDefs: [
             { className: 'text-left', targets: [1] },
