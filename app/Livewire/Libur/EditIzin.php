@@ -33,6 +33,24 @@ class EditIzin extends Component
             return;
         }
 
+        $employeeId = (int) $this->form['data_employee_id'];
+        $from = Carbon::parse($this->form['from'])->format('Y-m-d H:i:s');
+        $to   = Carbon::parse($this->form['to'])->format('Y-m-d H:i:s');
+        $overlap = DataIzin::query()
+            ->where('id', '!=', $this->pass['id'])
+            ->where('data_employee_id', $employeeId)
+            ->whereIn('status', ['Proses', 'Disetujui'])
+            ->where(function ($q) use ($from, $to) {
+                $q->where('from', '<=', $to)
+                    ->where('to',   '>=', $from);
+            })
+            ->exists();
+        if ($overlap) {
+            $this->addError('form.from', 'Tanggal izin bertabrakan dengan pengajuan izin yang sudah ada.');
+            $this->addError('form.to',   'Tanggal izin bertabrakan dengan pengajuan izin yang sudah ada.');
+            return;
+        }
+
         $this->form['approved_by'] = $this->dataEmployeeRepo->pengawasCheck($this->form['data_employee_id']);
 
         $from = Carbon::parse($this->form['from']);
