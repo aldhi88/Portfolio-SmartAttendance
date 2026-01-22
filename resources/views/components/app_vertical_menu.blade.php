@@ -47,7 +47,7 @@
                         <li class="parent izin">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-calendar-line"></i>
-                                <span>Data Libur</span>
+                                <span>Izin & Libur</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
                                 <li class="child"><a href="{{ route('izin.indexIzin') }}">Data Pengajuan Izin</a></li>
