@@ -253,4 +253,5 @@
         </div>
     </div>
     @include('report.atc.report_absen_atc')
+    @include('report.atc.report_absen_claim')
 </div>

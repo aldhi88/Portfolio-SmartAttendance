@@ -12,7 +12,7 @@ class DataLiburController extends Controller
 {
     public function indexMerah()
     {
-        $data['tab_title'] = "Data Tanggal Merah | ".config('app.name');
+        $data['tab_title'] = "Data Tanggal Merah | " . config('app.name');
         $data['page_title'] = "Data Tanggal Merah";
         $data['page_desc'] = "Manajemen data tanggal merah";
         $data['lw'] = "libur.tgl-merah";
@@ -20,7 +20,7 @@ class DataLiburController extends Controller
     }
     public function indexIzin()
     {
-        $data['tab_title'] = "Data Izin Libur | ".config('app.name');
+        $data['tab_title'] = "Data Izin Libur | " . config('app.name');
         $data['page_title'] = "Data Izin Libur";
         $data['page_desc'] = "Manajemen data izin libur karyawan";
         $data['lw'] = "libur.data-izin";
@@ -28,9 +28,9 @@ class DataLiburController extends Controller
     }
     public function indexIzinDT(DataLiburIzinFace $dataLiburIzinRepo)
     {
-        if(Auth::user()->is_pengawas){
+        if (Auth::user()->is_pengawas) {
             $data = $dataLiburIzinRepo->getDataIzinByPengawasDT(0);
-        }else{
+        } else {
             $data = $dataLiburIzinRepo->getDataIzinDT(0);
         }
 
@@ -39,7 +39,7 @@ class DataLiburController extends Controller
     }
     public function izinCreate()
     {
-        $data['tab_title'] = "Form Izin Libur Karyawan | ".config('app.name');
+        $data['tab_title'] = "Form Izin Libur Karyawan | " . config('app.name');
         $data['page_title'] = "Form Izin Libur Karyawan";
         $data['page_desc'] = "Menambah data izin libur karyawan";
         $data['lw'] = "libur.create-izin";
@@ -72,19 +72,26 @@ class DataLiburController extends Controller
         $filter = function ($query) use ($month, $year) {
             $query->whereMonth('from', $month)
                 ->whereYear('from', $year)
-                ->where('jenis','Cuti')
-                ->where('status','Disetujui')
-                ;
+                ->where('jenis', 'Cuti')
+                ->where('status', 'Disetujui')
+            ;
         };
 
+        // tetap untuk filter list employee yang punya cuti bulan tsb
         $data->whereHas('data_izins', $filter)
-            ->withCount([
-                'data_izins as total_hari_cuti' => $filter,
-            ])
-            ->with([
-                'data_izins' => $filter,
-            ])
-        ;
+            ->with(['data_izins' => $filter]);
+
+        // hitung total hari cuti (SUM DATEDIFF + 1) lewat subquery
+        $data->addSelect([
+            'total_hari_cuti' => \DB::table('data_izins')
+                ->selectRaw('COALESCE(SUM(DATEDIFF(`to`, `from`) + 1), 0)')
+                ->whereColumn('data_izins.data_employee_id', 'data_employees.id')
+                ->whereMonth('from', $month)
+                ->whereYear('from', $year)
+                ->where('jenis', 'Cuti')
+                ->where('status', 'Disetujui')
+                ->whereNull('data_izins.deleted_at'),
+        ])->orderByDesc('total_hari_cuti');
 
         return DataTables::of($data)
             ->toJson();
@@ -93,12 +100,10 @@ class DataLiburController extends Controller
     public function izinEdit($id)
     {
         $data['id'] = $id;
-        $data['tab_title'] = "Form Edit Izin Libur Karyawan | ".config('app.name');
+        $data['tab_title'] = "Form Edit Izin Libur Karyawan | " . config('app.name');
         $data['page_title'] = "Form Edit Izin Libur Karyawan";
         $data['page_desc'] = "Edit data izin libur karyawan";
         $data['lw'] = "libur.edit-izin";
         return view('index', compact('data'));
     }
-
-
 }

@@ -77,6 +77,11 @@ class DataIzin extends Component
         $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
+    public function mount()
+    {
+        $this->pass['izinList'] = $this->dataLiburIzinRepo->getIzinList();
+    }
+
     public $pass;
     public function render()
     {

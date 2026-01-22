@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Libur;
 
+use App\Models\DataIzin;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\DataLiburIzinFace;
 use Carbon\Carbon;
@@ -17,8 +18,7 @@ class CreateIzin extends Component
     public function boot(
         DataEmployeeFace $dataEmployeeRepo,
         DataLiburIzinFace $dataLiburIzinRepo,
-    )
-    {
+    ) {
         $this->dataEmployeeRepo = $dataEmployeeRepo;
         $this->dataLiburIzinRepo = $dataLiburIzinRepo;
     }
@@ -27,8 +27,26 @@ class CreateIzin extends Component
     {
         $this->validate();
 
-        if(!$this->form['data_employee_id']){
+        if (!$this->form['data_employee_id']) {
             $this->addError('employee_invalid', 'Ketik dan Pilih karyawan yang tersedia, anda belum memilih karyawan yang tersedia');
+            return;
+        }
+
+        // cek overlap tanggal
+        $employeeId = (int) $this->form['data_employee_id'];
+        $from = Carbon::parse($this->form['from'])->format('Y-m-d H:i:s');
+        $to   = Carbon::parse($this->form['to'])->format('Y-m-d H:i:s');
+        $overlap = DataIzin::query()
+            ->where('data_employee_id', $employeeId)
+            ->whereIn('status', ['Proses', 'Disetujui'])
+            ->where(function ($q) use ($from, $to) {
+                $q->where('from', '<=', $to)
+                    ->where('to',   '>=', $from);
+            })
+            ->exists();
+        if ($overlap) {
+            $this->addError('form.from', 'Tanggal izin bertabrakan dengan pengajuan izin yang sudah ada.');
+            $this->addError('form.to',   'Tanggal izin bertabrakan dengan pengajuan izin yang sudah ada.');
             return;
         }
 
@@ -36,7 +54,7 @@ class CreateIzin extends Component
 
         $from = Carbon::parse($this->form['from']);
         $to = Carbon::parse($this->form['to']);
-        if($from > $to){
+        if ($from > $to) {
             $this->addError('tgl_range_invalid', 'Rentang tanggal tidak valid, pastikan dari rendah ke tinggi.');
             return;
         }
@@ -45,8 +63,8 @@ class CreateIzin extends Component
 
         // dd($this->all());
 
-        if($this->dataLiburIzinRepo->create($this->form)){
-            $this->dispatch('alert', data:['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
+        if ($this->dataLiburIzinRepo->create($this->form)) {
+            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
             $this->reset('form');
             $this->form['bukti'] = null;
             $this->query = "";
@@ -54,8 +72,7 @@ class CreateIzin extends Component
             return;
         }
 
-        $this->dispatch('alert', data:['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
-
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public $form = [];
@@ -65,7 +82,7 @@ class CreateIzin extends Component
             "form.data_employee_id" => "required",
             "form.jenis" => "required",
             "form.from" => "required",
-            "form.to" => "required",
+            "form.to" => "required|date|after_or_equal:form.from",
             "form.desc" => "nullable",
             "form.bukti" => "nullable|file|mimes:pdf,jpg,jpeg,png|max:10240",
             "query" => "required",

@@ -110,7 +110,7 @@
                     return karyawan+pic;
                 }
             },
-            { data: 'jenis', name: 'jenis', orderable: false, searchable:false },
+            { data: 'jenis', name: 'jenis', orderable: false, searchable:true },
             { data: 'bukti', name: null, orderable: false, searchable:false,
                 render: function(data, type, row, meta){
                     if(data){
@@ -120,7 +120,7 @@
                     return '-';
                 }
             },
-            { data: 'status', name: 'status', orderable: false, searchable:false,
+            { data: 'status', name: 'status', orderable: false, searchable:true,
                 render: function (data, type, row, meta) {
                     let color;
                     let status = row.status;

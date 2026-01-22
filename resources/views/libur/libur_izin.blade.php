@@ -50,9 +50,23 @@
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm text-center search-col-dt">
                                     </th>
+                                    <th class="text-center">
+                                        <select class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">-Semua-</option>
+                                            @foreach ($pass['izinList'] as $item)
+                                                <option value="{{ $item }}">{{ $item }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
                                     <th class="text-center"></th>
-                                    <th class="text-center"></th>
-                                    <th class="text-center"></th>
+                                    <th class="text-center">
+                                        <select class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">-Semua-</option>
+                                            <option value="Disetujui">Disetujui</option>
+                                            <option value="Proses">Proses</option>
+                                            <option value="Ditolak">Ditolak</option>
+                                        </select>
+                                    </th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                 </tr>
