@@ -13,8 +13,8 @@ class ReportLemburHelper
         $paramLog['data_employee_id'] = $data['data_employee_id'];
         $paramLog['start'] = $data['checkin_time_lembur'];
         $paramLog['end'] = $data['checkin_deadline_time_lembur'];
+        $paramLog['id'] = $data['id'];
         $dataLogAttd = self::getLogAttd($paramLog, 'in');
-
         return $dataLogAttd;
     }
     public static function getLemburCheckout($data)
@@ -22,6 +22,7 @@ class ReportLemburHelper
         $paramLog['data_employee_id'] = $data['data_employee_id'];
         $paramLog['start'] = $data['checkout_time_lembur'];
         $paramLog['end'] = $data['checkout_deadline_time_lembur'];
+        $paramLog['id'] = $data['id'];
         $dataLogAttd = self::getLogAttd($paramLog, 'out');
         return $dataLogAttd;
     }
@@ -30,18 +31,21 @@ class ReportLemburHelper
     {
         $columnMethod = $type === 'in' ? 'min' : 'max';
 
-        $baseFilter = [
-            ['data_employee_id', '=', $data['data_employee_id']],
-        ];
-
-        $result = DataAttendanceClaim::where($baseFilter)
-            ->orderBy('id','desc')
+        $baseQuery = DataAttendanceClaim::query()
+            ->where('data_employee_id', $data['data_employee_id'])
             ->where('type', 'Lembur')
-            ->whereBetween('time', [$data['start'], $data['end']])
-            ->{$columnMethod}('time');
+            ->whereBetween('time', [$data['start'], $data['end']]);
+
+        $prioritizedTime = (clone $baseQuery)
+            ->where('data_lembur_id', $data['id'])
+            ->value('time'); // ambil langsung time-nya
+
+        $result = $prioritizedTime
+            ?? (clone $baseQuery)->{$columnMethod}('time');
 
         if (!$result) {
-            $result = LogAttendance::where($baseFilter)
+            $result = LogAttendance::query()
+                ->where('data_employee_id', $data['data_employee_id'])
                 ->whereBetween('time', [$data['start'], $data['end']])
                 ->{$columnMethod}('time');
         }

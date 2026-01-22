@@ -155,7 +155,7 @@
                     if (allApproved) {
                         const dtJsonKlaim = {
                             msg: `Anda yakin menyetujui data izin ${data.data_employees.name}?`,
-                            proses: 'Setujui',
+                            id: data.id,
                             log_gps: row.log_gps
                         };
                         html += `

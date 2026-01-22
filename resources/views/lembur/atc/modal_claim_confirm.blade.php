@@ -91,6 +91,17 @@
                 if (btn) btn.disabled = !ok;
             };
 
+            const safeReposition = (inst) => {
+                if (!inst) return;
+                if (typeof inst.positionCalendar === 'function') inst.positionCalendar();
+                else if (typeof inst._positionCalendar === 'function') inst._positionCalendar();
+            };
+
+            const repositionAll = () => {
+                safeReposition(startEl?._flatpickr);
+                safeReposition(endEl?._flatpickr);
+            };
+
             // anti double-init
             if (startEl && startEl._flatpickr) startEl._flatpickr.destroy();
             if (endEl && endEl._flatpickr) endEl._flatpickr.destroy();
@@ -103,11 +114,6 @@
 
             if (btn) btn.disabled = true;
 
-            const repositionAll = () => {
-                startEl?._flatpickr?.positionCalendar();
-                endEl?._flatpickr?.positionCalendar();
-            };
-
             flatpickr(startEl, {
                 enableTime: true,
                 enableSeconds: true,
@@ -116,21 +122,20 @@
                 defaultHour: 0,
                 defaultMinute: 0,
                 defaultSecond: 0,
-
-                // ✅ posisi paling akurat
                 appendTo: document.body,
 
-                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+                onOpen: (_, __, inst) => setTimeout(() => safeReposition(inst), 0),
 
-                onChange: function(selectedDates, dateStr) {
-                    @this.set('lemburIn', dateStr, false);
+                onChange: function(selectedDates, dateStr, inst) {
+                @this.set('lemburIn', dateStr, false);
 
-                    if (selectedDates?.[0] && endEl?._flatpickr) {
-                        endEl._flatpickr.set('minDate', selectedDates[0]);
-                    }
+                if (selectedDates?.[0] && endEl?._flatpickr) {
+                    endEl._flatpickr.set('minDate', selectedDates[0]);
+                }
 
-                    updateSubmitState();
-                    setTimeout(repositionAll, 0);
+                updateSubmitState();
+                setTimeout(() => safeReposition(inst), 0);
+                setTimeout(repositionAll, 0);
                 }
             });
 
@@ -142,19 +147,19 @@
                 defaultHour: 23,
                 defaultMinute: 59,
                 defaultSecond: 0,
-
                 appendTo: document.body,
 
-                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+                onOpen: (_, __, inst) => setTimeout(() => safeReposition(inst), 0),
 
-                onChange: function(selectedDates, dateStr) {
-                    @this.set('lemburOut', dateStr, false);
-                    updateSubmitState();
-                    setTimeout(repositionAll, 0);
+                onChange: function(selectedDates, dateStr, inst) {
+                @this.set('lemburOut', dateStr, false);
+                updateSubmitState();
+                setTimeout(() => safeReposition(inst), 0);
+                setTimeout(repositionAll, 0);
                 }
             });
 
-            // kalau modal scroll, posisi ikut dibenerin (Chrome sering butuh ini)
+            // kalau modal scroll, posisi ikut dibenerin
             const modalBody = modal.querySelector('.modal-body');
             if (modalBody) {
                 if (modal._fpScrollHandler) modalBody.removeEventListener('scroll', modal._fpScrollHandler);
@@ -165,21 +170,24 @@
             // ===== kode kamu yang lain tetap... =====
             const data = $(e.relatedTarget).data('json');
             let logs = data.log_gps;
+            let lemburId = data.id;
+            @this.set('lemburId', lemburId);
             $(modal).find('#log-gps-count').text(logs.length);
             logs.sort((a, b) => moment(a.created_at) - moment(b.created_at));
             $('#logList').empty();
             $.each(logs, function (i, item) {
                 const formatted = moment(item.created_at).locale('id').format('DD/MM/YYYY HH:mm:ss');
                 $('#logList').append(`
-                    <a class="dropdown-item" href="javascript:void(0)">
-                        <i class="fas fa-map-marker-alt fa-fw"></i> ${formatted}
-                    </a>
+                <a class="dropdown-item" href="javascript:void(0)">
+                    <i class="fas fa-map-marker-alt fa-fw"></i> ${formatted}
+                </a>
                 `);
             });
 
             const dispatchMethod = $(e.relatedTarget).data('dispatch') || 'wireSubmitClaim';
             $(modal).find('#submitModalConfirm').attr('wire:click', `${dispatchMethod}`);
-        });
+            });
+
     </script>
     @endpush
 

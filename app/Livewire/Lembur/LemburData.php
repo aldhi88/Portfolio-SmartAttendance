@@ -28,6 +28,7 @@ class LemburData extends Component
 
     public $lemburIn;
     public $lemburOut;
+    public $lemburId;
     // claim proses
     public function wireSubmitClaim($employeeId)
     {
@@ -52,6 +53,7 @@ class LemburData extends Component
             [
                 'data_employee_id' => $employeeId,
                 'created_by' => Auth::id(),
+                'data_lembur_id' => $this->lemburId,
                 'time' => $this->lemburIn,
                 'type' => 'Lembur',
                 'created_at' => $now,
@@ -60,6 +62,7 @@ class LemburData extends Component
             [
                 'data_employee_id' => $employeeId,
                 'created_by' => Auth::id(),
+                'data_lembur_id' => $this->lemburId,
                 'time' => $this->lemburOut,
                 'type' => 'Lembur',
                 'created_at' => $now,
