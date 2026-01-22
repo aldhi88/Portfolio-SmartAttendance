@@ -380,8 +380,8 @@ class EmployeeEdit extends Component
             "dtForm.master_location_id" => "required",
             "dtForm.master_function_id" => "required",
             "activedSchedules.id" => "required",
-            "dtForm.ttd" => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            "dtForm.paraf" => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            "dtForm.ttd" => "nullable|image|mimes:png,jpg,jpeg|max:2048",
+            "dtForm.paraf" => "nullable|image|mimes:png,jpg,jpeg|max:2048",
             "dtForm.effective_at" => "",
             "dtForm.expired_at" => "",
             "dtForm.username" => "required|unique:user_logins,username,{$this->dtForm['user_login_id']},id,deleted_at,NULL",
@@ -444,6 +444,8 @@ class EmployeeEdit extends Component
         $this->dtForm['role'] = null;
         $this->dtForm['ttd_old'] = $this->dtForm['ttd'];
         $this->dtForm['paraf_old'] = $this->dtForm['paraf'];
+        $this->dtForm['ttd'] = null;
+        $this->dtForm['ttd'] = null;
         if ($this->dtForm['user_logins']) {
             $this->dtForm['username'] = $this->dtForm['user_logins']['username'];
             $this->dtForm['role'] = $this->dtForm['user_logins']['user_roles']['id'];
