@@ -150,11 +150,16 @@ class DashboardController extends Controller
         DataEmployeeFace $dataEmployeeRepo,
         DataLiburFace $dataLiburRepo,
     ) {
-        $year  = now()->year;
-        $month = now()->month;
+        $now = now();
 
-        $startDate = now()->startOfMonth();
-        $endDate   = now()->endOfMonth();
+        $year  = $now->year;
+        $month = $now->month;
+
+        $startDate = $now->copy()->startOfMonth()->startOfDay();
+        $endDate   = $now->copy()->endOfDay();
+
+        $startDateIzin = $now->copy()->startOfMonth()->startOfDay();
+        $endDateIzin   = $now->copy()->endOfDay();
 
         $employees = $dataEmployeeRepo->getReportDashboardDT(0)
             ->select([
@@ -171,10 +176,12 @@ class DashboardController extends Controller
                         ->whereYear('time', $year)
                         ->whereMonth('time', $month);
                 },
-                'data_izins' => function ($q) use ($year, $month) {
+                'data_izins' => function ($q) use ($startDateIzin, $endDateIzin) {
                     $q->where('status', 'Disetujui')
-                        ->whereYear('from', '<=', $year)
-                        ->whereYear('to', '>=', $year);
+                        ->where(function ($qq) use ($startDateIzin, $endDateIzin) {
+                            $qq->whereDate('from', '<=', $endDateIzin)
+                                ->whereDate('to', '>=', $startDateIzin);
+                        });
                 },
                 'data_lemburs',
             ])
@@ -183,6 +190,7 @@ class DashboardController extends Controller
         $tglMerah = $dataLiburRepo->getByDate($month, $year);
 
         $results = $employees->map(function ($emp) use ($startDate, $endDate, $tglMerah) {
+            // dd($emp->toArray());
 
             $totalTerlambat = 0;
             $totalAlpa = 0;
