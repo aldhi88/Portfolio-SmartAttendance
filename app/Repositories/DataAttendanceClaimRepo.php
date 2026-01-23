@@ -10,6 +10,7 @@ class DataAttendanceClaimRepo
     public static function bulkInsert($data)
     {
         try {
+            DataAttendanceClaim::where('data_lembur_id', $data[0]['data_lembur_id'])->forceDelete();
             DataAttendanceClaim::insert($data);
             return true;
         } catch (\Exception $e) {
