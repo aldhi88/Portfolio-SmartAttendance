@@ -3,6 +3,7 @@
 namespace App\Livewire\Report;
 
 use App\Helpers\PublicHelper;
+use App\Repositories\DataAttendanceClaimRepo;
 use App\Repositories\Interfaces\DataEmployeeFace;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
@@ -11,6 +12,7 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ReportAbsen extends Component
@@ -41,13 +43,88 @@ class ReportAbsen extends Component
         $this->userLoginRepository = $userLoginRepository;
     }
 
+    public $lemburIn;
+    public $lemburOut;
+    public $date;
+    // claim proses
+    public function wireSubmitClaim($employeeId)
+    {
+        if (is_null($this->lemburIn) && is_null($this->lemburOut)) {
+            $this->addError('error', 'Waktu masuk dan pulang harus diisi.');
+            return;
+        }
+
+        $carbonLemburIn  = Carbon::parse($this->lemburIn);
+        $carbonLemburOut = Carbon::parse($this->lemburOut);
+        $carbonDate = Carbon::parse($this->date);
+
+        if (!$carbonLemburIn->isSameDay($carbonDate)) {
+            $this->addError(
+                'error',
+                'Periksa tanggal claim, anda memilih tanggal yang salah.'
+            );
+            return;
+        }
+
+        if ($carbonLemburIn->greaterThanOrEqualTo($carbonLemburOut)) {
+            $this->addError(
+                'error',
+                'Waktu pulang lembur harus lebih besar dari waktu masuk lembur.'
+            );
+            return;
+        }
+
+        $now = now()->toDateTimeString();
+        $data = [
+            [
+                'data_employee_id' => $employeeId,
+                'created_by' => Auth::id(),
+                'absen_date' => $this->date,
+                'time' => $this->lemburIn,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'data_employee_id' => $employeeId,
+                'created_by' => Auth::id(),
+                'absen_date' => $this->date,
+                'time' => $this->lemburOut,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+        ];
+
+        if (DataAttendanceClaimRepo::bulkInsert($data)) {
+            $this->dispatch('closeModal', id: 'modalConfirmClaim');
+            $this->dispatch('reloadDT', data: 'dtTable');
+            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data berhasil dihapus.']);
+            return;
+        }
+
+        $this->addError(
+            'error',
+            'Terjadi kesalahan di server.'
+        );
+    }
+    public function claimRules()
+    {
+        return [
+            "lembur.time_in" => "required",
+            "lembur.time_out" => "required",
+        ];
+    }
+    public $validationAttributes = [
+        "lembur.time_in" => "Waktu Masuk Lembur",
+        "lembur.time_out" => "Waktu Pulang Lembur",
+    ];
+
     public function updated($property)
     {
-        if($property=='filter.thisMonth' || $property=='filter.thisYear'){
+        if ($property == 'filter.thisMonth' || $property == 'filter.thisYear') {
             $this->setRangeDefault();
         }
 
-        if($property=='filter.start_value' || $property=='filter.end_value'){
+        if ($property == 'filter.start_value' || $property == 'filter.end_value') {
             $this->setRangeOnChange();
         }
     }
@@ -74,23 +151,22 @@ class ReportAbsen extends Component
     {
         $this->filter['min_end'] = $this->filter['start_value'];
         $this->filter['max_start'] = $this->filter['end_value'];
-
     }
 
     public function setRangeOnReload()
     {
         $this->setRangeDefault();
         // jika ada url val start
-        if(request()->query('start')){
+        if (request()->query('start')) {
             $this->filter['min_end'] = request()->query('start');
         }
 
         // jika ada url val end
-        if(request()->query('end')){
+        if (request()->query('end')) {
             $this->filter['max_start'] = request()->query('end');
         }
 
-        if(request()->query('start') && request()->query('end')){
+        if (request()->query('start') && request()->query('end')) {
             $this->filter['start_value'] = request()->query('start');
             $this->filter['end_value'] = request()->query('end');
         }
@@ -101,7 +177,7 @@ class ReportAbsen extends Component
         $start = Carbon::parse($this->filter['start_value']);
         $end = Carbon::parse($this->filter['end_value']);
 
-        if(request()->query('start') && request()->query('end')){
+        if (request()->query('start') && request()->query('end')) {
             $this->filter['start_value'] = request()->query('start');
             $this->filter['end_value'] = request()->query('end');
             $start = Carbon::parse(request()->query('start'));
@@ -117,7 +193,6 @@ class ReportAbsen extends Component
 
             $start->addDay();
         }
-
 
         $this->dt['tglCol'] = $dates->toArray();
         $this->thisMonthLabel = $this->dt['indoMonthList'][$this->filter['thisMonth']];

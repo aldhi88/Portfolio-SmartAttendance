@@ -80,4 +80,12 @@ class DataEmployee extends Model
     {
         return $this->hasMany(LogAttendance::class, 'data_employee_id', 'id');
     }
+    public function log_gps(): HasMany
+    {
+        return $this->hasMany(LogGps::class, 'data_employee_id', 'id');
+    }
+    public function data_attendance_claims(): HasMany
+    {
+        return $this->hasMany(DataAttendanceClaim::class, 'data_employee_id', 'id');
+    }
 }

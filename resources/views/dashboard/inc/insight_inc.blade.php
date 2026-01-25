@@ -71,7 +71,9 @@
 
         // Tampilkan ke elemen HTML
         $('#rank1-name').html(rank1.name);
-        $('#rank1-point').html(rank1.akumulasi.rank.total_poin);
+        $('#rank1-point').html(
+            Number(rank1.akumulasi.rank.total_poin).toFixed(2)
+        );
         $('#rank1-org').html(rank1.master_organizations.name);
         $('#rank1-as').html(rank1.master_positions.name);
         $('#rank1-day-work').html(rank1.akumulasi.hari_kerja);

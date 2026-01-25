@@ -73,7 +73,7 @@ class PublicHelper
 
     public static function getDtAbsen($param)
     {
-        // dump($param);
+        // dump($param['data_attendance_claims']);
         $listJadwal = collect($param['jadwal']);
 
 
@@ -103,16 +103,14 @@ class PublicHelper
                 $result[$tglIndex] = $return;
                 continue;
             }
-            // skip jika tanggal merah
-            // if (in_array($tglStringYMD, $param['tglMerah'])) {
-            //     $return['label_in'] = 'tgl merah';
-            //     $return['label_out'] = 'tgl merah';
-            //     $return['status'] = 'tgl merah';
-            //     $result[$tglIndex] = $return;
-            //     continue;
-            // }
 
-            // dd($jadwalAktif);
+            $filtered = collect($param['data_attendance_claims'] ?? [])
+                ->filter(function ($item) use ($tglCekCarbon) {
+                    $absenDate = data_get($item, 'absen_date'); // aman untuk array/object
+                    if (!$absenDate) return false;
+                    return Carbon::parse($absenDate)->isSameDay($tglCekCarbon);
+                })
+                ->values();
 
             if ($jadwalAktif['type'] == 'Tetap') {
                 $dtTetap['log'] = $param['log'];
@@ -123,6 +121,7 @@ class PublicHelper
                 $dtTetap['tglCekCarbon'] = $tglCekCarbon;
                 $dtTetap['tglStringYMD'] = $tglStringYMD;
                 $dtTetap['tglMerah'] = $param['tglMerah'];
+                $dtTetap['data_attendance_claims'] = $filtered;
                 $return = self::cekTetap($dtTetap);
                 $result[$tglIndex] = $return;
             }
@@ -136,12 +135,14 @@ class PublicHelper
                 $dtRotasi['tglCekCarbon'] = $tglCekCarbon;
                 $dtRotasi['tglStringYMD'] = $tglStringYMD;
                 $dtRotasi['tglMerah'] = $param['tglMerah'];
+                $dtRotasi['data_attendance_claims'] = $filtered;
                 $return = self::cekRotasi($dtRotasi);
                 $result[$tglIndex] = $return;
             }
 
-            // dd($param);
+            // dump($value,$param['data_attendance_claims']);
             if ($jadwalAktif['type'] == 'Hybrid') {
+                // dd($param['data_attendance_claims']);
                 $dtHybrid['log'] = $param['log'];
                 $dtHybrid['izin'] = $param['izin'];
                 $dtHybrid['lembur'] = $param['lembur'];
@@ -150,6 +151,7 @@ class PublicHelper
                 $dtHybrid['tglCekCarbon'] = $tglCekCarbon;
                 $dtHybrid['tglStringYMD'] = $tglStringYMD;
                 $dtHybrid['tglMerah'] = $param['tglMerah'];
+                $dtHybrid['data_attendance_claims'] = $filtered;
                 $return = self::cekHybrid($dtHybrid);
                 $result[$tglIndex] = $return;
                 // dd(0);
@@ -165,6 +167,7 @@ class PublicHelper
                 $dtBebas['tglCekCarbon'] = $tglCekCarbon;
                 $dtBebas['tglStringYMD'] = $tglStringYMD;
                 $dtBebas['tglMerah'] = $param['tglMerah'];
+                $dtBebas['data_attendance_claims'] = $filtered;
                 $return = self::cekBebas($dtBebas);
                 $result[$tglIndex] = $return;
                 // dd(0);
@@ -172,7 +175,7 @@ class PublicHelper
 
             // dd(0);
         }
-        // dd($result); //dd disini error Undefined array key -1
+        // dump($result); //dd disini error Undefined array key -1
         return $result;
     }
 
@@ -234,15 +237,38 @@ class PublicHelper
         }
         // ========CHECK STATUS ABSEN==========
         $dt['return']['status'] = 'hadir';
+
+        $claimTimes = collect($dt['data_attendance_claims'] ?? [])
+            ->map(fn($c) => data_get($c, 'time'))
+            ->filter()
+            ->map(fn($t) => Carbon::parse($t))
+            ->values();
+
         // IN
         if (!$dtIzin['status']['kenaIzinMasuk']) {
             $dt['return']['label_in'] = 'tdk absen';
-            $logIn = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logIn = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
-                ->min();
+                ->min()
+                : null;
+
+            // 2) kalau claim tidak ada / tidak masuk window → baru GPS
+            if (!$logIn) {
+                $logIn = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                    ->min();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logIn) {
                 $dt['return']['time_in'] = $logIn->format('H:i:s');
+
                 if ($logIn <= $timeRule['checkin_ontime']) {
                     $dt['return']['label_in'] = 'dtg ontime';
                     $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
@@ -256,10 +282,25 @@ class PublicHelper
         // OUT
         if (!$dtIzin['status']['kenaIzinKeluar']) {
             $dt['return']['label_out'] = 'tdk absen';
-            $logOut = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logOut = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
-                ->max();
+                ->max()
+                : null;
+
+            // 2) kalau claim tidak ada / tidak masuk window → baru GPS
+            if (!$logOut) {
+                $logOut = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                    ->max();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logOut) {
                 $dt['return']['time_out'] = $logOut->format('H:i:s');
 
@@ -272,6 +313,45 @@ class PublicHelper
                 }
             }
         }
+
+        // IN
+        // if (!$dtIzin['status']['kenaIzinMasuk']) {
+        //     $dt['return']['label_in'] = 'tdk absen';
+        //     $logIn = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+        //         ->min();
+        //     if ($logIn) {
+        //         $dt['return']['time_in'] = $logIn->format('H:i:s');
+        //         if ($logIn <= $timeRule['checkin_ontime']) {
+        //             $dt['return']['label_in'] = 'dtg ontime';
+        //             $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_in'] = 'terlambat';
+        //             $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
+        // // OUT
+        // if (!$dtIzin['status']['kenaIzinKeluar']) {
+        //     $dt['return']['label_out'] = 'tdk absen';
+        //     $logOut = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+        //         ->max();
+        //     if ($logOut) {
+        //         $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+        //         if ($logOut < $timeRule['checkout_start']) {
+        //             $dt['return']['label_out'] = 'plg cepat';
+        //             $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_out'] = 'plg ontime';
+        //             $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
 
         if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
             $dt['return']['label_in'] = 'alpha';
@@ -358,15 +438,38 @@ class PublicHelper
 
         // ========CHECK STATUS ABSEN==========
         $dt['return']['status'] = 'hadir';
+
+        $claimTimes = collect($dt['data_attendance_claims'] ?? [])
+            ->map(fn($c) => data_get($c, 'time'))
+            ->filter()
+            ->map(fn($t) => Carbon::parse($t))
+            ->values();
+
         // IN
         if (!$dtIzin['status']['kenaIzinMasuk']) {
             $dt['return']['label_in'] = 'tdk absen';
-            $logIn = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logIn = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
-                ->min();
+                ->min()
+                : null;
+
+            // 2) kalau claim tidak ada  baru cek log
+            if (!$logIn) {
+                $logIn = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                    ->min();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logIn) {
                 $dt['return']['time_in'] = $logIn->format('H:i:s');
+
                 if ($logIn <= $timeRule['checkin_ontime']) {
                     $dt['return']['label_in'] = 'dtg ontime';
                     $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
@@ -380,10 +483,25 @@ class PublicHelper
         // OUT
         if (!$dtIzin['status']['kenaIzinKeluar']) {
             $dt['return']['label_out'] = 'tdk absen';
-            $logOut = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logOut = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
-                ->max();
+                ->max()
+                : null;
+
+            // 2) kalau claim tidak ada baru log
+            if (!$logOut) {
+                $logOut = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                    ->max();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logOut) {
                 $dt['return']['time_out'] = $logOut->format('H:i:s');
 
@@ -397,6 +515,45 @@ class PublicHelper
             }
         }
 
+        // // IN
+        // if (!$dtIzin['status']['kenaIzinMasuk']) {
+        //     $dt['return']['label_in'] = 'tdk absen';
+        //     $logIn = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+        //         ->min();
+        //     if ($logIn) {
+        //         $dt['return']['time_in'] = $logIn->format('H:i:s');
+        //         if ($logIn <= $timeRule['checkin_ontime']) {
+        //             $dt['return']['label_in'] = 'dtg ontime';
+        //             $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_in'] = 'terlambat';
+        //             $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
+        // // OUT
+        // if (!$dtIzin['status']['kenaIzinKeluar']) {
+        //     $dt['return']['label_out'] = 'tdk absen';
+        //     $logOut = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+        //         ->max();
+        //     if ($logOut) {
+        //         $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+        //         if ($logOut < $timeRule['checkout_start']) {
+        //             $dt['return']['label_out'] = 'plg cepat';
+        //             $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_out'] = 'plg ontime';
+        //             $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
 
         if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
             $dt['return']['label_in'] = 'alpha';
@@ -408,7 +565,6 @@ class PublicHelper
 
     public static function cekHybrid($dt)
     {
-        // dump($dt);
         $dt['return']['type'] = 'Hybrid';
 
         // jika tanggal merah
@@ -432,6 +588,8 @@ class PublicHelper
             $dt['return']['status'] = 'tgl merah';
             return $dt['return'];
         }
+
+        // dd($dt['tglCekCarbon'], $dt['data_attendance_claims']);
 
         // jika tidak hari kerja;
         $dayIndex = $dt['tglCekCarbon']->dayOfWeek;
@@ -494,17 +652,42 @@ class PublicHelper
             return $dt['return'];
         }
 
+        // dd($dt);
+
         // ========CHECK STATUS ABSEN==========
         $dt['return']['status'] = 'hadir';
+
+        $claimTimes = collect($dt['data_attendance_claims'] ?? [])
+            ->map(fn($c) => data_get($c, 'time'))
+            ->filter()
+            ->map(fn($t) => Carbon::parse($t))
+            ->values();
+
         // IN
         if (!$dtIzin['status']['kenaIzinMasuk']) {
             $dt['return']['label_in'] = 'tdk absen';
-            $logIn = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logIn = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
-                ->min();
+                ->min()
+                : null;
+
+            // 2) kalau claim tidak ada / tidak masuk window → baru GPS
+            if (!$logIn) {
+                $logIn = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                    ->min();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logIn) {
                 $dt['return']['time_in'] = $logIn->format('H:i:s');
+
                 if ($logIn <= $timeRule['checkin_ontime']) {
                     $dt['return']['label_in'] = 'dtg ontime';
                     $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
@@ -518,10 +701,25 @@ class PublicHelper
         // OUT
         if (!$dtIzin['status']['kenaIzinKeluar']) {
             $dt['return']['label_out'] = 'tdk absen';
-            $logOut = collect($dt['log'])
-                ->map(fn($l) => Carbon::parse($l['time']))
+
+            // 1) coba dari CLAIM
+            $logOut = $claimTimes->isNotEmpty()
+                ? $claimTimes
                 ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
-                ->max();
+                ->max()
+                : null;
+
+            // 2) kalau claim tidak ada / tidak masuk window → baru GPS
+            if (!$logOut) {
+                $logOut = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                    ->max();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logOut) {
                 $dt['return']['time_out'] = $logOut->format('H:i:s');
 
@@ -535,11 +733,62 @@ class PublicHelper
             }
         }
 
+        // // IN
+        // if (!$dtIzin['status']['kenaIzinMasuk']) {
+        //     $dt['return']['label_in'] = 'tdk absen';
+
+        //     // if(count($dt['data_attendance_claims'])>0){
+        //     //     //proses claim, kasi keterangan label_in,time_dtg_cpt,time_in seperti logic if ($logIn)
+        //     // }
+
+        //     $logIn = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+        //         ->min();
+        //     if ($logIn) {
+        //         $dt['return']['time_in'] = $logIn->format('H:i:s');
+        //         if ($logIn <= $timeRule['checkin_ontime']) {
+        //             $dt['return']['label_in'] = 'dtg ontime';
+        //             $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_in'] = 'terlambat';
+        //             $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
+        // // OUT
+        // if (!$dtIzin['status']['kenaIzinKeluar']) {
+        //     $dt['return']['label_out'] = 'tdk absen';
+
+        //     // if(count($dt['data_attendance_claims'])>0){
+        //     //     //proses claim, kasi keterangan label_out,time_plg_cpt,time_out seperti logic if ($logIn)
+        //     // }
+
+        //     $logOut = collect($dt['log'])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+        //         ->max();
+        //     if ($logOut) {
+        //         $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+        //         if ($logOut < $timeRule['checkout_start']) {
+        //             $dt['return']['label_out'] = 'plg cepat';
+        //             $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_out'] = 'plg ontime';
+        //             $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
         if ($dt['return']['label_in'] === 'tdk absen' && $dt['return']['label_out'] === 'tdk absen') {
             $dt['return']['label_in'] = 'alpha';
             $dt['return']['label_out'] = 'alpha';
             $dt['return']['status'] = 'alpha';
         }
+
+        // dd($dt);
         return $dt['return'];
     }
 
@@ -641,19 +890,38 @@ class PublicHelper
         // ========CHECK STATUS ABSEN==========
         $dt['return']['status'] = 'hadir';
 
+        $claimTimes = collect($dt['data_attendance_claims'] ?? [])
+            ->map(fn($c) => data_get($c, 'time'))
+            ->filter()
+            ->map(fn($t) => Carbon::parse($t))
+            ->values();
+
         // IN
         if (!$dtIzin['status']['kenaIzinMasuk']) {
             $dt['return']['label_in'] = 'tdk absen';
-            $logIn = collect($dt['log'] ?? [])
-                ->map(fn($l) => Carbon::parse($l['time']))
-                ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
-                ->min();
 
+            // 1) coba dari CLAIM
+            $logIn = $claimTimes->isNotEmpty()
+                ? $claimTimes
+                ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                ->min()
+                : null;
+
+            // 2) kalau claim tidak ada  baru cek log
+            if (!$logIn) {
+                $logIn = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+                    ->min();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logIn) {
                 $dt['return']['time_in'] = $logIn->format('H:i:s');
 
-                // On-time jika datang <= work_time; selebihnya terlambat
-                if ($logIn->lte($timeRule['checkin_ontime'])) {
+                if ($logIn <= $timeRule['checkin_ontime']) {
                     $dt['return']['label_in'] = 'dtg ontime';
                     $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
                 } else {
@@ -666,16 +934,29 @@ class PublicHelper
         // OUT
         if (!$dtIzin['status']['kenaIzinKeluar']) {
             $dt['return']['label_out'] = 'tdk absen';
-            $logOut = collect($dt['log'] ?? [])
-                ->map(fn($l) => Carbon::parse($l['time']))
-                ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
-                ->max();
 
+            // 1) coba dari CLAIM
+            $logOut = $claimTimes->isNotEmpty()
+                ? $claimTimes
+                ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                ->max()
+                : null;
+
+            // 2) kalau claim tidak ada baru log
+            if (!$logOut) {
+                $logOut = collect($dt['log'] ?? [])
+                    ->map(fn($l) => data_get($l, 'time'))
+                    ->filter()
+                    ->map(fn($t) => Carbon::parse($t))
+                    ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+                    ->max();
+            }
+
+            // 3) terapkan aturan label (sama persis)
             if ($logOut) {
                 $dt['return']['time_out'] = $logOut->format('H:i:s');
 
-                // Pulang cepat jika sebelum checkout_start; sisanya ontime/normal (atau overtime dihitung via selisih)
-                if ($logOut->lt($timeRule['checkout_start'])) {
+                if ($logOut < $timeRule['checkout_start']) {
                     $dt['return']['label_out'] = 'plg cepat';
                     $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
                 } else {
@@ -684,6 +965,50 @@ class PublicHelper
                 }
             }
         }
+
+        // // IN
+        // if (!$dtIzin['status']['kenaIzinMasuk']) {
+        //     $dt['return']['label_in'] = 'tdk absen';
+        //     $logIn = collect($dt['log'] ?? [])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t >= $timeRule['checkin_start'] && $t <= $timeRule['checkin_end'])
+        //         ->min();
+
+        //     if ($logIn) {
+        //         $dt['return']['time_in'] = $logIn->format('H:i:s');
+
+        //         // On-time jika datang <= work_time; selebihnya terlambat
+        //         if ($logIn->lte($timeRule['checkin_ontime'])) {
+        //             $dt['return']['label_in'] = 'dtg ontime';
+        //             $dt['return']['time_dtg_cpt'] = $timeRule['checkin_ontime']->diff($logIn)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_in'] = 'terlambat';
+        //             $dt['return']['time_dtg_lama'] = $logIn->diff($timeRule['checkin_ontime'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
+
+        // // OUT
+        // if (!$dtIzin['status']['kenaIzinKeluar']) {
+        //     $dt['return']['label_out'] = 'tdk absen';
+        //     $logOut = collect($dt['log'] ?? [])
+        //         ->map(fn($l) => Carbon::parse($l['time']))
+        //         ->filter(fn($t) => $t > $timeRule['checkin_end'] && $t <= $timeRule['checkout_end'])
+        //         ->max();
+
+        //     if ($logOut) {
+        //         $dt['return']['time_out'] = $logOut->format('H:i:s');
+
+        //         // Pulang cepat jika sebelum checkout_start; sisanya ontime/normal (atau overtime dihitung via selisih)
+        //         if ($logOut->lt($timeRule['checkout_start'])) {
+        //             $dt['return']['label_out'] = 'plg cepat';
+        //             $dt['return']['time_plg_cpt'] = $timeRule['checkout_start']->diff($logOut)->format('%H:%I:%S');
+        //         } else {
+        //             $dt['return']['label_out'] = 'plg ontime';
+        //             $dt['return']['time_plg_lama'] = $logOut->diff($timeRule['checkout_start'])->format('%H:%I:%S');
+        //         }
+        //     }
+        // }
 
         // === Tidak ada absen sama sekali ===
         if (($dt['return']['label_in'] ?? null) === 'tdk absen' && ($dt['return']['label_out'] ?? null) === 'tdk absen') {
@@ -816,8 +1141,6 @@ class PublicHelper
         return $return;
     }
 
-
-
     public static function getJadwalAktifByDate($listJadwal, $tglCek)
     {
         $return = $listJadwal->first(function ($jadwal) use ($tglCek) {
@@ -833,14 +1156,22 @@ class PublicHelper
         return $return;
     }
 
-    public static function getAkumulasi($dateInMonth, $logAttendances, $schedules, $izin, $lembur, $tglMerah)
-    {
+    public static function getAkumulasi(
+        $dateInMonth,
+        $logAttendances,
+        $schedules,
+        $izin,
+        $lembur,
+        $tglMerah,
+        $data_attendance_claims
+    ) {
         $param['dateInMonth'] = $dateInMonth;
         $param['tglMerah'] = $tglMerah;
         $param['izin'] = $izin;
         $param['lembur'] = $lembur;
         $param['log'] = $logAttendances;
         $param['jadwal'] = $schedules;
+        $param['data_attendance_claims'] = $data_attendance_claims;
 
         $result = self::getDtAbsen($param);
 

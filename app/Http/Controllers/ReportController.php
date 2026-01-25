@@ -43,8 +43,11 @@ class ReportController extends Controller
             ->has('master_schedules')
         ;
 
+        // dd($request);
+
         $range['start_cast'] = Carbon::parse($request->filter_start)->startOfDay();
         $range['end_cast'] = Carbon::parse($request->filter_end)->addDay()->endOfDay();
+        // dd($range);
 
         $data->with([
             'master_schedules:id,type,kode,day_work',
@@ -71,13 +74,24 @@ class ReportController extends Controller
                             ->orWhereBetween('to', [$range['start_cast'], $range['end_cast']]);
                     });
             },
+            'log_gps' => function ($q) use ($range) {
+                $q->select('id', 'data_employee_id', 'created_at')
+                    ->whereBetween('created_at', [
+                        $range['start_cast'],
+                        $range['end_cast']
+                    ]);
+            },
             'data_lemburs' => function ($q) use ($range) {
                 $q->select(
-                        'id', 'data_employee_id',
-                        'tanggal','checkin_time_lembur',
-                        'work_time_lembur','checkin_deadline_time_lembur',
-                        'checkout_time_lembur','checkout_deadline_time_lembur',
-                    )
+                    'id',
+                    'data_employee_id',
+                    'tanggal',
+                    'checkin_time_lembur',
+                    'work_time_lembur',
+                    'checkin_deadline_time_lembur',
+                    'checkout_time_lembur',
+                    'checkout_deadline_time_lembur',
+                )
                     ->where(function ($sub) {
                         $sub->whereNull('pengawas1')
                             ->orWhere('status_pengawas1', 'Disetujui');
@@ -91,7 +105,20 @@ class ReportController extends Controller
                         $range['end_cast']->toDateString(),
                     ]);
             },
+            'data_attendance_claims' => function ($q) use ($range) {
+                $q->where('type', 'Normal')
+                    ->whereBetween('absen_date', [
+                        $range['start_cast']->toDateString(),
+                        $range['end_cast']->toDateString()
+                    ])
+                ;
+            },
+
         ]);
+
+        // dd($range['start_cast']->toDateString(),$range['end_cast']->toDateString());
+
+        // dd($data->get()->toArray());
 
         if ($request->filter_master_organization_id) {
             $data->where('master_organization_id', $request->filter_master_organization_id);
@@ -119,6 +146,7 @@ class ReportController extends Controller
                 $param['lembur'] = $data->data_lemburs->toArray();
                 $param['log'] = $data->log_attendances->toArray();
                 $param['jadwal'] = $data->master_schedules->toArray();
+                $param['data_attendance_claims'] = $data->data_attendance_claims->toArray();
                 return PublicHelper::getDtAbsen($param);
             })
             ->addColumn('akumulasi', function ($data) use ($dateInMonth, $tglMerah) {
@@ -128,8 +156,12 @@ class ReportController extends Controller
                     $data->master_schedules->toArray(),
                     $data->data_izins->toArray(),
                     $data->data_lemburs->toArray(),
+                    $data->data_attendance_claims->toArray(),
                     $tglMerah,
                 );
+            })
+            ->addColumn('monthYear', function ($data) use ($request) {
+                return $request->filter_year . '-' . $request->filter_month;
             })
             ->smart(false)
             ->toJson()
@@ -170,14 +202,19 @@ class ReportController extends Controller
                             $request->filter_start,
                             Carbon::parse($request->filter_end)->addDay()->format('Y-m-d 23:59:59')
                         ])
-                        // ->whereBetween('time', [$request->filter_start, Carbon::parse($request->filter_end)->addDay()->format('Y-m-d')])
-                        // ->whereYear('time', $request->filter_year)
-                        // ->whereMonth('time', $request->filter_month)
                     ;
                 },
                 'data_izins' => function ($q) use ($request) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
                         ->where('status', 'Disetujui');
+                },
+                'data_attendance_claims' => function ($q) use ($request) {
+                    $q->where('type', 'Normal')
+                        ->whereBetween('absen_date', [
+                            $request->filter_start,
+                            $request->filter_end
+                        ])
+                    ;
                 },
             ])
         ;
@@ -206,6 +243,7 @@ class ReportController extends Controller
                     $data->master_schedules->toArray(),
                     $data->data_izins->toArray(),
                     $data->data_lemburs->toArray(),
+                    $data->data_attendance_claims->toArray(),
                     $tglMerah,
                 );
             })
@@ -307,6 +345,15 @@ class ReportController extends Controller
                             $range['end_cast']->toDateString(),
                         ]);
                 },
+                'data_attendance_claims' => function ($q) use ($range) {
+                    $q->select('data_attendance_claims.*')
+                        ->where('type', 'Normal')
+                        ->whereBetween('absen_date', [
+                            $range['start_cast']->toDateString(),
+                            $range['end_cast']->toDateString()
+                        ])
+                    ;
+                },
             ])
             ->where('status', 'Aktif')
             ->has('master_schedules')
@@ -332,7 +379,7 @@ class ReportController extends Controller
             $param['lembur'] = $row->data_lemburs->toArray();
             $param['log'] = $row->log_attendances->toArray();
             $param['jadwal'] = $row->master_schedules->toArray();
-
+            $param['data_attendance_claims'] = $data->data_attendance_claims->toArray();
             $row->absensi = PublicHelper::getDtAbsen($param);
             return $row;
         })->toArray();

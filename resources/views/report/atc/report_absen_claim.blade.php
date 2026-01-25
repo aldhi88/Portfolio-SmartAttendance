@@ -15,7 +15,7 @@
                             <h1 class="mb-3">
                                 <i class="ri-error-warning-line rounded-circle p-3 badge-soft-danger"></i>
                             </h1>
-                            <h4>Konfirmasi Klaim Presensi Lembur Manual</h4>
+                            <h4>Konfirmasi Klaim Presensi Manual</h4>
                         </div>
                     </div>
                     <hr>
@@ -103,10 +103,10 @@
 
             if (btn) btn.disabled = true;
 
-            const repositionAll = () => {
-                startEl?._flatpickr?.positionCalendar();
-                endEl?._flatpickr?.positionCalendar();
-            };
+            // const repositionAll = () => {
+            //     startEl?._flatpickr?.positionCalendar();
+            //     endEl?._flatpickr?.positionCalendar();
+            // };
 
             flatpickr(startEl, {
                 enableTime: true,
@@ -120,7 +120,7 @@
                 // ✅ posisi paling akurat
                 appendTo: document.body,
 
-                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+                // onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
 
                 onChange: function(selectedDates, dateStr) {
                     @this.set('lemburIn', dateStr, false);
@@ -130,7 +130,7 @@
                     }
 
                     updateSubmitState();
-                    setTimeout(repositionAll, 0);
+                    // setTimeout(repositionAll, 0);
                 }
             });
 
@@ -145,26 +145,29 @@
 
                 appendTo: document.body,
 
-                onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
+                // onOpen: (_, __, inst) => setTimeout(() => inst.positionCalendar(), 0),
 
                 onChange: function(selectedDates, dateStr) {
                     @this.set('lemburOut', dateStr, false);
                     updateSubmitState();
-                    setTimeout(repositionAll, 0);
+                    // setTimeout(repositionAll, 0);
                 }
             });
 
             // kalau modal scroll, posisi ikut dibenerin (Chrome sering butuh ini)
-            const modalBody = modal.querySelector('.modal-body');
-            if (modalBody) {
-                if (modal._fpScrollHandler) modalBody.removeEventListener('scroll', modal._fpScrollHandler);
-                modal._fpScrollHandler = () => repositionAll();
-                modalBody.addEventListener('scroll', modal._fpScrollHandler, { passive: true });
-            }
+            // const modalBody = modal.querySelector('.modal-body');
+            // if (modalBody) {
+            //     if (modal._fpScrollHandler) modalBody.removeEventListener('scroll', modal._fpScrollHandler);
+            //     modal._fpScrollHandler = () => repositionAll();
+            //     modalBody.addEventListener('scroll', modal._fpScrollHandler, { passive: true });
+            // }
 
             // ===== kode kamu yang lain tetap... =====
             const data = $(e.relatedTarget).data('json');
+
             let logs = data.log_gps;
+            let date = data.date;
+            @this.set('date', date);
             $(modal).find('#log-gps-count').text(logs.length);
             logs.sort((a, b) => moment(a.created_at) - moment(b.created_at));
             $('#logList').empty();

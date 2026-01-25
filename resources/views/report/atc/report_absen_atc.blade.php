@@ -1,6 +1,7 @@
 @section('style')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
+    <link rel="stylesheet" href="{{ asset('assets/libs/flatpicker/flatpickr.min.css') }}">
     <style>
         #myTable tbody td:nth-child(n+3):nth-child(odd) {
             background-color: #ffffff;
@@ -30,7 +31,9 @@
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/libs/moment/locale/id.js') }}"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="{{ asset('assets/libs/flatpicker/flatpickr.js') }}"></script>
 @endsection
 
 @push('push-script')
@@ -113,6 +116,40 @@
                         }
                     }
 
+                    const targetDate = row.monthYear + '-' + item.col_date;
+                    const filteredLogGps = row.log_gps.filter(item => {
+                        return moment(item.created_at).format('YYYY-MM-DD') === targetDate;
+                    });
+
+
+                    // console.log(filteredLogGps);
+
+                    const dtJsonKlaim = {
+                        id: row.id,
+                        log_gps: filteredLogGps,
+                        date: targetDate
+                    };
+
+                    if(
+                        abs.label_in == 'tdk absen' ||
+                        abs.label_in == 'terlambat' ||
+                        abs.label_in == 'alpha'
+                    ){
+                        return `
+                            ${abs.time_in}<br>
+                            <div class="text-rapat">
+                                <strong data-json='${JSON.stringify(dtJsonKlaim)}'
+                                    style="text-decoration:underline;cursor:pointer" class="text-${color}"
+                                    data-dispatch="wireSubmitClaim(${row.id})"
+                                    data-toggle="modal" data-target="#modalConfirmClaim"
+                                    >
+                                    ${abs.label_in}
+                                </strong>
+                                ${type}
+                            </div>
+                        `;
+                    }
+
                     return `
                         ${abs.time_in}<br>
                         <div class="text-rapat">
@@ -156,6 +193,40 @@
                         if(abs.label_out != 'lembur'){
                             type = '<br><small>'+abs.shift+'</small>';
                         }
+                    }
+
+                    const targetDate = row.monthYear + '-' + item.col_date;
+                    const filteredLogGps = row.log_gps.filter(item => {
+                        return moment(item.created_at).format('YYYY-MM-DD') === targetDate;
+                    });
+
+
+                    // console.log(filteredLogGps);
+
+                    const dtJsonKlaim = {
+                        id: row.id,
+                        log_gps: filteredLogGps,
+                        date: targetDate
+                    };
+
+                    if(
+                        abs.label_out == 'tdk absen' ||
+                        abs.label_out == 'plg cepat' ||
+                        abs.label_out == 'alpha'
+                    ){
+                        return `
+                            ${abs.time_out}<br>
+                            <div class="text-rapat">
+                                <strong data-json='${JSON.stringify(dtJsonKlaim)}'
+                                    style="text-decoration:underline;cursor:pointer" class="text-${color}"
+                                    data-dispatch="wireSubmitClaim(${row.id})"
+                                    data-toggle="modal" data-target="#modalConfirmClaim"
+                                    >
+                                    ${abs.label_out}
+                                </strong>
+                                ${type}
+                            </div>
+                        `;
                     }
                     return `
                         ${abs.time_out}<br>

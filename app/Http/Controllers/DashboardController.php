@@ -25,6 +25,11 @@ class DashboardController extends Controller
         DataLiburFace $dataLiburRepo,
     ) {
         $data = $dataEmployeeRepo->getReportDashboardDT(0);
+
+        $start = Carbon::create(date('Y'), date('m'), 1)->startOfMonth()->format('Y-m-d');
+        $end = Carbon::now()->format('Y-m-d');
+
+
         $data->select([
             'data_employees.id',
             'data_employees.name',
@@ -47,11 +52,13 @@ class DashboardController extends Controller
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
                         ->where('status', 'Disetujui');
                 },
+                'data_attendance_claims' => function ($q) use ($start, $end) {
+                    $q->where('type', 'Normal')
+                        ->whereBetween('absen_date', [$start, $end])
+                    ;
+                },
             ])
         ;
-
-        $start = Carbon::create(date('Y'), date('m'), 1)->startOfMonth()->format('Y-m-d');
-        $end = Carbon::now()->format('Y-m-d');
 
         $dateInMonth = PublicHelper::dateInMonth($start, $end);
         $tglMerah = $dataLiburRepo->getByDate(date('m'), date('Y'));
@@ -63,6 +70,7 @@ class DashboardController extends Controller
                 $item->master_schedules->toArray(),
                 $item->data_izins->toArray(),
                 $item->data_lemburs->toArray(),
+                $item->data_attendance_claims->toArray(),
                 $tglMerah
             );
 
@@ -111,6 +119,11 @@ class DashboardController extends Controller
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
                         ->where('status', 'Disetujui');
                 },
+                'data_attendance_claims' => function ($q) {
+                    $q->where('type', 'Normal')
+                        ->where('absen_date', date('Y-m-d'))
+                    ;
+                },
             ])
         ;
 
@@ -124,6 +137,7 @@ class DashboardController extends Controller
                 $item->master_schedules->toArray(),
                 $item->data_izins->toArray(),
                 $item->data_lemburs->toArray(),
+                $item->data_attendance_claims->toArray(),
                 $tglMerah
             );
 
@@ -184,6 +198,14 @@ class DashboardController extends Controller
                         });
                 },
                 'data_lemburs',
+                'data_attendance_claims' => function ($q) use ($startDateIzin, $endDateIzin) {
+                    $q->where('type', 'Normal')
+                        ->whereBetween('absen_date', [
+                            $startDateIzin->toDateString(),
+                            $endDateIzin->toDateString()
+                        ])
+                    ;
+                },
             ])
             ->get();
 
@@ -216,6 +238,7 @@ class DashboardController extends Controller
                     $emp->master_schedules->toArray(),
                     $emp->data_izins->toArray(),
                     $emp->data_lemburs->toArray(),
+                    $emp->data_attendance_claims->toArray(),
                     $tglMerah
                 );
 
