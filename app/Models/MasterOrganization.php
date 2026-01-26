@@ -15,4 +15,9 @@ class MasterOrganization extends Model
     {
         return $this->hasMany(DataEmployee::class, 'master_organization_id', 'id');
     }
+
+    public function data_email_orgs():HasMany
+    {
+        return $this->hasMany(DataEmailOrg::class, 'master_organization_id', 'id');
+    }
 }

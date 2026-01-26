@@ -162,6 +162,7 @@ class DataLemburController extends Controller
 
         $data->with([
             'data_lemburs' => $filterLembur,
+            'master_functions',
         ]);
 
         return DataTables::of($data)

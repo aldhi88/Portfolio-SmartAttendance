@@ -52,6 +52,7 @@
             },
             { data: 'name', name: 'name', orderable: false, searchable:true },
             { data: 'master_organizations.name', name: 'master_organizations.name', orderable: false, searchable:false },
+            { data: 'master_functions.name', name: 'master_functions.name', orderable: false, searchable:false },
             { data: 'total_hari_lembur', name: 'total_hari_lembur', orderable: false, searchable:false },
             { data: 'total_jam_lembur_aktual', name: 'total_jam_lembur_aktual', orderable: true, searchable: false},
 

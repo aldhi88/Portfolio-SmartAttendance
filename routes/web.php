@@ -99,6 +99,7 @@ Route::middleware('auth:web')->group(function(){
             Route::controller(MasterOrganizationController::class)->group(function () {
                 Route::get('index', 'index')->name('index');
                 Route::get('indexDT', 'indexDT')->name('indexDT');
+                Route::get('email', 'email')->name('email');
             });
         });
     });

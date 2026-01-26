@@ -59,6 +59,13 @@
                         `;
                     }
 
+                    let linkEmail = "{{ route('perusahaan.email') }}";
+                    html += `
+                        <a href="${linkEmail}" class="dropdown-item">
+                            <i class="fas fa-envelope fa-fw"></i> Atur Email Notifikasi
+                        </a>
+                    `;
+
                     html += `</div></div>`;
                     return html;
                 }

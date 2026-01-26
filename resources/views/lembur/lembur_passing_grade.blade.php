@@ -112,6 +112,7 @@
                                 <th rowspan="2" class="text-center" width="10">No</th>
                                 <th rowspan="2" class="text-center">Nama</th>
                                 <th rowspan="2" class="text-center">Perusahaan</th>
+                                <th rowspan="2" class="text-center">Fungsi</th>
                                 <th colspan="2" class="text-center">Total</th>
                                 {{-- <th class="text-center">Jumlah Karyawan <br> Lembur</th> --}}
                             </tr>
@@ -128,6 +129,7 @@
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm search-col-dt">
                                     </th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
