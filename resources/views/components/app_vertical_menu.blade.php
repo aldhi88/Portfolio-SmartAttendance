@@ -173,7 +173,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="waves-effect">
+                            <a href="{{ route('lembur-vendor.rekapBulanan') }}" class="waves-effect">
                                 <i class="ri-file-line"></i>
                                 <span>Laporan Data Lembur</span>
                             </a>

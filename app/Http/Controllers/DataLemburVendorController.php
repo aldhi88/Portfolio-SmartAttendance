@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ReportLemburHelper;
 use App\Models\DataLembur;
 use App\Repositories\Interfaces\DataLemburFace;
+use App\Repositories\MasterOrganizationRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DataTables;
@@ -54,6 +55,31 @@ class DataLemburVendorController extends Controller
             ->addColumn('format', function ($data) {
                 return DataLembur::formatOrg($data->data_employees->master_organization_id);
             })
+            ->toJson();
+    }
+
+    public function rekapBulanan()
+    {
+        $data['tab_title'] = "Rekap Lembur Bulanan | " . config('app.name');
+        $data['page_title'] = "Rekap Lembur Bulanan";
+        $data['page_desc'] = "Laporan data lembur bulanan";
+        $data['lw'] = "lembur-vendor.lembur-vendor-rekap-bulanan";
+        return view('index', compact('data'));
+    }
+
+    public function rekapBulananDT(Request $request)
+    {
+        $param = [
+            'month' => $request->month,
+            'year' => $request->year,
+        ];
+        $orgId = Auth::user()->data_vendors->master_organization_id;
+
+
+        $data = MasterOrganizationRepo::getOrgLemburBulanan($param);
+        $data->where('id', $orgId);
+        return DataTables::of($data)
+            ->smart(false)
             ->toJson();
     }
 }

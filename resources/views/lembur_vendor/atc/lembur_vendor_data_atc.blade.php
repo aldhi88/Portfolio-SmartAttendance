@@ -1,6 +1,18 @@
 @section('style')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
+    <style>
+        .truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;      /* jumlah baris */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-width: 300px;           /* sesuaikan lebar kolom */
+            cursor: pointer;
+        }
+    </style>
 @endsection
 @section('script')
     <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
