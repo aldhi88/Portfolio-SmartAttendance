@@ -179,27 +179,6 @@
                             </a>
                         </li>
 
-
-
-                        {{-- <li class="parent">
-                            <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class="ri-history-line"></i>
-                                <span>Lembur</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="{{ route('lembur.indexLembur') }}">Data Lembur</a></li>
-                                <li class="child"><a href="{{ route('lembur.lemburCreate') }}">Pengajuan Lembur</a>
-                                </li>
-                                <li class="child lembur"><a href="{{ route('vendor.index') }}">Login Vendor</a></li>
-                                <li class="child"><a href="#">Daftar Pekerjaan</a></li>
-                                <li class="child"><a href="#">Pejabat Penanda Tangan</a></li>
-                                <li class="child"><a href="#">Pembatalan</a></li>
-                                <li class="child"><a href="#">Print Surat Lembur</a></li>
-                                <li class="child"><a href="#">Rekap Laporan 40 Jam</a></li>
-                                <li class="child"><a href="#">Rekap Laporan 40 Jam+</a></li>
-                            </ul>
-                        </li> --}}
-
                     </ul>
                 @endif
             </div>
