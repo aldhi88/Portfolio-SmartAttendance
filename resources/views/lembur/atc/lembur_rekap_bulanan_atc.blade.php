@@ -55,10 +55,11 @@
                     let html = '';
                     let printPdfUrl = `/lembur/rekap-bulanan/print-pdf/${row.id}/${month}/${year}`;
 
-                    if(orgId==1){
+                    if(orgId==1 || orgId==2 || orgId==3 || orgId==11){
                         linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pn1">Rekap Bulanan</a>`;
                         linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pn2">Justifikasi Kelebihan Jam</a>`;
                     }
+
                     if(orgId==5){
                         linkPrint = `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl1">Rekap Form Pengajuan</a>`;
                         linkPrint += `<a class="dropdown-item" target="_blank" href="${printPdfUrl}/pl2">Rekap Timesheet Pengemudi</a>`;

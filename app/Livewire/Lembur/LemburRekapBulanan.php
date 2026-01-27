@@ -22,7 +22,7 @@ class LemburRekapBulanan extends Component
         $this->getOrgBulanan();
         $this->dt['month'] = request()->query('month', now()->month);
         $this->dt['year']  = request()->query('year', now()->year);
-        $this->dt['report_print_id'] = [1,5,9];
+        $this->dt['report_print_id'] = [1,2,3,5,9,11];
     }
 
     public $pass;
