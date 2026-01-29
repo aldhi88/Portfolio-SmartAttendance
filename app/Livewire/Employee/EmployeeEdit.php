@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -425,6 +424,7 @@ class EmployeeEdit extends Component
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();
+        // dd($this->all());
     }
 
     public $activedSchedules = [

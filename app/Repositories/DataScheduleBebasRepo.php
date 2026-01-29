@@ -13,6 +13,7 @@ class DataScheduleBebasRepo implements DataScheduleBebasFace
 
     public function bulkCreate($data): bool
     {
+        // dd($data);
         $data = collect($data)->map(function ($row) {
             if (isset($row['day_work']) && is_array($row['day_work'])) {
                 $row['day_work'] = json_encode($row['day_work']);
