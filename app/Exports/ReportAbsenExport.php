@@ -9,13 +9,21 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
+class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles, WithEvents
 {
     protected $year, $month, $start, $end, $org, $pos;
     protected $dataLiburRepo;
+
+    // untuk hitung kolom dinamis absensi
+    protected int $tglColCount = 0;
 
     public function __construct($year, $month, $start, $end, $org, $pos, DataLiburFace $dataLiburRepo)
     {
@@ -42,6 +50,63 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
         return [];
     }
 
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+
+                $startRow = 4; // sesuai screenshot
+                $highestRow = $sheet->getHighestRow();
+
+                $startColIndex = 5; // E (kolom absensi mulai)
+                $endColIndex = $startColIndex + ($this->tglColCount * 2) - 1;
+
+                $redTexts = [
+                    'alpha',
+                    'terlambat',
+                    'plg cepat',
+                    'tdk absen',
+                ];
+
+                for ($row = $startRow; $row <= $highestRow; $row++) {
+                    for ($col = $startColIndex; $col <= $endColIndex; $col++) {
+                        $addr = Coordinate::stringFromColumnIndex($col) . $row;
+                        $raw  = (string) $sheet->getCell($addr)->getValue();
+
+                        // skip cepat kalau gak mengandung salah satu keyword
+                        $rawLower = strtolower($raw);
+                        $hit = false;
+                        foreach ($redTexts as $t) {
+                            if (strpos($rawLower, $t) !== false) {
+                                $hit = true;
+                                break;
+                            }
+                        }
+                        if (!$hit) continue;
+
+                        // pecah per baris (hasil dari <br>)
+                        $lines = preg_split("/\R/u", $raw);
+
+                        $rich = new RichText();
+                        foreach ($lines as $i => $line) {
+                            if ($i > 0) $rich->createTextRun("\n");
+
+                            $lineText = strtolower(trim((string) $line));
+                            $run = $rich->createTextRun($line);
+
+                            if (in_array($lineText, $redTexts, true)) {
+                                $run->getFont()->setColor(new Color(Color::COLOR_RED));
+                            }
+                        }
+
+                        $sheet->setCellValue($addr, $rich);
+                    }
+                }
+            },
+        ];
+    }
+
     public function view(): View
     {
         $start = Carbon::create($this->year, $this->month, 1)->startOfMonth();
@@ -57,15 +122,19 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
         while ($start->lte($end)) {
             $tglCol[] = [
                 'col_date' => $start->format('d'),
-                'col_day' => $start->locale('id')->translatedFormat('l'),
+                'col_day'  => $start->locale('id')->translatedFormat('l'),
             ];
             $start->addDay();
         }
+
+        // simpan count untuk dipakai di AfterSheet
+        $this->tglColCount = count($tglCol);
+
         $filter['start'] = $this->start;
-        $filter['end'] = $this->end;
+        $filter['end']   = $this->end;
 
         $range['start_cast'] = Carbon::parse($filter['start'])->startOfDay();
-        $range['end_cast'] = Carbon::parse($filter['end'])->addDay()->endOfDay();
+        $range['end_cast']   = Carbon::parse($filter['end'])->addDay()->endOfDay();
 
         $data = DataEmployee::query()
             ->select([
@@ -84,11 +153,7 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
                 'master_positions:id,name',
                 'log_attendances' => function ($q) use ($range) {
                     $q->select('data_employee_id', 'time')
-                        ->whereBetween('time', [
-                            $range['start_cast'],
-                            $range['end_cast']
-                        ])
-                    ;
+                        ->whereBetween('time', [$range['start_cast'], $range['end_cast']]);
                 },
                 'data_izins' => function ($q) use ($range) {
                     $q->select('id', 'data_employee_id', 'jenis', 'from', 'to', 'desc')
@@ -126,9 +191,8 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
                     $q->where('type', 'Normal')
                         ->whereBetween('absen_date', [
                             $range['start_cast']->toDateString(),
-                            $range['end_cast']->toDateString()
-                        ])
-                    ;
+                            $range['end_cast']->toDateString(),
+                        ]);
                 },
             ])
             ->where('status', 'Aktif')
@@ -143,9 +207,8 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
         }
 
         $dateInMonth = PublicHelper::dateInMonth($this->start, $this->end);
-        $tglMerah = $this->dataLiburRepo->getByDate($this->month, $this->year);
+        $tglMerah    = $this->dataLiburRepo->getByDate($this->month, $this->year);
 
-        // Isi absensi ke setiap row
         $data = $data->get()->map(function ($row) use ($dateInMonth, $tglMerah) {
             $param['dateInMonth'] = $dateInMonth;
             $param['tglMerah'] = $tglMerah;
@@ -154,22 +217,22 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
             $param['log'] = $row->log_attendances->toArray();
             $param['jadwal'] = $row->master_schedules->toArray();
             $param['data_attendance_claims'] = $row->data_attendance_claims->toArray();
+
             $row->absensi = PublicHelper::getDtAbsen($param);
             return $row;
         })->toArray();
 
         $manajer = DataEmployee::whereHas('user_logins', function ($query) {
             $query->where('user_role_id', 500);
-        })
-            ->pluck('name')
-            ->first() ?? 'Manajer belum dipilih';
+        })->pluck('name')->first() ?? 'Manajer belum dipilih';
 
+        // dd($data);
         return view('report.export.report_export_excel', [
-            'data' => $data,
-            'tglCol' => $tglCol,
-            'year' => $this->year,
-            'month' => $this->month,
-            'manajer' => $manajer
+            'data'    => $data,
+            'tglCol'  => $tglCol,
+            'year'    => $this->year,
+            'month'   => $this->month,
+            'manajer' => $manajer,
         ]);
     }
 }
