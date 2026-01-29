@@ -147,6 +147,7 @@ class ReportController extends Controller
                 $param['log'] = $data->log_attendances->toArray();
                 $param['jadwal'] = $data->master_schedules->toArray();
                 $param['data_attendance_claims'] = $data->data_attendance_claims->toArray();
+                // dd($param);
                 return PublicHelper::getDtAbsen($param);
             })
             ->addColumn('akumulasi', function ($data) use ($dateInMonth, $tglMerah) {
@@ -331,7 +332,16 @@ class ReportController extends Controller
                         });
                 },
                 'data_lemburs' => function ($q) use ($range) {
-                    $q->select('id', 'data_employee_id', 'tanggal')
+                    $q->select(
+                        'id',
+                        'data_employee_id',
+                        'tanggal',
+                        'checkin_time_lembur',
+                        'work_time_lembur',
+                        'checkin_deadline_time_lembur',
+                        'checkout_time_lembur',
+                        'checkout_deadline_time_lembur',
+                    )
                         ->where(function ($sub) {
                             $sub->whereNull('pengawas1')
                                 ->orWhere('status_pengawas1', 'Disetujui');
@@ -346,8 +356,7 @@ class ReportController extends Controller
                         ]);
                 },
                 'data_attendance_claims' => function ($q) use ($range) {
-                    $q->select('data_attendance_claims.*')
-                        ->where('type', 'Normal')
+                    $q->where('type', 'Normal')
                         ->whereBetween('absen_date', [
                             $range['start_cast']->toDateString(),
                             $range['end_cast']->toDateString()
@@ -379,10 +388,12 @@ class ReportController extends Controller
             $param['lembur'] = $row->data_lemburs->toArray();
             $param['log'] = $row->log_attendances->toArray();
             $param['jadwal'] = $row->master_schedules->toArray();
-            $param['data_attendance_claims'] = $data->data_attendance_claims->toArray();
+            $param['data_attendance_claims'] = $row->data_attendance_claims->toArray();
             $row->absensi = PublicHelper::getDtAbsen($param);
             return $row;
         })->toArray();
+
+        // dd($data);
 
         $manajer = DataEmployee::whereHas('user_logins', function ($query) {
             $query->where('user_role_id', 500);

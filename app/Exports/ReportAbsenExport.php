@@ -99,7 +99,16 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
                         });
                 },
                 'data_lemburs' => function ($q) use ($range) {
-                    $q->select('id', 'data_employee_id', 'tanggal')
+                    $q->select(
+                        'id',
+                        'data_employee_id',
+                        'tanggal',
+                        'checkin_time_lembur',
+                        'work_time_lembur',
+                        'checkin_deadline_time_lembur',
+                        'checkout_time_lembur',
+                        'checkout_deadline_time_lembur',
+                    )
                         ->where(function ($sub) {
                             $sub->whereNull('pengawas1')
                                 ->orWhere('status_pengawas1', 'Disetujui');
@@ -112,6 +121,14 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
                             $range['start_cast']->toDateString(),
                             $range['end_cast']->toDateString(),
                         ]);
+                },
+                'data_attendance_claims' => function ($q) use ($range) {
+                    $q->where('type', 'Normal')
+                        ->whereBetween('absen_date', [
+                            $range['start_cast']->toDateString(),
+                            $range['end_cast']->toDateString()
+                        ])
+                    ;
                 },
             ])
             ->where('status', 'Aktif')
@@ -136,7 +153,7 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles
             $param['lembur'] = $row->data_lemburs->toArray();
             $param['log'] = $row->log_attendances->toArray();
             $param['jadwal'] = $row->master_schedules->toArray();
-
+            $param['data_attendance_claims'] = $row->data_attendance_claims->toArray();
             $row->absensi = PublicHelper::getDtAbsen($param);
             return $row;
         })->toArray();
