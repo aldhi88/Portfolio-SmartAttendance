@@ -67,6 +67,7 @@ class ReportAbsenExport implements FromView, ShouldAutoSize, WithStyles, WithEve
                     'terlambat',
                     'plg cepat',
                     'tdk absen',
+                    'off',
                 ];
 
                 for ($row = $startRow; $row <= $highestRow; $row++) {
