@@ -169,6 +169,7 @@ class EmployeeEdit extends Component
             ->values()
             ->toArray();
 
+
         $uploadedFiles = [];
         if (!empty($this->dtForm['ttd'])) {
             $ttdFile = $this->dtForm['ttd'];
@@ -196,7 +197,6 @@ class EmployeeEdit extends Component
 
         try {
             DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin, $flatten, $uploadedFiles) {
-
                 if(count($uploadedFiles)!=0){
                     foreach ($uploadedFiles as $file) {
                         $file['file']->storeAs(
@@ -333,6 +333,7 @@ class EmployeeEdit extends Component
                 //Jika tanggal baru → buat default kosong
                 $result[] = [
                     'master_schedule_id' => $id,
+                    'data_employee_id' => $this->pass['editId'],
                     'tanggal' => $tgl,
                     'day_work' => [
                         'checkin_time' => null,
@@ -424,7 +425,6 @@ class EmployeeEdit extends Component
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();
-        // dd($this->all());
     }
 
     public $activedSchedules = [

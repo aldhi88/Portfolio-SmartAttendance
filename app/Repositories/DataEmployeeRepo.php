@@ -127,7 +127,7 @@ class DataEmployeeRepo implements DataEmployeeFace
 
         if (Auth::user()->is_pengawas) {
             $pengawasId = Auth::user()->data_employees->id;
-            return DataEmployee::select('id', 'name','master_organization_id')
+            return DataEmployee::select('id', 'name', 'master_organization_id')
                 ->where('name', 'like', '%' . $name . '%')
                 ->where(function ($q) use ($pengawasId) {
                     $q->whereHas('pengawas', function ($q2) use ($pengawasId) {
@@ -139,7 +139,7 @@ class DataEmployeeRepo implements DataEmployeeFace
                 ->toArray();
         }
 
-        return DataEmployee::select('id', 'name','master_organization_id')
+        return DataEmployee::select('id', 'name', 'master_organization_id')
             ->where('name', 'like', '%' . $name . '%')
             ->limit(10)
             ->get()
@@ -202,7 +202,9 @@ class DataEmployeeRepo implements DataEmployeeFace
         return DataEmployee::where('id', $id)
             ->with([
                 'master_schedules',
-                'master_schedules.data_schedule_bebas',
+                'master_schedules.data_schedule_bebas' => function ($q) use ($id) {
+                    $q->where('data_employee_id', $id);
+                },
                 'user_logins.user_roles',
             ])
             ->first()
