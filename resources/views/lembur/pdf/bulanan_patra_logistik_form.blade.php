@@ -119,10 +119,8 @@
                         echo null;
                     }
                 @endphp
-                {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}
                  ">
                     @php
-
                         if(
                             $item['absensi'][$i]['label_in']=='lembur' &&
                             $item['absensi'][$i]['time_in']!='-' &&
