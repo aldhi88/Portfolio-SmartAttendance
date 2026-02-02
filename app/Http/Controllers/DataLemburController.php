@@ -6,6 +6,7 @@ use App\Helpers\PublicHelper;
 use App\Helpers\ReportLemburHelper;
 use App\Models\DataAttendanceClaim;
 use App\Models\DataEmployee;
+use App\Models\DataIzin;
 use App\Models\DataLembur;
 use App\Models\LogAttendance;
 use App\Repositories\DataEmployeeRepo;
@@ -291,6 +292,7 @@ class DataLemburController extends Controller
         $dt['monthList'] = PublicHelper::indoMonthList();
         $dt['manager'] = DataEmployeeRepo::getManager();
         $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
+        $dt['pjs_patlog'] = DataEmployeeRepo::getTtdById(173);
 
         $dt['attr'] = [
             'month' => $month,
@@ -408,6 +410,8 @@ class DataLemburController extends Controller
             }
         }
         $dt['emp'] = array_values($dt['emp']);
+
+        $dt['list_izin'] = DataIzin::izinList();
 
         // dd($dt['emp']);
 

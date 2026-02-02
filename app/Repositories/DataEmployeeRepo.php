@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Log;
 
 class DataEmployeeRepo implements DataEmployeeFace
 {
+    public static function getTtdById($id)
+    {
+        return DataEmployee::query()
+            ->where('id', $id)
+            ->with('master_positions')
+            ->first()
+            ->toArray();
+    }
 
     public static function getManager()
     {

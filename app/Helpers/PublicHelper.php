@@ -1056,15 +1056,18 @@ class PublicHelper
 
         $izinMasuk = $izinCollection->first(
             fn($izin) =>
-            $timeRule['checkin_start'] >= $izin['from'] &&
-                $timeRule['checkin_end'] <= $izin['to']
+            $timeRule['checkin_start'] <= $izin['to'] &&
+                $timeRule['checkin_end']   >= $izin['from']
         );
 
         $izinKeluar = $izinCollection->first(
             fn($izin) =>
-            $timeRule['checkout_start'] >= $izin['from'] &&
-                $timeRule['checkout_end']   <= $izin['to']
+            $timeRule['checkout_start'] <= $izin['to'] &&
+                $timeRule['checkout_end']   >= $izin['from']
         );
+
+
+        // dd($izinMasuk, $izinKeluar, $izinCollection, $timeRule);
 
         $dt['status']['kenaIzinMasuk'] = false;
         $dt['status']['kenaIzinKeluar'] = false;
@@ -1079,6 +1082,7 @@ class PublicHelper
             $dt['status']['kenaIzinKeluar'] = true;
         }
 
+        // dd($dt);
         return $dt;
     }
 

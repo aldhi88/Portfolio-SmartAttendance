@@ -19,13 +19,6 @@ $(document).ready(function () {
 });
 
 function initSearchCol(table, headerId, inputClass) {
-    // $(headerId).on('keyup', '.' + inputClass, function () {
-    //     table.column($(this).parent().index()).search(this.value).draw(false);
-    // });
-
-    // $(headerId).on('change', '.' + inputClass, function () {
-    //     table.column($(this).parent().index()).search(this.value).draw();
-    // });
     $(headerId).on('input', '.' + inputClass, function () {
         const colIndex = $(this).parent().index();
         const searchVal = this.value;

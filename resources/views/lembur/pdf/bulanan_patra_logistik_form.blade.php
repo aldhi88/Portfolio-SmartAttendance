@@ -103,8 +103,26 @@
                     @endphp
                 </td>
                 <td></td>
-                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">
+                <td class="hc" style="color:
+                @php
+                    if(
+                        $item['absensi'][$i]['label_in']=='off' ||
+                        $item['absensi'][$i]['status']=='izin'
+                    ){
+                        echo 'red';
+                    }elseif (
+                        in_array($item['absensi'][$i]['label_in'],$dt['list_izin']) ||
+                        in_array($item['absensi'][$i]['label_out'],$dt['list_izin'])
+                    ) {
+                        echo 'red';
+                    }else{
+                        echo null;
+                    }
+                @endphp
+                {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}
+                 ">
                     @php
+
                         if(
                             $item['absensi'][$i]['label_in']=='lembur' &&
                             $item['absensi'][$i]['time_in']!='-' &&
@@ -113,6 +131,18 @@
                             $ket = $item['data_lemburs'][0]['pekerjaan'];
                         }elseif ($item['absensi'][$i]['label_in']=='off') {
                             $ket = 'OFF';
+                        }elseif (
+                            $item['absensi'][$i]['status']=='izin'
+                        ) {
+                            $ket = $item['absensi'][$i]['label_in'];
+                        }elseif (
+                            in_array($item['absensi'][$i]['label_in'],$dt['list_izin'])
+                        ) {
+                            $ket = $item['absensi'][$i]['label_in'];
+                        }elseif (
+                            in_array($item['absensi'][$i]['label_out'],$dt['list_izin'])
+                        ) {
+                            $ket = $item['absensi'][$i]['label_out'];
                         }else{
                             $ket = 'Operasional Kantor';
                         }
@@ -161,41 +191,47 @@
     </table>
 
     <div style="height: 10px"></div>
-    <table>
-        <tr>
-            <td class="hc" style="width: 20%;line-height: 14px">
-                <strong>Medan</strong>, <br><br>
-                Diusulkan oleh, <br>
-                Koordinator Lapangan
-            </td>
-            <td style="width: 60%"></td>
-            <td class="hc" style="width: 20%;line-height: 14px">
-                <span style="color: white;">----</span><br><br>
-                Diverifikasi Oleh,
-                <br>
-                User
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="hc">
-                <div style="height: 100px"></div>
-                <strong>({{ $item['pejabat']['korlap'] }})</strong>
-            </td>
-            <td></td>
-            <td class="hc">
-                @if (is_null($item['pejabat']['pengawas1']['ttd']))
-                    <div style="height: 100px"></div>
-                @else
-                    <img src="{{ public_path('storage/employees/ttd/' . $item['pejabat']['pengawas1']['ttd']) }}" alt="" class="img-fluid" height="100"><br>
-                @endif
-                <strong>({{ $item['pejabat']['pengawas1']['name'] }})</strong>
-            </td>
-        </tr>
+    <div style="
+        page-break-inside: avoid;
+        break-inside: avoid;
+        display: block;
+     ">
+        <table>
+            <tr>
+                <td class="hc" style="width: 20%;line-height: 14px">
+                    <strong>Medan</strong>, <br><br>
+                    Diusulkan oleh, <br>
+                    Koordinator Lapangan
+                </td>
+                <td style="width: 50%"></td>
+                <td class="hc" style="width: 30%;line-height: 14px">
+                    <span style="color: white;">----</span><br><br>
+                    Diverifikasi Oleh,
+                    <br>
+                    User
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="hc">
+                    <div style="height: 80px"></div>
+                    <strong>({{ $item['pejabat']['korlap'] }})</strong>
+                </td>
+                <td></td>
+                <td class="hc">
+                    @if (is_null($dt['pjs_patlog']['ttd']))
+                        <div style="height: 80px"></div>
+                    @else
+                        <img src="{{ public_path('storage/employees/ttd/' . $dt['pjs_patlog']['ttd']) }}" alt="" class="img-fluid" height="80"><br>
+                    @endif
+                    <strong>({{ $dt['pjs_patlog']['name'] }})</strong>
+                </td>
+            </tr>
 
-    </table>
+        </table>
+    </div>
 </div>
 
 @if ($key+1 < count($dt['emp']))
