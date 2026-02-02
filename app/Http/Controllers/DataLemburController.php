@@ -269,8 +269,8 @@ class DataLemburController extends Controller
         DataLiburFace $dataLiburRepo
     ) {
 
-        // dd($type);
-        // date day list
+        $dt['month'] = $month;
+        $dt['year'] = $year;
         $start = Carbon::createFromDate((int)$year, (int)$month, 1)->startOfDay();
         $now = Carbon::now();
         $isCurrentMonth = ($start->year === $now->year) && ($start->month === $now->month);
@@ -300,6 +300,8 @@ class DataLemburController extends Controller
             'year' => $year,
             'monthList' => $dt['monthList']
         ];
+
+        // dd($range);
 
         $dt['emp'] = DataEmployee::where('master_organization_id', $id)
             ->whereHas('data_lemburs', function ($query) use ($month, $year) {
@@ -343,6 +345,14 @@ class DataLemburController extends Controller
                 },
                 'log_attendances' => function ($q) use ($range) {
                     $q->select('data_employee_id', 'time')
+                        ->whereBetween('time', [
+                            $range['start_cast'],
+                            $range['end_cast']
+                        ])
+                    ;
+                },
+                'data_attendance_claims' => function ($q) use ($range) {
+                    $q->where('type', 'lembur')
                         ->whereBetween('time', [
                             $range['start_cast'],
                             $range['end_cast']
@@ -408,6 +418,14 @@ class DataLemburController extends Controller
             if (count($dt['emp'][$key]['data_lemburs']) === 0) {
                 unset($dt['emp'][$key]);
             }
+
+            foreach ($value['data_lemburs'] as $l => $lem) {
+                $dt['emp'][$key]['data_lemburs'][$l]['checkin'] = ReportLemburHelper::getLemburCheckin($lem);
+                $dt['emp'][$key]['data_lemburs'][$l]['checkout'] = ReportLemburHelper::getLemburCheckout($lem);
+            }
+
+            $dt['emp'][$key]['lembur_collection'] = collect($dt['emp'][$key]['data_lemburs'])->groupBy('tanggal')->toArray();
+
         }
         $dt['emp'] = array_values($dt['emp']);
 

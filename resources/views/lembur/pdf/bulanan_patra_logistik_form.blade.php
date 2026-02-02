@@ -72,12 +72,37 @@
             $totaljam=0;
         @endphp
         @foreach ($dt['listHari'] as $i=>$day)
+            @php
+                $tanggalLoop = sprintf($dt['year']."-".$dt['month']."-%02d", $i + 1);
+            @endphp
             <tr>
                 <td class="hc">{{ $i+1 }}</td>
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $day }}</td>
                 <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $dt['listTanggal'][$i] }}</td>
-                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_in'] }}</td>
-                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">{{ $item['absensi'][$i]['time_out'] }}</td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">
+                    @php
+                        if(
+                            (isset($item['lembur_collection'][$tanggalLoop])) &&
+                            $item['absensi'][$i]['label_in']!='lembur'
+                        ){
+                            echo \Carbon\Carbon::parse($item['lembur_collection'][$tanggalLoop][0]['checkin'])->format('H:i:s');
+                        }else{
+                            echo $item['absensi'][$i]['time_in'];
+                        }
+                    @endphp
+                </td>
+                <td class="hc" style="color: {{ $item['absensi'][$i]['label_in']=='off'?'red':null }}">
+                    @php
+                        if(
+                            (isset($item['lembur_collection'][$tanggalLoop])) &&
+                            $item['absensi'][$i]['label_out']!='lembur'
+                        ){
+                            echo \Carbon\Carbon::parse($item['lembur_collection'][$tanggalLoop][0]['checkout'])->format('H:i:s');
+                        }else{
+                            echo $item['absensi'][$i]['time_out'];
+                        }
+                    @endphp
+                </td>
                 <td></td>
                 <td class="hc">
                     @php
@@ -97,6 +122,23 @@
                             $selisih = $roundedSeconds / 3600;
 
                             $totaljam+=$selisih;
+                        }
+
+                        if(
+                            (isset($item['lembur_collection'][$tanggalLoop])) &&
+                            $item['absensi'][$i]['label_in']!='lembur'
+                        ){
+                            // dd($item['lembur_collection'][$tanggalLoop][0]['checkin']);
+                            $start = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item['lembur_collection'][$tanggalLoop][0]['checkin']);
+                            $end   = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item['lembur_collection'][$tanggalLoop][0]['checkout']);
+                            if ($end->lessThan($start)) {
+                                $end->addDay();
+                            }
+                            $diffSeconds = $start->diffInSeconds($end);
+                            $roundedSeconds = intdiv($diffSeconds, 1800) * 1800;
+                            $selisih = $roundedSeconds / 3600;
+                            $totaljam+=$selisih;
+                            // dump($selisih, $totaljam);
                         }
 
                         echo $selisih;
