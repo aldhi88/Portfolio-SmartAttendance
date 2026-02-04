@@ -398,6 +398,9 @@ class DataLemburController extends Controller
                     ->diffInMinutes($dt['emp'][$key]['data_lemburs'][$i]['end_carbon']);
                 $roundedMinutes = intdiv($totalMinutes, 30) * 30;
                 $dt['emp'][$key]['data_lemburs'][$i]['total_jam'] = $roundedMinutes / 60;
+
+                $dt['emp'][$key]['data_lemburs'][$i]['checkin'] = ReportLemburHelper::getLemburCheckin($v);
+                $dt['emp'][$key]['data_lemburs'][$i]['checkout'] = ReportLemburHelper::getLemburCheckout($v);
             }
 
             $param['dateInMonth'] = $dateInMonth;
@@ -406,6 +409,8 @@ class DataLemburController extends Controller
             $param['lembur'] = $value['data_lemburs'];
             $param['log'] = $value['log_attendances'];
             $param['jadwal'] = $value['master_schedules'];
+
+
 
             $dt['emp'][$key]['absensi'] = PublicHelper::getDtAbsen($param);
             $dt['emp'][$key]['absensi'] = collect($dt['emp'][$key]['absensi'])
@@ -417,21 +422,22 @@ class DataLemburController extends Controller
             $dt['emp'][$key]['data_lemburs'] = array_values($dt['emp'][$key]['data_lemburs']);
             if (count($dt['emp'][$key]['data_lemburs']) === 0) {
                 unset($dt['emp'][$key]);
+            }else{
+                $dt['emp'][$key]['lembur_collection'] = collect($dt['emp'][$key]['data_lemburs'])->groupBy('tanggal')->toArray();
             }
 
-            foreach ($value['data_lemburs'] as $l => $lem) {
-                $dt['emp'][$key]['data_lemburs'][$l]['checkin'] = ReportLemburHelper::getLemburCheckin($lem);
-                $dt['emp'][$key]['data_lemburs'][$l]['checkout'] = ReportLemburHelper::getLemburCheckout($lem);
-            }
 
-            $dt['emp'][$key]['lembur_collection'] = collect($dt['emp'][$key]['data_lemburs'])->groupBy('tanggal')->toArray();
+            // foreach ($value['data_lemburs'] as $l => $lem) {
+            //     $dt['emp'][$key]['data_lemburs'][$l]['checkin'] = ReportLemburHelper::getLemburCheckin($lem);
+            //     $dt['emp'][$key]['data_lemburs'][$l]['checkout'] = ReportLemburHelper::getLemburCheckout($lem);
+            // }
+
+            // $dt['emp'][$key]['lembur_collection'] = collect($dt['emp'][$key]['data_lemburs'])->groupBy('tanggal')->toArray();
 
         }
         $dt['emp'] = array_values($dt['emp']);
 
         $dt['list_izin'] = DataIzin::izinList();
-
-        // dd($dt['emp']);
 
         $view = [
             'pn1' => 'bulanan_patra_niaga',
