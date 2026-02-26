@@ -291,7 +291,6 @@ class DataLemburController extends Controller
 
         $dt['monthList'] = PublicHelper::indoMonthList();
         $dt['manager'] = DataEmployeeRepo::getManager();
-        dd($dt);
         $dt['manager']['path_ttd'] = public_path('storage/employees/ttd/' . $dt['manager']['ttd']);
         $dt['pjs_patlog'] = DataEmployeeRepo::getTtdById(173);
 
