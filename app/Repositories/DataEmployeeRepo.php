@@ -21,7 +21,9 @@ class DataEmployeeRepo implements DataEmployeeFace
     public static function getManager()
     {
         return DataEmployee::query()
-            ->where('master_position_id', 14)
+            ->whereHas('user_logins', function ($q) {
+                $q->where('user_role_id', 500);
+            })
             ->with('master_positions')
             ->first()
             ->toArray();
