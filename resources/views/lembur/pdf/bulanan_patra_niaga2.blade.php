@@ -75,7 +75,6 @@
             <td>
                 Dumai, {{ \Carbon\Carbon::parse(date('d M Y'))->locale('id')->translatedFormat('d F Y') }} <br>
                 {{ $dt['manager']['master_positions']['name'] }} <br>
-                Pjs.
             </td>
         </tr>
         <tr style="font-weight: bold; text-decoration: underline">
