@@ -231,13 +231,14 @@ class ReportController extends Controller
         // dd($dateInMonth);
 
         $tglMerah = $dataLiburRepo->getByDate($request->filter_month, $request->filter_year);
-        // dd($dataLibur);
+        // dd($tglMerah);
 
         return DataTables::of($data)
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%$keyword%");
             })
             ->addColumn('akumulasi', function ($data) use ($dateInMonth, $tglMerah) {
+                
                 return PublicHelper::getAkumulasi(
                     $dateInMonth,
                     $data->log_attendances->toArray(),
