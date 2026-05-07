@@ -17,6 +17,7 @@ use App\Http\Controllers\MasterScheduleController;
 use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\Rdp\MasterClusterController;
 use App\Http\Controllers\Rdp\MasterRumahController;
+use App\Http\Controllers\Rdp\MasterVendorController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -95,6 +96,16 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('create', 'create')->name('create');
                                 Route::get('detail/{id}', 'detail')->name('detail');
                                 Route::get('edit/{id}', 'edit')->name('edit');
+                                Route::get('indexDT', 'indexDT')->name('indexDT');
+
+                            });
+                        });
+                    });
+
+                    Route::prefix('vendor')->group(function () {
+                        Route::name('vendor.')->group(function () {
+                            Route::controller(MasterVendorController::class)->group(function () {
+                                Route::get('index', 'index')->name('index');
                                 Route::get('indexDT', 'indexDT')->name('indexDT');
 
                             });

@@ -32,6 +32,10 @@ class UserLogin extends Authenticatable
     {
         return $this->hasOne(DataVendor::class, 'user_login_id', 'id');
     }
+    public function rdp_master_vendors(): HasOne
+    {
+        return $this->hasOne(RdpMasterVendor::class, 'user_login_id', 'id');
+    }
 
     public function getIsPengawasAttribute()
     {

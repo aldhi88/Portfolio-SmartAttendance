@@ -96,7 +96,7 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah">
+                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah rdp-master-vendor">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Data Master</span>
@@ -105,7 +105,7 @@
                                 <li class="child rdp-master-aset"><a href="{{ route('rdp.master.aset.index') }}">Data Aset</a></li>
                                 <li class="child rdp-master-cluster"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
                                 <li class="child rdp-master-rumah"><a href="{{ route('rdp.master.rumah.index') }}">Data Unit Rumah</a></li>
-                                <li class="child"><a href="#">Data Vendor RDP</a></li>
+                                <li class="child rdp-master-vendor"><a href="{{ route('rdp.master.vendor.index') }}">Data Vendor RDP</a></li>
                             </ul>
                         </li>
                         <li class="parent">
