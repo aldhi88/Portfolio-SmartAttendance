@@ -103,7 +103,7 @@
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
                                 <li class="child perusahaan"><a href="{{ route('rdp.master.aset.index') }}">Data Aset</a></li>
-                                <li class="child perusahaan"><a href="#">Data Cluster</a></li>
+                                <li class="child perusahaan"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
                                 <li class="child perusahaan"><a href="#">Data Unit Rumah</a></li>
                                 <li class="child perusahaan"><a href="#">Data Vendor</a></li>
                             </ul>

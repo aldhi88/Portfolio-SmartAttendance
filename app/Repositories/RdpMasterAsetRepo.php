@@ -18,6 +18,11 @@ class RdpMasterAsetRepo
         return RdpMasterAset::query();
     }
 
+    public static function getAll()
+    {
+        return RdpMasterAset::orderBy('perlengkapan')->get();
+    }
+
     public static function create($data)
     {
         try {
