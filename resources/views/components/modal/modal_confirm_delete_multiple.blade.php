@@ -17,6 +17,7 @@
                             </h1>
                             <h4>Konfirmasi Hapus Data Banyak</h4>
                             <h6 class="msg">Apakah anda yakin menghapus semua data yang dipilih?</h6>
+                            <p class="delete-info text-danger mb-0"></p>
                         </div>
                     </div>
                     <div class="text-center mt-4">

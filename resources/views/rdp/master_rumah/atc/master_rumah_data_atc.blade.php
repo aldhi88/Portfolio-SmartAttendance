@@ -10,41 +10,26 @@
 <script>
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
-        order: [[3, 'asc']],
+        order: [[5, 'asc']],
         columnDefs: [
-            { className: 'text-left', targets: [3] },
+            { className: 'text-left', targets: [3, 4, 5, 6] },
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
-        ajax: '{{ route("rdp.master.cluster.indexDT") }}',
+        ajax: '{{ route("rdp.master.rumah.indexDT") }}',
         columns: [
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
-                    return `
-                        <input
-                            class="data-check"
-                            type="checkbox"
-                            value="${data.id}"
-                            data-used="${data.rdp_master_cluster_master_asets_count}"
-                            data-rumah-used="${data.rdp_master_rumahs_count}"
-                        >
-                    `;
+                    return '<input class="data-check" type="checkbox" value="'+data.id+'">';
                 }
             },
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function(data, type, row) {
-                    const usedCount = data.rdp_master_cluster_master_asets_count;
-                    const rumahCount = data.rdp_master_rumahs_count;
+                    const label = [data.block, data.tipe, data.nomor].filter(Boolean).join(' ');
                     const dtJson = {
-                        msg: `Apakah anda yakin menghapus cluster ${data.nama_cluster}?`,
-                        info: rumahCount > 0
-                            ? `Cluster ini sedang dipakai oleh ${rumahCount} unit rumah dan tidak bisa dihapus.`
-                            : usedCount > 0
-                            ? `Cluster ini memiliki ${usedCount} detail aset. Jika dihapus, seluruh detail aset di cluster ini ikut terhapus.`
-                            : '',
-                        blockDelete: rumahCount > 0,
+                        msg: `Apakah anda yakin menghapus unit rumah ${label}?`,
                         id: data.id
                     };
 
@@ -54,10 +39,10 @@
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a href="{{ url('rdp/master/cluster/detail') }}/${data.id}" class="dropdown-item">
+                                <a href="{{ url('rdp/master/rumah/detail') }}/${data.id}" class="dropdown-item">
                                     <i class="fas fa-eye fa-fw"></i> Detail Data
                                 </a>
-                                <a href="{{ url('rdp/master/cluster/edit') }}/${data.id}" class="dropdown-item">
+                                <a href="{{ url('rdp/master/rumah/edit') }}/${data.id}" class="dropdown-item">
                                     <i class="fas fa-edit fa-fw"></i> Edit Data
                                 </a>
                                 <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
@@ -77,17 +62,31 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            { data: 'nama_cluster', name: 'nama_cluster', orderable: true, searchable:true },
+            { data: 'block', name: 'block', orderable: true, searchable:true },
+            { data: 'tipe', name: 'tipe', orderable: true, searchable:true },
+            { data: 'nomor', name: 'nomor', orderable: true, searchable:true },
             {
-                data: null, name: 'rdp_master_cluster_master_asets_count', orderable: true, searchable:false,
+                data: null, name: 'rdp_master_clusters.nama_cluster', orderable: true, searchable:true,
                 render: function(data, type, row) {
-                    return data.rdp_master_cluster_master_asets_count + ' aset';
+                    return data.rdp_master_clusters?.nama_cluster || '-';
+                }
+            },
+            { data: 'status', name: 'status', orderable: true, searchable:true },
+            {
+                data: null, name: 'rdp_master_rumah_asets_count', orderable: true, searchable:false,
+                render: function(data, type, row) {
+                    return data.rdp_master_rumah_asets_count + ' aset';
                 }
             },
         ],
         initComplete: function(settings){
             table = settings.oInstance.api();
             initSearchCol(table,'#header-filter','search-col-dt');
+
+            $('#header-filter').on('change', '.search-status-dt', function () {
+                const colIndex = $(this).parent().index();
+                table.column(colIndex).search(this.value).draw(false);
+            });
         }
     });
 
@@ -123,44 +122,17 @@
 
         Livewire.dispatch('setDeleteMultipleId', { ids: ids });
 
-        let rumahItems = $('.data-check:checked').map(function () {
-            return Number($(this).data('rumah-used')) || 0;
-        }).get().filter(function (item) {
-            return item > 0;
-        });
-
-        let totalRumahUsed = rumahItems.reduce(function (total, item) {
-            return total + item;
-        }, 0);
-
-        let usedItems = $('.data-check:checked').map(function () {
-            return Number($(this).data('used')) || 0;
-        }).get().filter(function (item) {
-            return item > 0;
-        });
-
-        let totalUsed = usedItems.reduce(function (total, item) {
-            return total + item;
-        }, 0);
-
-        let info = '';
-        if (rumahItems.length > 0) {
-            info = `${rumahItems.length} cluster yang dipilih sedang dipakai oleh total ${totalRumahUsed} unit rumah dan tidak bisa dihapus.`;
-        } else if (usedItems.length > 0) {
-            info = `${usedItems.length} cluster yang dipilih memiliki total ${totalUsed} detail aset. Jika dihapus, seluruh detail aset di cluster tersebut ikut terhapus.`;
-        }
-
         $('#modalConfirmDeleteMultiple')
             .find('#submitModalConfirmDeleteMultiple')
             .attr('wire:click', 'deleteMultiple()')
-            .prop('disabled', rumahItems.length > 0)
-            .text(rumahItems.length > 0 ? 'Tidak Bisa Dihapus' : 'Hapus Data');
+            .prop('disabled', false)
+            .text('Hapus Data');
         $('#modalConfirmDeleteMultiple')
             .find('.msg')
-            .text(`Apakah anda yakin menghapus ${ids.length} cluster yang dipilih?`);
+            .text(`Apakah anda yakin menghapus ${ids.length} unit rumah yang dipilih?`);
         $('#modalConfirmDeleteMultiple')
             .find('.delete-info')
-            .text(info);
+            .text('');
         $('#modalConfirmDeleteMultiple').modal('show');
 
     });

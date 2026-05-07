@@ -13,4 +13,9 @@ class RdpMasterCluster extends Model
     {
         return $this->hasMany(RdpMasterClusterMasterAset::class, 'cluster_id', 'id');
     }
+
+    public function rdp_master_rumahs(): HasMany
+    {
+        return $this->hasMany(RdpMasterRumah::class);
+    }
 }

@@ -15,7 +15,8 @@ class RdpMasterAsetRepo
 
     public static function getDT($data)
     {
-        return RdpMasterAset::query();
+        return RdpMasterAset::query()
+            ->withCount(['rdp_master_cluster_master_asets', 'rdp_master_rumah_asets']);
     }
 
     public static function getAll()
@@ -63,6 +64,10 @@ class RdpMasterAsetRepo
     public static function delete($id)
     {
         try {
+            if (RdpMasterAset::whereKey($id)->whereHas('rdp_master_rumah_asets')->exists()) {
+                return false;
+            }
+
             RdpMasterAset::find($id)->delete();
             return true;
         } catch (\Exception $e) {
@@ -74,6 +79,10 @@ class RdpMasterAsetRepo
     public static function deleteMultiple($ids)
     {
         try {
+            if (RdpMasterAset::whereIn('id', $ids)->whereHas('rdp_master_rumah_asets')->exists()) {
+                return false;
+            }
+
             RdpMasterAset::whereIn('id', $ids)->delete();
             return true;
         } catch (\Exception $e) {

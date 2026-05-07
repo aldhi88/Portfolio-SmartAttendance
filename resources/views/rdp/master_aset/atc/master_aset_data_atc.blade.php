@@ -21,14 +21,30 @@
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
-                    return '<input class="data-check" type="checkbox" value="'+data.id+'">';
+                    return `
+                        <input
+                            class="data-check"
+                            type="checkbox"
+                            value="${data.id}"
+                            data-used="${data.rdp_master_cluster_master_asets_count}"
+                            data-rumah-used="${data.rdp_master_rumah_asets_count}"
+                        >
+                    `;
                 }
             },
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function(data, type, row) {
+                    const usedCount = data.rdp_master_cluster_master_asets_count;
+                    const rumahCount = data.rdp_master_rumah_asets_count;
                     const dtJson = {
                         msg: `Apakah anda yakin menghapus data ${data.perlengkapan}?`,
+                        info: rumahCount > 0
+                            ? `Data ini sedang dipakai oleh ${rumahCount} aset rumah dan tidak bisa dihapus.`
+                            : usedCount > 0
+                            ? `Data ini sedang terpakai di ${usedCount} detail cluster. Jika dihapus, data aset ini juga akan terhapus dari detail cluster tersebut.`
+                            : '',
+                        blockDelete: rumahCount > 0,
                         id: data.id
                     };
 
@@ -98,9 +114,44 @@
 
         Livewire.dispatch('setDeleteMultipleId', { ids: ids });
 
+        let rumahItems = $('.data-check:checked').map(function () {
+            return Number($(this).data('rumah-used')) || 0;
+        }).get().filter(function (item) {
+            return item > 0;
+        });
+
+        let totalRumahUsed = rumahItems.reduce(function (total, item) {
+            return total + item;
+        }, 0);
+
+        let usedItems = $('.data-check:checked').map(function () {
+            return Number($(this).data('used')) || 0;
+        }).get().filter(function (item) {
+            return item > 0;
+        });
+
+        let totalUsed = usedItems.reduce(function (total, item) {
+            return total + item;
+        }, 0);
+
+        let info = '';
+        if (rumahItems.length > 0) {
+            info = `${rumahItems.length} data aset yang dipilih sedang dipakai oleh total ${totalRumahUsed} aset rumah dan tidak bisa dihapus.`;
+        } else if (usedItems.length > 0) {
+            info = `${usedItems.length} data aset yang dipilih sedang terpakai di ${totalUsed} detail cluster. Jika dihapus, data aset tersebut juga akan terhapus dari detail cluster terkait.`;
+        }
+
         $('#modalConfirmDeleteMultiple')
             .find('#submitModalConfirmDeleteMultiple')
-            .attr('wire:click', 'deleteMultiple()');
+            .attr('wire:click', 'deleteMultiple()')
+            .prop('disabled', rumahItems.length > 0)
+            .text(rumahItems.length > 0 ? 'Tidak Bisa Dihapus' : 'Hapus Data');
+        $('#modalConfirmDeleteMultiple')
+            .find('.msg')
+            .text(`Apakah anda yakin menghapus ${ids.length} data aset yang dipilih?`);
+        $('#modalConfirmDeleteMultiple')
+            .find('.delete-info')
+            .text(info);
         $('#modalConfirmDeleteMultiple').modal('show');
 
     });

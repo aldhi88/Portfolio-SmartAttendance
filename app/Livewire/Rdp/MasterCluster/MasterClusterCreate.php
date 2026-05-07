@@ -68,7 +68,7 @@ class MasterClusterCreate extends Component
         return [
             'form.nama_cluster' => 'required|unique:rdp_master_clusters,nama_cluster',
             'detail' => 'required|array|min:1',
-            'detail.*.aset_id' => 'required|distinct|exists:rdp_master_asets,id',
+            'detail.*.aset_id' => 'required|exists:rdp_master_asets,id',
             'detail.*.jenis' => 'nullable|string',
             'detail.*.jumlah' => 'nullable|string',
             'detail.*.satuan' => 'nullable|in:' . implode(',', self::SATUAN_LIST),

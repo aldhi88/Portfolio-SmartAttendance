@@ -37,7 +37,7 @@ class MasterAsetData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Aset sedang dipakai di data aset rumah, tidak bisa dihapus.']);
     }
     // end edit section
 
@@ -62,7 +62,7 @@ class MasterAsetData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Ada aset yang sedang dipakai di data aset rumah, tidak bisa dihapus.']);
     }
     // end create section
 

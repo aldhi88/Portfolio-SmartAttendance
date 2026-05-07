@@ -23,7 +23,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('jenis')->nullable();
             $table->string('jumlah')->nullable();
-            $table->enum('satuan', ['Unit', 'Set', 'Buah', 'Paket', 'Menyesuaikan'])->nullable();
+            $table->string('satuan')->nullable();
             $table->timestamps();
         });
     }

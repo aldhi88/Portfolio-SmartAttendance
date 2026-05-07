@@ -17,6 +17,7 @@
                             </h1>
                             <h4>Konfirmasi Hapus Data</h4>
                             <h6 class="msg">{{ isset($data['msg'])?$data['msg']:null }}</h6>
+                            <p class="delete-info text-danger mb-0"></p>
                         </div>
                     </div>
                     <div class="text-center mt-4">
@@ -32,10 +33,15 @@
         <script>
             $('#modalConfirmDelete').on('show.bs.modal', function(e) {
                 const data = $(e.relatedTarget).data('json');
+                const blockDelete = data.blockDelete || false;
                 $(this).find('.msg').text(data.msg);
+                $(this).find('.delete-info').text(data.info || '');
                 Livewire.dispatch('setDeleteId', {id: data.id});
                 const dispatchMethod = $(e.relatedTarget).data('dispatch') || 'wireDelete';
-                $(this).find('#submitModalConfirmDelete').attr('wire:click', `${dispatchMethod}`);
+                $(this).find('#submitModalConfirmDelete')
+                    .attr('wire:click', `${dispatchMethod}`)
+                    .prop('disabled', blockDelete)
+                    .text(blockDelete ? 'Tidak Bisa Dihapus' : 'Hapus Data');
             });
         </script>
     @endpush

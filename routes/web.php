@@ -16,6 +16,7 @@ use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\MasterScheduleController;
 use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\Rdp\MasterClusterController;
+use App\Http\Controllers\Rdp\MasterRumahController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -77,6 +78,19 @@ Route::middleware('auth:web')->group(function () {
                     Route::prefix('cluster')->group(function () {
                         Route::name('cluster.')->group(function () {
                             Route::controller(MasterClusterController::class)->group(function () {
+                                Route::get('index', 'index')->name('index');
+                                Route::get('create', 'create')->name('create');
+                                Route::get('detail/{id}', 'detail')->name('detail');
+                                Route::get('edit/{id}', 'edit')->name('edit');
+                                Route::get('indexDT', 'indexDT')->name('indexDT');
+
+                            });
+                        });
+                    });
+
+                    Route::prefix('rumah')->group(function () {
+                        Route::name('rumah.')->group(function () {
+                            Route::controller(MasterRumahController::class)->group(function () {
                                 Route::get('index', 'index')->name('index');
                                 Route::get('create', 'create')->name('create');
                                 Route::get('detail/{id}', 'detail')->name('detail');

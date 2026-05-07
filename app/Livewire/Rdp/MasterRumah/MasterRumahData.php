@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Livewire\Rdp\MasterCluster;
+namespace App\Livewire\Rdp\MasterRumah;
 
-use App\Repositories\RdpMasterClusterRepo;
+use App\Repositories\RdpMasterRumahRepo;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class MasterClusterData extends Component
+class MasterRumahData extends Component
 {
     public $data;
 
@@ -19,14 +19,14 @@ class MasterClusterData extends Component
 
     public function wireDelete()
     {
-        if (RdpMasterClusterRepo::delete($this->deleteId)) {
+        if (RdpMasterRumahRepo::delete($this->deleteId)) {
             $this->dispatch('reloadDT', data: 'dtTable');
             $this->dispatch('closeModal', id: 'modalConfirmDelete');
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data berhasil dihapus.']);
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Cluster sedang dipakai di data unit rumah, tidak bisa dihapus.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public $deleteMultipleId;
@@ -38,18 +38,18 @@ class MasterClusterData extends Component
 
     public function deleteMultiple()
     {
-        if (RdpMasterClusterRepo::deleteMultiple($this->deleteMultipleId)) {
+        if (RdpMasterRumahRepo::deleteMultiple($this->deleteMultipleId)) {
             $this->dispatch('reloadDT', data: 'dtTable');
             $this->dispatch('closeModal', id: 'modalConfirmDeleteMultiple');
             $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Semua data yang dipilih berhasil dihapus.']);
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Ada cluster yang sedang dipakai di data unit rumah, tidak bisa dihapus.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
     public function render()
     {
-        return view('rdp.master_cluster.master_cluster_data');
+        return view('rdp.master_rumah.master_rumah_data');
     }
 }

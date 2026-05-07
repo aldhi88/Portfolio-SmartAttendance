@@ -96,16 +96,16 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Data Master</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="{{ route('rdp.master.aset.index') }}">Data Aset</a></li>
-                                <li class="child perusahaan"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
-                                <li class="child perusahaan"><a href="#">Data Unit Rumah</a></li>
-                                <li class="child perusahaan"><a href="#">Data Vendor</a></li>
+                                <li class="child rdp-master-aset"><a href="{{ route('rdp.master.aset.index') }}">Data Aset</a></li>
+                                <li class="child rdp-master-cluster"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
+                                <li class="child rdp-master-rumah"><a href="{{ route('rdp.master.rumah.index') }}">Data Unit Rumah</a></li>
+                                <li class="child"><a href="#">Data Vendor RDP</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -114,8 +114,8 @@
                                 <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Karyawan Masuk</a></li>
-                                <li class="child perusahaan"><a href="#">Karyawan Keluar</a></li>
+                                <li class="child"><a href="#">Karyawan Masuk</a></li>
+                                <li class="child"><a href="#">Karyawan Keluar</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -124,8 +124,8 @@
                                 <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
-                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
+                                <li class="child"><a href="#">Perbaikan</a></li>
+                                <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
 
@@ -142,9 +142,9 @@
                                 <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Penempatan</a></li>
-                                <li class="child perusahaan"><a href="#">Keluar Rumah</a></li>
-                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
+                                <li class="child"><a href="#">Penempatan</a></li>
+                                <li class="child"><a href="#">Keluar Rumah</a></li>
+                                <li class="child"><a href="#">Perbaikan</a></li>
                             </ul>
                         </li>
 
@@ -162,10 +162,10 @@
                                 <span>Persetujuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Karyawan Masuk</a></li>
-                                <li class="child perusahaan"><a href="#">Karyawan Keluar</a></li>
-                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
-                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
+                                <li class="child"><a href="#">Karyawan Masuk</a></li>
+                                <li class="child"><a href="#">Karyawan Keluar</a></li>
+                                <li class="child"><a href="#">Perbaikan</a></li>
+                                <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
 
@@ -182,8 +182,8 @@
                                 <span>Permintaan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
-                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
+                                <li class="child"><a href="#">Perbaikan</a></li>
+                                <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
 

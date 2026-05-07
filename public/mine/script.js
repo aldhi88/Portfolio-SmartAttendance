@@ -2,11 +2,20 @@ $(document).ready(function () {
     $('.loading').fadeOut(500);
 
     const path = window.location.pathname;        // ex: "/jadwal-kerja/create/tetap"
-    const firstSegment = path.split('/')[1];      // ambil segmen pertama setelah slash
+    const segments = path.split('/').filter(Boolean);
+    const firstSegment = segments[0];      // ambil segmen pertama setelah slash
+    const candidates = [];
+
+    for (let i = segments.length; i > 0; i--) {
+        candidates.push(segments.slice(0, i).join('-'));
+    }
+    candidates.push(...segments);
+
+    const activeSegment = candidates.find((item) => $(`.child.${item}`).length || $(`.parent.${item}`).length) || firstSegment;
 
     // Cari menu parent dan child berdasarkan segmen
-    const parentSelector = `.parent.${firstSegment}`;
-    const childSelector = `.child.${firstSegment}`;
+    const parentSelector = `.parent.${activeSegment}`;
+    const childSelector = `.child.${activeSegment}`;
 
     // Aktifkan parent menu
     $(parentSelector).addClass('mm-active');

@@ -17,7 +17,12 @@ class RdpMasterClusterRepo
     public static function getDT($data)
     {
         return RdpMasterCluster::query()
-            ->withCount('rdp_master_cluster_master_asets');
+            ->withCount(['rdp_master_cluster_master_asets', 'rdp_master_rumahs']);
+    }
+
+    public static function getAll()
+    {
+        return RdpMasterCluster::orderBy('nama_cluster')->get();
     }
 
     public static function create($data)
@@ -58,6 +63,10 @@ class RdpMasterClusterRepo
     public static function delete($id)
     {
         try {
+            if (RdpMasterCluster::whereKey($id)->whereHas('rdp_master_rumahs')->exists()) {
+                return false;
+            }
+
             RdpMasterCluster::find($id)->delete();
             return true;
         } catch (\Exception $e) {
@@ -69,6 +78,10 @@ class RdpMasterClusterRepo
     public static function deleteMultiple($ids)
     {
         try {
+            if (RdpMasterCluster::whereIn('id', $ids)->whereHas('rdp_master_rumahs')->exists()) {
+                return false;
+            }
+
             RdpMasterCluster::whereIn('id', $ids)->delete();
             return true;
         } catch (\Exception $e) {
