@@ -18,6 +18,16 @@ class MasterAsetController extends Controller
         return view('rdp.index', compact('data'));
     }
 
+    public function create()
+    {
+        $data['tab_title'] = "Tambah Data Aset | RDP";
+        $data['page_title'] = "Tambah Data Aset";
+        $data['page_desc'] = "Tambah banyak perlengkapan aset rumah dinas.";
+        $data['lw'] = "rdp.master-aset.master-aset-create";
+
+        return view('rdp.index', compact('data'));
+    }
+
     public function indexDT()
     {
         $data = RdpMasterAsetRepo::getDT(0);

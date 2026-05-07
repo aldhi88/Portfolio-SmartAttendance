@@ -197,6 +197,16 @@
     @yield('script')
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script src="{{ asset('mine/script.js') }}"></script>
+    @if (session()->has('success'))
+        <script>
+            toastr.success(@json(session('success')), '', {
+                closeButton: true,
+                positionClass: "toast-top-center",
+                timeOut: "1000",
+                extendedTimeOut: "500",
+            });
+        </script>
+    @endif
     @stack('push-script')
 </body>
 
