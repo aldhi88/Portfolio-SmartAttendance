@@ -66,6 +66,7 @@ Route::middleware('auth:web')->group(function () {
                         Route::name('aset.')->group(function () {
                             Route::controller(MasterAsetController::class)->group(function () {
                                 Route::get('index', 'index')->name('index');
+                                Route::get('indexDT', 'indexDT')->name('indexDT');
 
                             });
                         });

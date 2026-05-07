@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Rdp;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Repositories\RdpMasterAsetRepo;
+use DataTables;
 
 class MasterAsetController extends Controller
 {
@@ -15,5 +16,13 @@ class MasterAsetController extends Controller
         $data['lw'] = "rdp.master-aset.master-aset-data";
 
         return view('rdp.index', compact('data'));
+    }
+
+    public function indexDT()
+    {
+        $data = RdpMasterAsetRepo::getDT(0);
+
+        return DataTables::of($data)
+            ->toJson();
     }
 }

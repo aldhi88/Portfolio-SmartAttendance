@@ -1,9 +1,0 @@
-@startuml
-
-actor "User" as user
-
-node "Smart ITD" {
-
-}
-
-@enduml
