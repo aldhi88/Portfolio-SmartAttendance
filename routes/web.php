@@ -14,6 +14,7 @@ use App\Http\Controllers\MasterLocationController;
 use App\Http\Controllers\MasterOrganizationController;
 use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\MasterScheduleController;
+use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -24,9 +25,9 @@ Route::get('/mobile', function () {
     return redirect()->away(env('MOBILE_URL'));
 });
 
-Route::get('/', function(){
-    if(Auth::check()){
-        if(Auth::user()->is_vendor){
+Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->is_vendor) {
             return redirect()->route('lembur-vendor.indexLembur');
         }
         return redirect()->route('dashboard.index');
@@ -34,15 +35,15 @@ Route::get('/', function(){
     return redirect()->route('auth.formLogin');
 })->name('anchor');
 
-Route::get('/privacy-policy-smartitd', function(){
+Route::get('/privacy-policy-smartitd', function () {
     return view('mix.privacy_policy');
 });
-Route::get('/delete-account', function(){
+Route::get('/delete-account', function () {
     return view('mix.privacy_policy');
 });
 
 
-Route::middleware('guest')->group(function(){
+Route::middleware('guest')->group(function () {
 
     Route::prefix('auth')->group(function () {
         Route::name('auth.')->group(function () {
@@ -51,10 +52,31 @@ Route::middleware('guest')->group(function(){
             });
         });
     });
-
 });
 
-Route::middleware('auth:web')->group(function(){
+Route::middleware('auth:web')->group(function () {
+
+    // RDP
+    Route::prefix('rdp')->group(function () {
+        Route::name('rdp.')->group(function () {
+            Route::prefix('master')->group(function () {
+                Route::name('master.')->group(function () {
+
+                    Route::prefix('aset')->group(function () {
+                        Route::name('aset.')->group(function () {
+                            Route::controller(MasterAsetController::class)->group(function () {
+                                Route::get('index', 'index')->name('index');
+
+                            });
+                        });
+                    });
+
+
+                });
+            });
+        });
+    });
+
 
     Route::prefix('auth')->group(function () {
         Route::name('auth.')->group(function () {
@@ -197,8 +219,6 @@ Route::middleware('auth:web')->group(function(){
                 Route::get('edit/{id}', 'izinEdit')->name('izinEdit');
                 Route::get('/passing-grade', 'passingGradeCuti')->name('passingGradeCuti');
                 Route::get('/passing-grade-cuti-dt', 'passingGradeCutiDT')->name('passingGradeCutiDT');
-
-
             });
         });
     });
@@ -250,6 +270,4 @@ Route::middleware('auth:web')->group(function(){
             });
         });
     });
-
-
 });

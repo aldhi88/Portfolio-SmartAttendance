@@ -86,6 +86,7 @@
                         </li>
 
                         <hr>
+                        {{-- ======================================= RDP ======================================= --}}
 
                         <li class="menu-title">RUMAH DINAS PERTAMINA <br> (masih proses)</li>
 
@@ -101,62 +102,91 @@
                                 <span>Data Master</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Data Aset</a></li>
-                                <li class="child perusahaan"><a href="#">Penjabat Penanda Tangan</a></li>
+                                <li class="child perusahaan"><a href="{{ route('rdp.master.aset.index') }}">Data Aset</a></li>
+                                <li class="child perusahaan"><a href="#">Data Cluster</a></li>
+                                <li class="child perusahaan"><a href="#">Data Unit Rumah</a></li>
+                                <li class="child perusahaan"><a href="#">Data Vendor</a></li>
                             </ul>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
-                                <span>Data Vendor</span>
+                                <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Daftar Vendor</a></li>
-                                <li class="child perusahaan"><a href="#">Buat Vendor Baru</a></li>
-                                <li class="child perusahaan"><a href="#">Rekap Daftar Permintaan</a></li>
+                                <li class="child perusahaan"><a href="#">Karyawan Masuk</a></li>
+                                <li class="child perusahaan"><a href="#">Karyawan Keluar</a></li>
                             </ul>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
-                                <span>Pengajuan Masuk</span>
+                                <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Daftar Pengajuan Masuk</a></li>
-                                <li class="child perusahaan"><a href="#">Pengajuan Baru Keluar</a></li>
-                                <li class="child perusahaan"><a href="#">Cetak SIP</a></li>
+                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
+                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
                             </ul>
+                        </li>
+
+                        {{-- Login karyawan --}}
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-dashboard-line"></i>
+                                <span>Dashboard</span>
+                            </a>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
-                                <span>Pengadaan</span>
+                                <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Daftar Pengadaan</a></li>
-                                <li class="child perusahaan"><a href="#">Pengadaan Baru</a></li>
+                                <li class="child perusahaan"><a href="#">Penempatan</a></li>
+                                <li class="child perusahaan"><a href="#">Keluar Rumah</a></li>
+                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
                             </ul>
+                        </li>
+
+
+                        {{-- Login Pimpinan --}}
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-dashboard-line"></i>
+                                <span>Dashboard</span>
+                            </a>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
-                                <span>Perbaikan</span>
+                                <span>Persetujuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Daftar Perbaikan</a></li>
-                                <li class="child perusahaan"><a href="#">Perbaikan Baru</a></li>
+                                <li class="child perusahaan"><a href="#">Karyawan Masuk</a></li>
+                                <li class="child perusahaan"><a href="#">Karyawan Keluar</a></li>
+                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
+                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
                             </ul>
+                        </li>
+
+                        {{-- Login Vendor --}}
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-dashboard-line"></i>
+                                <span>Dashboard</span>
+                            </a>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
-                                <span>Pengajuan Keluar</span>
+                                <span>Permintaan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child perusahaan"><a href="#">Daftar Pengajuan Keluar</a></li>
-                                <li class="child perusahaan"><a href="#">Pengajuan Keluar Baru</a></li>
+                                <li class="child perusahaan"><a href="#">Perbaikan</a></li>
+                                <li class="child perusahaan"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
+
 
                     </ul>
                 @endif
