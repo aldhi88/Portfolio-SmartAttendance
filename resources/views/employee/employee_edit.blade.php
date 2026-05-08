@@ -1,4 +1,36 @@
 <div>
+    <style>
+        .schedule-scroll {
+            max-height: 420px;
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+            border: 1px solid #e9eef3;
+        }
+
+        .schedule-scroll::-webkit-scrollbar {
+            width: 14px;
+        }
+
+        .schedule-scroll::-webkit-scrollbar-track {
+            background: #f1f5f7;
+            border-left: 1px solid #e2e8ef;
+        }
+
+        .schedule-scroll::-webkit-scrollbar-thumb {
+            background: #9aa7b5;
+            border: 3px solid #f1f5f7;
+            border-radius: 8px;
+        }
+
+        .schedule-scroll::-webkit-scrollbar-thumb:hover {
+            background: #7b8794;
+        }
+
+        .schedule-scroll {
+            scrollbar-color: #9aa7b5 #f1f5f7;
+            scrollbar-width: auto;
+        }
+    </style>
     <div class="loading-50" wire:loading wire:target="wireSubmit">
         <div class="loader"></div>
     </div>
@@ -231,9 +263,9 @@
                 @error('multi_schedule')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
-                <div class="table-responsive bg-white">
+                <div class="table-responsive bg-white schedule-scroll">
                     <table class="table mb-0">
-                        <thead class="thead-light">
+                        <thead class="thead-light" style="position: sticky; top: 0; z-index: 2;">
                             <tr>
                                 <th>#</th>
                                 <th>Kode Jadwal</th>
