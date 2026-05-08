@@ -114,8 +114,8 @@
                                 <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Izin Penempatan</a></li>
-                                <li class="child"><a href="#">Izin Keluar</a></li>
+                                <li class="child"><a href="#">Izin Penempatan RDP</a></li>
+                                <li class="child"><a href="#">Izin Keluar RDP</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -142,8 +142,8 @@
                                 <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Penempatan</a></li>
-                                <li class="child"><a href="#">Keluar Rumah</a></li>
+                                <li class="child"><a href="#">Izin Penempatan RDP</a></li>
+                                <li class="child"><a href="#">Izin Keluar RDP</a></li>
                                 <li class="child"><a href="#">Perbaikan</a></li>
                             </ul>
                         </li>
