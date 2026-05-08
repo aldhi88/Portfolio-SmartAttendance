@@ -114,8 +114,8 @@
                                 <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Karyawan Masuk</a></li>
-                                <li class="child"><a href="#">Karyawan Keluar</a></li>
+                                <li class="child"><a href="#">Izin Penempatan</a></li>
+                                <li class="child"><a href="#">Izin Keluar</a></li>
                             </ul>
                         </li>
                         <li class="parent">
