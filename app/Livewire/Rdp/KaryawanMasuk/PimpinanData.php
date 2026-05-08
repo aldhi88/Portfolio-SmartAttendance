@@ -12,6 +12,8 @@ class PimpinanData extends Component
 
     public $actionId;
 
+    public $statusList = RdpKaryawanMasukRepo::STATUS_LIST;
+
     #[On('setDeleteId')]
     public function setActionId($id)
     {

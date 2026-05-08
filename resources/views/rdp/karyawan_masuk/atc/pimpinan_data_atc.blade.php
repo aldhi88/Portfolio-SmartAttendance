@@ -33,7 +33,7 @@
         };
 
         const css = statusClass[status] || 'badge-soft-secondary';
-        return `<span class="badge ${css} w-100 px-2 py-1" style="font-size:13px">${status || '-'}</span>`;
+        return `<span class="badge ${css} d-inline-block text-wrap px-2 py-1" style="font-size:13px; line-height:1.25; max-width:180px; white-space:normal;">${status || '-'}</span>`;
     }
 
     function renderTanggalIndo(value, type) {
@@ -52,7 +52,7 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'desc']],
         columnDefs: [
-            { className: 'text-left', targets: [2,3,4,5,7] },
+            { className: 'text-left', targets: [2,3,4,5,6,7,9] },
             { className: 'px-0', targets: [0] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -128,7 +128,19 @@
                 data: null, name: 'rdp_master_rumahs.block', orderable: true, searchable:true,
                 render: function(data) {
                     const rumah = data.rdp_master_rumahs;
-                    return rumah ? [rumah.block, rumah.tipe, rumah.nomor].filter(Boolean).join(' ') : '-';
+                    return rumah?.block || '-';
+                }
+            },
+            {
+                data: null, name: 'rdp_master_rumahs.tipe', orderable: true, searchable:true,
+                render: function(data) {
+                    return data.rdp_master_rumahs?.tipe || '-';
+                }
+            },
+            {
+                data: null, name: 'rdp_master_rumahs.nomor', orderable: true, searchable:true,
+                render: function(data) {
+                    return data.rdp_master_rumahs?.nomor || '-';
                 }
             },
             {

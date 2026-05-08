@@ -25,7 +25,9 @@
                                     <th class="text-center">Nomor SK Mutasi</th>
                                     <th class="text-center">Tanggal SK Mutasi</th>
                                     <th class="text-center">Tanggal Mulai</th>
-                                    <th class="text-center">Rumah</th>
+                                    <th class="text-center">Blok</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nomor</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">File SIP</th>
                                 </tr>
@@ -35,6 +37,8 @@
                                     <th></th>
                                     <th></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                    <th><input type="date" class="form-control form-control-sm search-col-dt"></th>
+                                    <th><input type="date" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>

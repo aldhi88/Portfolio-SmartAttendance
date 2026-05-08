@@ -25,7 +25,9 @@
                                     <th class="text-center">Nama Karyawan</th>
                                     <th class="text-center">NOPek</th>
                                     <th class="text-center">Jabatan</th>
-                                    <th class="text-center">Rumah</th>
+                                    <th class="text-center">Blok</th>
+                                    <th class="text-center">Tipe</th>
+                                    <th class="text-center">Nomor</th>
                                     <th class="text-center">Tanggal Mulai</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">File SIP</th>
@@ -40,6 +42,8 @@
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                    <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                    <th><input type="date" class="form-control form-control-sm search-col-dt"></th>
                                     <th>
                                         <select class="form-control form-control-sm search-col-dt">
                                             <option value="">Semua</option>
