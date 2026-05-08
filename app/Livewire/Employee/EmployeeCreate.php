@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Employee;
 
+use App\Models\DataEmployee;
 use App\Repositories\Interfaces\DataEmployeeFace;
+use App\Repositories\Interfaces\DataScheduleBebasFace;
 use App\Repositories\Interfaces\MasterFunctionFace;
 use App\Repositories\Interfaces\MasterLocationFace;
 use App\Repositories\Interfaces\MasterOrganizationFace;
@@ -10,14 +12,17 @@ use App\Repositories\Interfaces\MasterPositionFace;
 use App\Repositories\Interfaces\MasterScheduleFace;
 use App\Repositories\Interfaces\RelDataEmployeeMasterScheduleFace;
 use App\Repositories\Interfaces\UserLoginInterface;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
 use Livewire\Component;
 
 class EmployeeCreate extends Component
 {
+    use WithFileUploads;
+
     protected $masterOrganizationRepo;
     protected $masterPositionRepo;
     protected $masterLocationRepo;
@@ -26,6 +31,8 @@ class EmployeeCreate extends Component
     protected $dataEmployeeRepo;
     protected $relDataEmployeeMasterScheduleRepo;
     protected $userLoginRepository;
+    protected $dataScheduleBebasRepo;
+
     public function boot(
         MasterOrganizationFace $masterOrganizationRepo,
         MasterPositionFace $masterPositionRepo,
@@ -35,6 +42,7 @@ class EmployeeCreate extends Component
         DataEmployeeFace $dataEmployeeRepo,
         RelDataEmployeeMasterScheduleFace $relDataEmployeeMasterScheduleRepo,
         UserLoginInterface $userLoginRepository,
+        DataScheduleBebasFace $dataScheduleBebasRepo,
     ) {
         $this->masterOrganizationRepo = $masterOrganizationRepo;
         $this->masterPositionRepo = $masterPositionRepo;
@@ -44,35 +52,29 @@ class EmployeeCreate extends Component
         $this->dataEmployeeRepo = $dataEmployeeRepo;
         $this->relDataEmployeeMasterScheduleRepo = $relDataEmployeeMasterScheduleRepo;
         $this->userLoginRepository = $userLoginRepository;
+        $this->dataScheduleBebasRepo = $dataScheduleBebasRepo;
     }
 
-    // insert
     public function wireSubmit()
     {
-        // dd($this->dtForm);
-        // $this->validate();
+        $this->validate();
+
         $dtEmployee = $this->dtForm;
         $dtEmployee['status'] = 'Aktif';
-        // dd($this->dtForm);
+
         unset(
-            $dtEmployee['master_schedule_id'],
-            $dtEmployee['effective_at'],
-            $dtEmployee['expired_at'],
             $dtEmployee['username'],
             $dtEmployee['password'],
         );
 
-
-        $selectedIds = collect($this->dtForm['master_schedule_id'])
-            ->filter(fn($val) => $val === true)
-            ->keys();
+        $selectedIds = collect($this->activedSchedules['id'] ?? []);
 
         if ($selectedIds->count() > 1) {
             $activeSchedules = [];
 
             foreach ($selectedIds as $id) {
-                $effective = $this->dtForm['effective_at'][$id] ?? null;
-                $expired   = $this->dtForm['expired_at'][$id] ?? null;
+                $effective = $this->activedSchedules['effective_at'][$id] ?? null;
+                $expired   = $this->activedSchedules['expired_at'][$id] ?? null;
 
                 if ($effective) {
                     $start = $effective;
@@ -135,11 +137,12 @@ class EmployeeCreate extends Component
         }
 
         $index = 0;
-        foreach ($this->dtForm['master_schedule_id'] as $key => $value) {
+        $dtRel = [];
+        foreach ($selectedIds as $scheduleId) {
             $dtRel[$index]['data_employee_id'] = $dtEmployee['id'];
-            $dtRel[$index]['master_schedule_id'] = $key;
-            $dtRel[$index]['effective_at'] = $this->dtForm['effective_at'][$key];
-            $dtRel[$index]['expired_at'] = $this->dtForm['expired_at'][$key];
+            $dtRel[$index]['master_schedule_id'] = $scheduleId;
+            $dtRel[$index]['effective_at'] = $this->activedSchedules['effective_at'][$scheduleId] ?? null;
+            $dtRel[$index]['expired_at'] = $this->activedSchedules['expired_at'][$scheduleId] ?? null;
             $dtRel[$index]['created_at'] = Carbon::now();
             $dtRel[$index]['updated_at'] = Carbon::now();
             $index++;
@@ -150,56 +153,173 @@ class EmployeeCreate extends Component
         $dtLogin['username'] = $this->dtForm['username'];
         $dtLogin['password'] = Hash::make($this->dtForm['password']);
 
-        // dd($dtEmployee, $dtRel, $dtLogin);
+        $uploadedFiles = [];
+        if (!empty($this->dtForm['ttd'])) {
+            $ttdFile = $this->dtForm['ttd'];
+            $ttdName = uniqid('ttd_', true) . '.' . $ttdFile->extension();
+
+            $uploadedFiles['ttd'] = [
+                'file' => $ttdFile,
+                'path' => 'employees/ttd/' . $ttdName,
+                'name' => $ttdName,
+            ];
+        }
+
+        if (!empty($this->dtForm['paraf'])) {
+            $parafFile = $this->dtForm['paraf'];
+            $parafName = uniqid('paraf_', true) . '.' . $parafFile->extension();
+
+            $uploadedFiles['paraf'] = [
+                'file' => $parafFile,
+                'path' => 'employees/paraf/' . $parafName,
+                'name' => $parafName,
+            ];
+        }
+
+        $flatten = collect($this->dtScheduleBebas)
+            ->flatMap(function ($items) {
+                return $items;
+            })
+            ->values()
+            ->toArray();
 
         try {
-            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin) {
+            DB::transaction(function () use ($dtEmployee, $dtRel, $dtLogin, $flatten, $uploadedFiles) {
+                if (count($uploadedFiles) != 0) {
+                    foreach ($uploadedFiles as $file) {
+                        $file['file']->storeAs(
+                            dirname($file['path']),
+                            basename($file['path']),
+                            'public'
+                        );
+                    }
+
+                    foreach ($uploadedFiles as $key => $file) {
+                        $dtEmployee[$key] = $file['name'];
+                    }
+                }
+
                 $userId = $this->userLoginRepository->create($dtLogin);
                 if ($userId) {
                     $dtEmployee['user_login_id'] = $userId;
                     $this->dataEmployeeRepo->createForm($dtEmployee);
                     $this->relDataEmployeeMasterScheduleRepo->insert($dtRel);
+                    if (!empty($flatten)) {
+                        $this->dataScheduleBebasRepo->bulkCreate($flatten);
+                    }
                 } else {
                     throw new \Exception('Gagal membuat user login.');
                 }
             });
-            $this->dispatch('alert', data: ['type' => 'success',  'message' => 'Data baru berhasil ditambahkan.']);
-            $this->reset('dtForm');
-            $this->initForm();
+
+            session()->flash('success', 'Data karyawan baru berhasil ditambahkan.');
+            return redirect()->route('karyawan.index');
         } catch (\Throwable $e) {
-            // dd($e);
             $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator..']);
         }
     }
 
-    // public function updated($property, $value)
-    // {
-    //     foreach ($value as $key => $item) {
-    //         if(!$item){
-    //             unset($va);
-    //         }
-    //     }
-
-    //     dd($property, $value, $this->dtForm['master_schedule_id']);
-    // }
-
-    public function checkSchedule($id)
+    public function isReady($id): bool
     {
-        $this->dtForm['expired_at'][$id] = null;
-        $this->dtForm['effective_at'][$id] = null;
+        return in_array($id, $this->activedSchedules['id'] ?? [])
+            && !empty($this->activedSchedules['effective_at'][$id] ?? null)
+            && !empty($this->activedSchedules['expired_at'][$id] ?? null);
+    }
 
-        if ($this->dtForm['master_schedule_id'][$id]) {
-            $this->dtForm['effective_at'][$id] = date('Y-m-d');
+    public function toggleSchedule($id)
+    {
+        if (in_array($id, $this->activedSchedules['id'])) {
+            $this->activedSchedules['id'] = array_values(array_diff(
+                $this->activedSchedules['id'],
+                [$id]
+            ));
+            unset($this->activedSchedules['effective_at'][$id]);
+            unset($this->activedSchedules['expired_at'][$id], $this->dtScheduleBebas[$id]);
         } else {
-            unset(
-                $this->dtForm['master_schedule_id'][$id],
-                $this->dtForm['effective_at'][$id],
-                $this->dtForm['expired_at'][$id],
-            );
+            $this->activedSchedules['id'][] = $id;
+            $this->activedSchedules['effective_at'][$id] = date('Y-m-d');
+            $this->activedSchedules['expired_at'][$id] = null;
         }
     }
 
+    public function updated($property)
+    {
+        $parts = explode('.', $property);
+        $scheduleId = end($parts);
+
+        if (
+            count($parts) === 3
+            && $parts[0] === 'activedSchedules'
+            && in_array($parts[1], ['effective_at', 'expired_at'])
+        ) {
+            if (
+                !empty($this->activedSchedules['effective_at'][$scheduleId] ?? null)
+                && !empty($this->activedSchedules['expired_at'][$scheduleId] ?? null)
+                && $this->isScheduleBebas($scheduleId)
+            ) {
+                $this->genScheduleTime($scheduleId);
+            }
+        }
+    }
+
+    public function genScheduleTime($id)
+    {
+        $start = Carbon::parse($this->activedSchedules['effective_at'][$id])->startOfDay();
+        $end   = Carbon::parse($this->activedSchedules['expired_at'][$id])->startOfDay();
+
+        $existing = collect($this->dtScheduleBebas[$id] ?? [])
+            ->mapWithKeys(fn($item) => [$item['tanggal'] => $item])
+            ->toArray();
+
+        $result = [];
+
+        foreach (CarbonPeriod::create($start, $end) as $date) {
+            $tgl = $date->format('Y-m-d');
+
+            if (isset($existing[$tgl])) {
+                $result[] = $existing[$tgl];
+            } else {
+                $result[] = [
+                    'master_schedule_id' => $id,
+                    'data_employee_id' => $this->dtForm['id'],
+                    'tanggal' => $tgl,
+                    'day_work' => [
+                        'checkin_time' => null,
+                        'work_time' => null,
+                        'checkin_deadline_time' => null,
+                        'checkout_time' => null,
+                        'checkout_deadline_time' => null,
+                    ],
+                ];
+            }
+        }
+
+        $this->dtScheduleBebas[$id] = $result;
+    }
+
+    public function applyTemplate($scheduleId, $index, $json)
+    {
+        if (!$json) return;
+
+        $data = json_decode($json, true);
+
+        $this->dtScheduleBebas[$scheduleId][$index]['day_work'] = [
+            'checkin_time' => $data['checkin_time'] ?? null,
+            'work_time' => $data['work_time'] ?? null,
+            'checkin_deadline_time' => $data['checkin_deadline_time'] ?? null,
+            'checkout_time' => $data['checkout_time'] ?? null,
+            'checkout_deadline_time' => $data['checkout_deadline_time'] ?? null,
+        ];
+    }
+
+    public function isScheduleBebas($scheduleId): bool
+    {
+        return collect($this->dtCreate['schedule'])
+            ->contains(fn($item) => $item['id'] == $scheduleId && $item['type'] === 'Bebas');
+    }
+
     public $dtForm = [];
+
     public function rules()
     {
         return [
@@ -210,15 +330,13 @@ class EmployeeCreate extends Component
             "dtForm.master_position_id" => "required",
             "dtForm.master_location_id" => "required",
             "dtForm.master_function_id" => "required",
-            "dtForm.master_schedule_id" => "required",
-            "dtForm.effective_at" => "",
-            "dtForm.expired_at" => "",
+            "activedSchedules.id" => "required",
+            "dtForm.ttd" => "nullable|image|mimes:png,jpg,jpeg|max:2048",
+            "dtForm.paraf" => "nullable|image|mimes:png,jpg,jpeg|max:2048",
             "dtForm.username" => "required|unique:user_logins,username,NULL,id,deleted_at,NULL",
             "dtForm.password" => "required",
-
         ];
     }
-    // // end insert tetap
 
     public $validationAttributes = [
         "dtForm.id" => "Kode",
@@ -228,16 +346,25 @@ class EmployeeCreate extends Component
         "dtForm.master_position_id" => "Jabatan",
         "dtForm.master_location_id" => "Lokasi",
         "dtForm.master_function_id" => "Fungsi",
-        "dtForm.master_schedule_id" => "Jadwal Kerja",
+        "activedSchedules.id" => "Jadwal Kerja",
         "dtForm.username" => "Username Login",
         "dtForm.password" => "Password Login",
+        "dtForm.ttd" => "File Tanda Tangan",
+        "dtForm.paraf" => "File Paraf",
     ];
 
     protected $messages = [
-        "dtForm.master_schedule_id.required" => ":attribute wajib dipilih minimal 1 jadwal.",
+        "activedSchedules.id.required" => ":attribute wajib dipilih minimal 1 jadwal.",
     ];
 
     public $dtCreate;
+    public $activedSchedules = [
+        'id' => [],
+        'effective_at' => [],
+        'expired_at' => [],
+    ];
+    public $dtScheduleBebas = [];
+
     public function mount()
     {
         $this->dtCreate['organization'] = $this->masterOrganizationRepo->getAll()->toArray();
@@ -250,6 +377,10 @@ class EmployeeCreate extends Component
 
     public function initForm()
     {
+        $this->pass['ttd'] = "Pilih file gambar tanda tangan";
+        $this->pass['paraf'] = "Pilih file gambar paraf";
+        $this->dtForm['id'] = (DataEmployee::max('id') ?? 0) + 1;
+        $this->dtForm['status'] = 'Aktif';
         $this->dtForm['password'] = "123456";
     }
 

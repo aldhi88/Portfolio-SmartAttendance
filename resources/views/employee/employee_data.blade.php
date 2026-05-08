@@ -5,7 +5,10 @@
             <div class="page-title-box d-flex align-items-center justify-content-between row">
                 @include('components.app_layout_title')
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <h4>ID Baru : {{ $dt['newId'] }}</h4>
+                    <a href="{{ route('karyawan.create') }}" class="btn btn-primary mr-2">
+                        <i class="fas fa-plus fa-fw"></i> Tambah Karyawan Baru
+                    </a>
+                    <h4 class="d-inline-block mb-0 align-middle">ID Baru : {{ $dt['newId'] }}</h4>
                 </div>
             </div>
         </div>
