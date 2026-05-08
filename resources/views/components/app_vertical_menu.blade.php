@@ -11,12 +11,7 @@
 
                     {{-- ATTD --}}
                     <li class="menu-title">Smart Absensi</li>
-                    @if (
-                        Auth::user()->is_pengawas ||
-                        Auth::user()->is_pengawas_rdp ||
-                        Auth::user()->is_manajer ||
-                        Auth::user()->is_superuser
-                    )
+                    @if (Auth::user()->is_pengawas || Auth::user()->is_pengawas_rdp || Auth::user()->is_manajer || Auth::user()->is_superuser)
                         <li>
                             <a href="{{ route('dashboard.index') }}" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
@@ -143,16 +138,6 @@
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class="ri-logout-box-r-line"></i>
-                                <span>Keluar RDP</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Data Izin Keluar</a></li>
-                                <li class="child"><a href="#">Izin Keluar Baru</a></li>
-                            </ul>
-                        </li>
-                        <li class="parent">
-                            <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-gear-line"></i>
                                 <span>Perbaikan</span>
                             </a>
@@ -169,6 +154,16 @@
                             <ul class="sub-menu" aria-expanded="false">
                                 <li class="child"><a href="#">Data Pengadaan</a></li>
                                 <li class="child"><a href="#">Pengadaan Baru</a></li>
+                            </ul>
+                        </li>
+                        <li class="parent">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-logout-box-r-line"></i>
+                                <span>Keluar RDP</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.index') }}">Data Izin Keluar</a></li>
+                                <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.create') }}">Izin Keluar Baru</a></li>
                             </ul>
                         </li>
                     @endif
@@ -193,29 +188,39 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="#" class="waves-effect">
+                            <a href="{{ route('rdp.pengajuan.izin-keluar.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
                                 <span>Ajukan Keluar</span>
                             </a>
                         </li>
-
                     @endif
 
 
                     {{-- Login Manajer --}}
-                    @if (Auth::user()->is_manajer || Auth::user()->is_superuser)
-                        <li class="menu-title">RDP (Manajer)</li>
-                        <li class="parent rdp-persetujuan-izin-penempatan">
-                            <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class="ri-archive-line"></i>
-                                <span>Persetujuan Manajer</span>
+                    @if (Auth::user()->is_manajer)
+                        <li>
+                            <a href="{{ route('rdp.persetujuan.izin-penempatan.index') }}" class="waves-effect">
+                                <i class="ri-file-edit-line"></i>
+                                <span>Data Pengajuan SIP</span>
                             </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li class="child rdp-persetujuan-izin-penempatan"><a href="{{ route('rdp.persetujuan.izin-penempatan.index') }}">Izin Penempatan RDP</a></li>
-                                <li class="child"><a href="#">Izin Keluar RDP</a></li>
-                                <li class="child"><a href="#">Perbaikan</a></li>
-                                <li class="child"><a href="#">Pengadaan</a></li>
-                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-home-gear-line"></i>
+                                <span>Data Perbaikan</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="waves-effect">
+                                <i class="ri-shopping-cart-line"></i>
+                                <span>Data Pengadaan</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('rdp.persetujuan.izin-keluar.index') }}" class="waves-effect">
+                                <i class="ri-file-edit-line"></i>
+                                <span>Data Izin Keluar</span>
+                            </a>
                         </li>
                     @endif
 

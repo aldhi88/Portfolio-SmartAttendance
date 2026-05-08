@@ -24,4 +24,9 @@ class RdpMasterRumah extends Model
     {
         return $this->hasMany(RdpKaryawanMasuk::class, 'rdp_master_rumah_id', 'id');
     }
+
+    public function rdp_karyawan_keluars(): HasMany
+    {
+        return $this->hasMany(RdpKaryawanKeluar::class, 'rdp_master_rumah_id', 'id');
+    }
 }
