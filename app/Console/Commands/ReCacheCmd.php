@@ -18,22 +18,22 @@ class ReCacheCmd extends Command
      *
      * @var string
      */
-    protected $description = 'Recache laravel config.';
+    protected $description = 'Rebuild all production caches.';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->call('config:clear');
-        $this->call('cache:clear');
-        $this->call('route:clear');
-        $this->call('view:clear');
+        $this->info('Clearing existing caches...');
+        $this->call('optimize:clear');
 
+        $this->info('Rebuilding production caches...');
         $this->call('config:cache');
         $this->call('route:cache');
         $this->call('view:cache');
+        $this->call('event:cache');
 
-        $this->info('All caches cleared and rebuilt successfully.');
+        $this->info('Production caches cleared and rebuilt successfully.');
     }
 }
