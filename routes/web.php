@@ -18,6 +18,7 @@ use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\Rdp\MasterClusterController;
 use App\Http\Controllers\Rdp\MasterRumahController;
 use App\Http\Controllers\Rdp\MasterVendorController;
+use App\Http\Controllers\Rdp\KaryawanMasukController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -113,6 +114,55 @@ Route::middleware('auth:web')->group(function () {
                     });
 
 
+                });
+            });
+
+            Route::prefix('penempatan')->group(function () {
+                Route::name('penempatan.')->group(function () {
+                    Route::prefix('izin-penempatan')->group(function () {
+                        Route::name('izin-penempatan.')->group(function () {
+                            Route::controller(KaryawanMasukController::class)->group(function () {
+                                Route::get('index', 'adminIndex')->name('index');
+                                Route::get('create', 'adminCreate')->name('create');
+                                Route::get('detail/{id}', 'adminDetail')->name('detail');
+                                Route::get('edit/{id}', 'adminEdit')->name('edit');
+                                Route::get('pendataan-aset/{id}', 'adminPendataanAset')->name('pendataan-aset');
+                                Route::get('sip/{id}', 'sipPdf')->name('sip');
+                                Route::get('indexDT', 'adminIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('pengajuan')->group(function () {
+                Route::name('pengajuan.')->group(function () {
+                    Route::prefix('izin-penempatan')->group(function () {
+                        Route::name('izin-penempatan.')->group(function () {
+                            Route::controller(KaryawanMasukController::class)->group(function () {
+                                Route::get('index', 'karyawanIndex')->name('index');
+                                Route::get('create', 'karyawanCreate')->name('create');
+                                Route::get('detail/{id}', 'karyawanDetail')->name('detail');
+                                Route::get('edit/{id}', 'karyawanEdit')->name('edit');
+                                Route::get('pendataan-aset/{id}', 'karyawanPendataanAset')->name('pendataan-aset');
+                                Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('persetujuan')->group(function () {
+                Route::name('persetujuan.')->group(function () {
+                    Route::prefix('izin-penempatan')->group(function () {
+                        Route::name('izin-penempatan.')->group(function () {
+                            Route::controller(KaryawanMasukController::class)->group(function () {
+                                Route::get('index', 'pimpinanIndex')->name('index');
+                                Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
+                                Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
                 });
             });
         });

@@ -18,4 +18,5 @@ class RdpMasterRumahAset extends Model
     {
         return $this->belongsTo(RdpMasterAset::class, 'rdp_master_aset_id', 'id');
     }
+
 }

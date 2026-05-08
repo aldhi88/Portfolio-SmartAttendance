@@ -88,4 +88,9 @@ class DataEmployee extends Model
     {
         return $this->hasMany(DataAttendanceClaim::class, 'data_employee_id', 'id');
     }
+
+    public function rdp_karyawan_masuks(): HasMany
+    {
+        return $this->hasMany(RdpKaryawanMasuk::class, 'data_employee_id', 'id');
+    }
 }

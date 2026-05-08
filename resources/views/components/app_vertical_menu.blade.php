@@ -7,11 +7,19 @@
             <div id="sidebar-menu">
                 <!-- Left Menu Start -->
 
-                @if (Auth::user()->is_pengawas || Auth::user()->is_superuser)
+                <ul class="metismenu list-unstyled" id="side-menu">
 
-                    <ul class="metismenu list-unstyled" id="side-menu">
-                        <li class="menu-title">Smart Absensi</li>
+                    {{-- ATTD --}}
+                    @if (!Auth::user()->is_karyawan)
+                    <li class="menu-title">Smart Absensi</li>
+                    @endif
 
+                    @if (
+                        Auth::user()->is_pengawas ||
+                        Auth::user()->is_pengawas_rdp ||
+                        Auth::user()->is_manajer ||
+                        Auth::user()->is_superuser
+                    )
                         <li>
                             <a href="{{ route('dashboard.index') }}" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
@@ -84,12 +92,27 @@
                                 <li><a href="{{ route('laporan.indexLogGps') }}">Log Lokasi</a></li>
                             </ul>
                         </li>
+                    @endif
 
-                        <hr>
-                        {{-- ======================================= RDP ======================================= --}}
+                    @if (Auth::user()->is_vendor)
+                        <li>
+                            <a href="{{ route('lembur-vendor.indexLembur') }}" class="waves-effect">
+                                <i class="ri-file-line"></i>
+                                <span>Data Pengajuan Lembur</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('lembur-vendor.rekapBulanan') }}" class="waves-effect">
+                                <i class="ri-file-line"></i>
+                                <span>Laporan Data Lembur</span>
+                            </a>
+                        </li>
+                    @endif
 
-                        <li class="menu-title">RUMAH DINAS PERTAMINA <br> (masih proses)</li>
 
+                    {{-- RDP --}}
+                    <li class="menu-title">RUMAH DINAS PERTAMINA</li>
+                    @if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser)
                         <li>
                             <a href="#" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
@@ -108,19 +131,19 @@
                                 <li class="child rdp-master-vendor"><a href="{{ route('rdp.master.vendor.index') }}">Data Vendor RDP</a></li>
                             </ul>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-penempatan-izin-penempatan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class="ri-archive-line"></i>
+                                <i class="ri-home-6-line"></i>
                                 <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Izin Penempatan RDP</a></li>
+                                <li class="child rdp-penempatan-izin-penempatan"><a href="{{ route('rdp.penempatan.izin-penempatan.index') }}">Izin Penempatan RDP</a></li>
                                 <li class="child"><a href="#">Izin Keluar RDP</a></li>
                             </ul>
                         </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                <i class="ri-archive-line"></i>
+                                <i class="ri-home-gear-line"></i>
                                 <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
@@ -128,48 +151,61 @@
                                 <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
+                    @endif
 
-                        {{-- Login karyawan --}}
+
+                    {{-- Login karyawan --}}
+                    @if (
+                        Auth::user()->is_karyawan ||
+                        Auth::user()->is_pengawas ||
+                        Auth::user()->is_pengawas_rdp ||
+                        Auth::user()->is_superuser
+                    )
                         <li>
                             <a href="#" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-pengajuan-izin-penempatan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Pengajuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Izin Penempatan RDP</a></li>
+                                <li class="child rdp-pengajuan-izin-penempatan"><a href="{{ route('rdp.pengajuan.izin-penempatan.index') }}">Izin Penempatan RDP</a></li>
                                 <li class="child"><a href="#">Izin Keluar RDP</a></li>
                                 <li class="child"><a href="#">Perbaikan</a></li>
+                                <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
+                    @endif
 
 
-                        {{-- Login Pimpinan --}}
+                    {{-- Login Manajer --}}
+                    @if (Auth::user()->is_manajer || Auth::user()->is_superuser)
                         <li>
                             <a href="#" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-persetujuan-izin-penempatan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Persetujuan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Karyawan Masuk</a></li>
-                                <li class="child"><a href="#">Karyawan Keluar</a></li>
+                                <li class="child rdp-persetujuan-izin-penempatan"><a href="{{ route('rdp.persetujuan.izin-penempatan.index') }}">Izin Penempatan RDP</a></li>
+                                <li class="child"><a href="#">Izin Keluar RDP</a></li>
                                 <li class="child"><a href="#">Perbaikan</a></li>
                                 <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
+                    @endif
 
-                        {{-- Login Vendor --}}
+                    {{-- Login Vendor --}}
+                    @if (Auth::user()->is_vendor_rdp || Auth::user()->is_superuser)
                         <li>
                             <a href="#" class="waves-effect">
                                 <i class="ri-dashboard-line"></i>
@@ -186,31 +222,23 @@
                                 <li class="child"><a href="#">Pengadaan</a></li>
                             </ul>
                         </li>
+                    @endif
 
 
-                    </ul>
-                @endif
+                </ul>
 
 
-                @if (Auth::user()->is_vendor)
-                    <ul class="metismenu list-unstyled" id="side-menu">
-                        <li class="menu-title">Smart Absensi</li>
 
-                        <li>
-                            <a href="{{ route('lembur-vendor.indexLembur') }}" class="waves-effect">
-                                <i class="ri-file-line"></i>
-                                <span>Data Pengajuan Lembur</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('lembur-vendor.rekapBulanan') }}" class="waves-effect">
-                                <i class="ri-file-line"></i>
-                                <span>Laporan Data Lembur</span>
-                            </a>
-                        </li>
+                {{-- ======================================= RDP ======================================= --}}
 
-                    </ul>
-                @endif
+
+
+
+
+
+
+
+
             </div>
             <!-- Sidebar -->
         </div>

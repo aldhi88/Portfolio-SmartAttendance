@@ -1,0 +1,109 @@
+@php
+    $employee = $item->data_employees;
+    $rumah = $item->rdp_master_rumahs;
+    $rumahLabel = function ($rumah) {
+        if (!$rumah) return '-';
+        return collect([$rumah['block'] ?? null, $rumah['tipe'] ?? null, $rumah['nomor'] ?? null])
+            ->filter()
+            ->implode(' ');
+    };
+
+    $fileUrl = function ($file) {
+        return $file ? asset('storage/' . \App\Repositories\RdpKaryawanMasukRepo::FILE_DIR . '/' . $file) : null;
+    };
+@endphp
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Data Karyawan</h5>
+                <table class="table table-sm mb-0">
+                    <tr><th width="160">Nama</th><td>{{ $employee?->name ?: '-' }}</td></tr>
+                    <tr><th>NOPek</th><td>{{ $employee?->number ?: '-' }}</td></tr>
+                    <tr><th>Perusahaan</th><td>{{ $employee?->master_organizations?->name ?: '-' }}</td></tr>
+                    <tr><th>Jabatan</th><td>{{ $employee?->master_positions?->name ?: '-' }}</td></tr>
+                    <tr><th>Status</th><td>{{ $employee?->status ?: '-' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Data Rumah</h5>
+                <table class="table table-sm mb-0">
+                    <tr><th width="160">Rumah</th><td>{{ $rumahLabel($rumah?->toArray()) }}</td></tr>
+                    <tr><th>Cluster</th><td>{{ $rumah?->rdp_master_clusters?->nama_cluster ?: '-' }}</td></tr>
+                    <tr><th>Status Rumah</th><td>{{ $rumah?->status ?: '-' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if ($rumah?->rdp_master_rumah_asets && $rumah->rdp_master_rumah_asets->count() > 0)
+    <div class="card">
+        <div class="card-body">
+            <h5>Data Aset Rumah</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="60">No</th>
+                            <th>Aset</th>
+                            <th>Jenis</th>
+                            <th class="text-center">Jumlah</th>
+                            <th class="text-center">Satuan</th>
+                            <th class="text-center">Status</th>
+                            <th>Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($rumah->rdp_master_rumah_asets as $aset)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $aset->rdp_master_asets?->perlengkapan ?: '-' }}</td>
+                                <td>{{ $aset->jenis ?: '-' }}</td>
+                                <td class="text-center">{{ $aset->jumlah ?: '-' }}</td>
+                                <td class="text-center">{{ $aset->satuan ?: '-' }}</td>
+                                <td class="text-center">{{ $aset->status ?: '-' }}</td>
+                                <td>{{ $aset->catatan ?: '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@endif
+
+<div class="card">
+    <div class="card-body">
+        <h5>Data SK Mutasi</h5>
+        <table class="table table-sm mb-0">
+            <tr><th width="220">Nomor SK Mutasi</th><td>{{ $item->nomor_sk_mutasi ?: '-' }}</td></tr>
+            <tr><th>Tanggal SK Mutasi</th><td>{{ $item->tanggal_sk_mutasi ?: '-' }}</td></tr>
+            <tr><th>Tanggal Mulai</th><td>{{ $item->tanggal_mulai ?: '-' }}</td></tr>
+            <tr><th>File</th><td>
+                @if ($fileUrl($item->file_sk_mutasi))
+                    <a href="{{ $fileUrl($item->file_sk_mutasi) }}" target="_blank">Lihat file</a>
+                @else
+                    -
+                @endif
+            </td></tr>
+            <tr><th>Catatan Revisi Berkas</th><td>{{ $item->catatan_revisi_berkas ?: '-' }}</td></tr>
+            <tr><th>File SIP</th><td>
+                @if ($item->status === \App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS)
+                    <a href="{{ route('rdp.penempatan.izin-penempatan.sip', $item->id) }}" target="_blank" class="btn btn-sm btn-primary">
+                        Lihat File SIP
+                    </a>
+                @else
+                    -
+                @endif
+            </td></tr>
+            <tr><th>Status</th><td>{{ $item->status }}</td></tr>
+            <tr><th>Dibuat</th><td>{{ $item->created_at }}</td></tr>
+            <tr><th>Diubah</th><td>{{ $item->updated_at }}</td></tr>
+        </table>
+    </div>
+</div>

@@ -27,10 +27,6 @@ class AuthRepository implements AuthInterface
                 ->toArray()
             ;
 
-            if (in_array($user['user_roles']['id'], [300])) {
-                return "invalid_role";
-            }
-
             if (count($user) > 0 && $data['username'] != 'superuser' && $user['user_role_id'] == 700) {
                 if (($user['rdp_master_vendors']['status'] ?? null) != 'Aktif') {
                     return "not_active";

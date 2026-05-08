@@ -19,10 +19,6 @@ class FormLogin extends Component
     {
         $validated = $this->validate();
         $cekLogin = $this->authRepository->login($validated['dt']);
-        if($cekLogin==='invalid_role'){
-            session()->flash('message', 'Aplikasi ini terbatas hanya untuk pengawas');
-            return;
-        }
         if($cekLogin==='not_active'){
             session()->flash('message', 'Status user tidak aktif');
             return;

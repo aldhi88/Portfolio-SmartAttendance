@@ -34,14 +34,24 @@
             $('#modalConfirmDelete').on('show.bs.modal', function(e) {
                 const data = $(e.relatedTarget).data('json');
                 const blockDelete = data.blockDelete || false;
+                const submitLabel = $(e.relatedTarget).data('submit-label') || 'Hapus Data';
+                const dispatchMethod = ($(e.relatedTarget).data('dispatch') || 'wireDelete').replace(/\(\)$/, '');
                 $(this).find('.msg').text(data.msg);
                 $(this).find('.delete-info').text(data.info || '');
                 Livewire.dispatch('setDeleteId', {id: data.id});
-                const dispatchMethod = $(e.relatedTarget).data('dispatch') || 'wireDelete';
                 $(this).find('#submitModalConfirmDelete')
-                    .attr('wire:click', `${dispatchMethod}`)
+                    .data('dispatch-method', dispatchMethod)
                     .prop('disabled', blockDelete)
-                    .text(blockDelete ? 'Tidak Bisa Dihapus' : 'Hapus Data');
+                    .text(blockDelete ? 'Tidak Bisa Dihapus' : submitLabel);
+            });
+
+            $('#submitModalConfirmDelete').on('click', function() {
+                const method = $(this).data('dispatch-method') || 'wireDelete';
+                const componentId = $(this).closest('[wire\\:id]').attr('wire:id');
+
+                if (componentId && Livewire.find(componentId)) {
+                    Livewire.find(componentId).call(method);
+                }
             });
         </script>
     @endpush
