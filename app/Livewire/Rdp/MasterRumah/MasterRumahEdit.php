@@ -26,6 +26,7 @@ class MasterRumahEdit extends Component
         $this->dt['aset'] = RdpMasterAsetRepo::getAll()->toArray();
         $this->dt['status'] = self::STATUS_LIST;
         $this->dt['aset_status'] = self::ASET_STATUS_LIST;
+        $this->dt['satuan'] = RdpMasterRumahRepo::SATUAN_LIST;
 
         $rumah = RdpMasterRumahRepo::getByKey($this->editId);
         $this->originalClusterId = (string) $rumah->rdp_master_cluster_id;
@@ -83,7 +84,7 @@ class MasterRumahEdit extends Component
             'aset.*.rdp_master_aset_id' => 'required|exists:rdp_master_asets,id',
             'aset.*.jenis' => 'nullable|string',
             'aset.*.jumlah' => 'nullable|string',
-            'aset.*.satuan' => 'nullable|string',
+            'aset.*.satuan' => 'nullable|in:' . implode(',', RdpMasterRumahRepo::SATUAN_LIST),
             'aset.*.status' => 'required|in:' . implode(',', self::ASET_STATUS_LIST),
             'aset.*.catatan' => 'nullable|string',
         ];

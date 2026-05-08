@@ -57,9 +57,6 @@ class AdminEdit extends Component
             'form.tanggal_sk_mutasi' => 'required|date',
             'form.tanggal_mulai' => 'required|date',
             'form.file_sk_mutasi' => 'nullable|file|max:5120',
-            'form.catatan_revisi_berkas' => $this->form['status'] === 'Berkas Ditolak SPV, cek catatan'
-                ? 'required'
-                : 'nullable',
             'form.status' => ['required', Rule::in($this->statusList)],
         ];
     }

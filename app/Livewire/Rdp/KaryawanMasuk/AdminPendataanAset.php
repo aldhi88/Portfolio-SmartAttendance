@@ -3,6 +3,7 @@
 namespace App\Livewire\Rdp\KaryawanMasuk;
 
 use App\Repositories\RdpKaryawanMasukRepo;
+use App\Repositories\RdpMasterRumahRepo;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -12,6 +13,7 @@ class AdminPendataanAset extends Component
     public $item;
     public $aset = [];
     public $statusList = RdpKaryawanMasukRepo::ASSET_STATUS_LIST;
+    public $satuanList = RdpMasterRumahRepo::SATUAN_LIST;
     public $isEditable = false;
     public $canViewAset = false;
 
@@ -50,7 +52,7 @@ class AdminPendataanAset extends Component
             'aset' => 'required|array|min:1',
             'aset.*.jenis' => 'nullable|string',
             'aset.*.jumlah' => 'nullable|string',
-            'aset.*.satuan' => 'nullable|string',
+            'aset.*.satuan' => ['nullable', Rule::in($this->satuanList)],
             'aset.*.status' => ['required', Rule::in($this->statusList)],
             'aset.*.catatan' => 'nullable|string',
         ];

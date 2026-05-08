@@ -59,14 +59,6 @@
 
 @if ($showAdminReviewFields ?? true)
     <div class="form-group">
-        <label>Catatan Revisi Berkas</label>
-        <textarea wire:model="form.catatan_revisi_berkas" rows="3" class="form-control @error('form.catatan_revisi_berkas') is-invalid @enderror"></textarea>
-        @error('form.catatan_revisi_berkas')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="form-group">
         <label>Status</label>
         <select wire:model="form.status" class="form-control @error('form.status') is-invalid @enderror">
             @foreach ($statusList as $status)

@@ -57,7 +57,12 @@
                                         @enderror
                                     </td>
                                     <td>
-                                        <input type="text" wire:model="aset.{{ $key }}.satuan" class="form-control text-center @error('aset.'.$key.'.satuan') is-invalid @enderror" @disabled(!$isEditable)>
+                                        <select wire:model="aset.{{ $key }}.satuan" class="form-control @error('aset.'.$key.'.satuan') is-invalid @enderror" @disabled(!$isEditable)>
+                                            <option value="">-</option>
+                                            @foreach ($satuanList as $satuan)
+                                                <option value="{{ $satuan }}">{{ $satuan }}</option>
+                                            @endforeach
+                                        </select>
                                         @error('aset.'.$key.'.satuan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

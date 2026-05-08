@@ -4,12 +4,11 @@ namespace App\Livewire\Rdp\MasterCluster;
 
 use App\Repositories\RdpMasterAsetRepo;
 use App\Repositories\RdpMasterClusterRepo;
+use App\Repositories\RdpMasterRumahRepo;
 use Livewire\Component;
 
 class MasterClusterEdit extends Component
 {
-    public const SATUAN_LIST = ['Unit', 'Set', 'Buah', 'Paket', 'Menyesuaikan'];
-
     public $data;
     public $dt;
     public $form = [];
@@ -20,7 +19,7 @@ class MasterClusterEdit extends Component
     {
         $this->editId = $this->data['id'];
         $this->dt['aset'] = RdpMasterAsetRepo::getAll()->toArray();
-        $this->dt['satuan'] = self::SATUAN_LIST;
+        $this->dt['satuan'] = RdpMasterRumahRepo::SATUAN_LIST;
 
         $cluster = RdpMasterClusterRepo::getByKey($this->editId);
         $this->form = [
@@ -66,7 +65,7 @@ class MasterClusterEdit extends Component
             'detail.*.aset_id' => 'required|exists:rdp_master_asets,id',
             'detail.*.jenis' => 'nullable|string',
             'detail.*.jumlah' => 'nullable|string',
-            'detail.*.satuan' => 'nullable|in:'.implode(',', self::SATUAN_LIST),
+            'detail.*.satuan' => 'nullable|in:'.implode(',', RdpMasterRumahRepo::SATUAN_LIST),
         ];
     }
 

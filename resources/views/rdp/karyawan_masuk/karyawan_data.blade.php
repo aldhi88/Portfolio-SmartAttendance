@@ -5,7 +5,7 @@
                 @include('components.app_layout_title', ['pass' => $data])
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
                     <a href="{{ route('rdp.pengajuan.izin-penempatan.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus fa-fw"></i> Tambah Pengajuan
+                        <i class="fas fa-plus fa-fw"></i> Ajukan SIP
                     </a>
                 </div>
             </div>

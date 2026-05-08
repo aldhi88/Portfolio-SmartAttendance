@@ -10,6 +10,32 @@ use Illuminate\Support\Facades\Log;
 
 class RdpMasterRumahRepo
 {
+    public const SATUAN_LIST = [
+        'Unit',
+        'Set',
+        'Buah',
+        'Paket',
+        'Pasang',
+        'Lembar',
+        'Batang',
+        'Roll',
+        'Box',
+        'Dus',
+        'Lusin',
+        'Meter',
+        'Meter Persegi',
+        'Meter Kubik',
+        'Liter',
+        'Kilogram',
+        'Gram',
+        'Kaleng',
+        'Botol',
+        'Karung',
+        'Tabung',
+        'Keping',
+        'Menyesuaikan',
+    ];
+
     public static function getByKey($id)
     {
         return RdpMasterRumah::with(['rdp_master_clusters', 'rdp_master_rumah_asets.rdp_master_asets'])->find($id);

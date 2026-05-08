@@ -109,6 +109,18 @@ class RdpKaryawanMasukRepo
             ->get();
     }
 
+    public static function getRumahAsets($rumahId)
+    {
+        if (empty($rumahId)) {
+            return collect();
+        }
+
+        return RdpMasterRumahAset::with('rdp_master_asets')
+            ->where('rdp_master_rumah_id', $rumahId)
+            ->orderBy('id')
+            ->get();
+    }
+
     public static function create($data)
     {
         try {
@@ -120,6 +132,22 @@ class RdpKaryawanMasukRepo
             return true;
         } catch (\Exception $e) {
             Log::error("Insert rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function createWithAsets($data, $asetData)
+    {
+        try {
+            DB::transaction(function () use ($data, $asetData) {
+                $payload = self::normalizePayload($data);
+                RdpKaryawanMasuk::create($payload);
+                self::updateRumahAsets($payload['rdp_master_rumah_id'] ?? null, $asetData);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Insert rdp_karyawan_masuks with aset failed", ['error' => $e->getMessage()]);
             return false;
         }
     }
@@ -296,26 +324,7 @@ class RdpKaryawanMasukRepo
                     throw new \Exception('Rumah belum dipilih.');
                 }
 
-                $validAsetIds = RdpMasterRumahAset::where('rdp_master_rumah_id', $item->rdp_master_rumah_id)
-                    ->pluck('id')
-                    ->map(fn ($id) => (int) $id)
-                    ->all();
-
-                foreach ($asetData as $key => $data) {
-                    if (!in_array((int) $key, $validAsetIds, true)) {
-                        continue;
-                    }
-
-                    RdpMasterRumahAset::where('rdp_master_rumah_id', $item->rdp_master_rumah_id)
-                        ->where('id', $key)
-                        ->update([
-                            'jenis' => $data['jenis'] ?? null,
-                            'jumlah' => $data['jumlah'] ?? null,
-                            'satuan' => $data['satuan'] ?? null,
-                            'status' => $data['status'] ?? 'Ada',
-                            'catatan' => $data['catatan'] ?? null,
-                        ]);
-                }
+                self::updateRumahAsets($item->rdp_master_rumah_id, $asetData);
 
                 $item->update(['status' => $nextStatus]);
             });
@@ -364,6 +373,34 @@ class RdpKaryawanMasukRepo
         }
 
         return $payload;
+    }
+
+    protected static function updateRumahAsets($rumahId, $asetData)
+    {
+        if (empty($rumahId)) {
+            throw new \Exception('Rumah belum dipilih.');
+        }
+
+        $validAsetIds = RdpMasterRumahAset::where('rdp_master_rumah_id', $rumahId)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        foreach ($asetData as $key => $data) {
+            if (!in_array((int) $key, $validAsetIds, true)) {
+                continue;
+            }
+
+            RdpMasterRumahAset::where('rdp_master_rumah_id', $rumahId)
+                ->where('id', $key)
+                ->update([
+                    'jenis' => $data['jenis'] ?? null,
+                    'jumlah' => $data['jumlah'] ?? null,
+                    'satuan' => $data['satuan'] ?? null,
+                    'status' => $data['status'] ?? 'Ada',
+                    'catatan' => $data['catatan'] ?? null,
+                ]);
+        }
     }
 
     protected static function storeFile($file, $oldFile = null)

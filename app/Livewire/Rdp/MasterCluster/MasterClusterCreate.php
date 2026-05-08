@@ -4,35 +4,11 @@ namespace App\Livewire\Rdp\MasterCluster;
 
 use App\Repositories\RdpMasterAsetRepo;
 use App\Repositories\RdpMasterClusterRepo;
+use App\Repositories\RdpMasterRumahRepo;
 use Livewire\Component;
 
 class MasterClusterCreate extends Component
 {
-    public const SATUAN_LIST = [
-        'Unit',
-        'Set',
-        'Buah',
-        'Paket',
-        'Pasang',
-        'Lembar',
-        'Batang',
-        'Roll',
-        'Box',
-        'Dus',
-        'Lusin',
-        'Meter',
-        'Meter Persegi',
-        'Meter Kubik',
-        'Liter',
-        'Kilogram',
-        'Gram',
-        'Kaleng',
-        'Botol',
-        'Karung',
-        'Tabung',
-        'Keping',
-    ];
-
     public $data;
     public $dt;
     public $form = [];
@@ -41,7 +17,7 @@ class MasterClusterCreate extends Component
     public function mount()
     {
         $this->dt['aset'] = RdpMasterAsetRepo::getAll()->toArray();
-        $this->dt['satuan'] = self::SATUAN_LIST;
+        $this->dt['satuan'] = RdpMasterRumahRepo::SATUAN_LIST;
         $this->form = ['nama_cluster' => ''];
         $this->detail = [
             ['aset_id' => '', 'jenis' => '', 'jumlah' => '', 'satuan' => ''],
@@ -71,7 +47,7 @@ class MasterClusterCreate extends Component
             'detail.*.aset_id' => 'required|exists:rdp_master_asets,id',
             'detail.*.jenis' => 'nullable|string',
             'detail.*.jumlah' => 'nullable|string',
-            'detail.*.satuan' => 'nullable|in:' . implode(',', self::SATUAN_LIST),
+            'detail.*.satuan' => 'nullable|in:' . implode(',', RdpMasterRumahRepo::SATUAN_LIST),
         ];
     }
 

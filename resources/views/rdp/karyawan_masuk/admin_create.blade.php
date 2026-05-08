@@ -18,6 +18,7 @@
         <div class="card">
             <div class="card-body">
                 @include('rdp.karyawan_masuk.partials.admin_form', ['showAdminReviewFields' => false])
+                @include('rdp.karyawan_masuk.partials.aset_form')
                 <div class="text-right">
                     <button type="submit" class="btn btn-primary">Simpan Data</button>
                 </div>
