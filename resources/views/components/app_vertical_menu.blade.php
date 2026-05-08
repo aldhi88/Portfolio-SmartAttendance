@@ -225,8 +225,7 @@
                     @endif
 
                     {{-- Login Vendor --}}
-                    @if (Auth::user()->is_vendor_rdp || Auth::user()->is_superuser)
-                        <li class="menu-title">RDP (Vendor)</li>
+                    @if (Auth::user()->is_vendor_rdp)
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
