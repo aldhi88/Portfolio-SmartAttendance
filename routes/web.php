@@ -37,9 +37,9 @@ Route::get('/', function () {
         if (Auth::user()->is_vendor) {
             return redirect()->route('lembur-vendor.indexLembur');
         }
-        // if (Auth::user()->is_karyawan) {
-        //     return redirect()->route('rdp.pengajuan.izin-penempatan.index');
-        // }
+        if (Auth::user()->is_vendor_rdp) {
+            return redirect()->route('rdp.vendor.perbaikan.index');
+        }
         return redirect()->route('dashboard.index');
     }
     return redirect()->route('auth.formLogin');
