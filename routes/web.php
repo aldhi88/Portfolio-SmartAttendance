@@ -21,6 +21,7 @@ use App\Http\Controllers\Rdp\MasterVendorController;
 use App\Http\Controllers\Rdp\KaryawanKeluarController;
 use App\Http\Controllers\Rdp\KaryawanMasukController;
 use App\Http\Controllers\Rdp\PerbaikanController;
+use App\Http\Controllers\Rdp\PengadaanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -171,6 +172,19 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
+            Route::prefix('pengadaan')->group(function () {
+                Route::name('pengadaan.')->group(function () {
+                    Route::controller(PengadaanController::class)->group(function () {
+                        Route::get('index', 'adminIndex')->name('index');
+                        Route::get('create', 'adminCreate')->name('create');
+                        Route::get('detail/{id}', 'adminDetail')->name('detail');
+                        Route::get('edit/{id}', 'adminEdit')->name('edit');
+                        Route::get('spk/{id}', 'spkPdf')->name('spk');
+                        Route::get('indexDT', 'adminIndexDT')->name('indexDT');
+                    });
+                });
+            });
+
             Route::prefix('pengajuan')->group(function () {
                 Route::name('pengajuan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
@@ -246,6 +260,17 @@ Route::middleware('auth:web')->group(function () {
                             });
                         });
                     });
+
+                    Route::prefix('pengadaan')->group(function () {
+                        Route::name('pengadaan.')->group(function () {
+                            Route::controller(PengadaanController::class)->group(function () {
+                                Route::get('index', 'pimpinanIndex')->name('index');
+                                Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
                 });
             });
 
@@ -254,6 +279,17 @@ Route::middleware('auth:web')->group(function () {
                     Route::prefix('perbaikan')->group(function () {
                         Route::name('perbaikan.')->group(function () {
                             Route::controller(PerbaikanController::class)->group(function () {
+                                Route::get('index', 'vendorIndex')->name('index');
+                                Route::get('detail/{id}', 'vendorDetail')->name('detail');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'vendorIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+
+                    Route::prefix('pengadaan')->group(function () {
+                        Route::name('pengadaan.')->group(function () {
+                            Route::controller(PengadaanController::class)->group(function () {
                                 Route::get('index', 'vendorIndex')->name('index');
                                 Route::get('detail/{id}', 'vendorDetail')->name('detail');
                                 Route::get('spk/{id}', 'spkPdf')->name('spk');

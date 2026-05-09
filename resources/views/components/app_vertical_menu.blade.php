@@ -19,12 +19,16 @@
                         $rdpPerbaikanKaryawanBadge = 0;
                         $rdpPerbaikanPimpinanBadge = 0;
                         $rdpPerbaikanVendorBadge = 0;
+                        $rdpPengadaanAdminBadge = 0;
+                        $rdpPengadaanPimpinanBadge = 0;
+                        $rdpPengadaanVendorBadge = 0;
 
                         try {
                             if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser) {
                                 $rdpPenempatanAdminBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('admin');
                                 $rdpKeluarAdminBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('admin');
                                 $rdpPerbaikanAdminBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('admin');
+                                $rdpPengadaanAdminBadge = \App\Repositories\RdpPengadaanRepo::countActionable('admin');
                             }
 
                             if (Auth::user()->is_pengawas || Auth::user()->is_karyawan) {
@@ -37,10 +41,12 @@
                                 $rdpPenempatanPimpinanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('pimpinan');
                                 $rdpKeluarPimpinanBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('pimpinan');
                                 $rdpPerbaikanPimpinanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('pimpinan');
+                                $rdpPengadaanPimpinanBadge = \App\Repositories\RdpPengadaanRepo::countActionable('pimpinan');
                             }
 
                             if (Auth::user()->is_vendor_rdp) {
                                 $rdpPerbaikanVendorBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
+                                $rdpPengadaanVendorBadge = \App\Repositories\RdpPengadaanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
                             }
                         } catch (\Throwable $e) {
                             $rdpPenempatanAdminBadge = 0;
@@ -53,6 +59,9 @@
                             $rdpPerbaikanKaryawanBadge = 0;
                             $rdpPerbaikanPimpinanBadge = 0;
                             $rdpPerbaikanVendorBadge = 0;
+                            $rdpPengadaanAdminBadge = 0;
+                            $rdpPengadaanPimpinanBadge = 0;
+                            $rdpPengadaanVendorBadge = 0;
                         }
                     @endphp
 
@@ -220,11 +229,21 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-shopping-cart-line"></i>
+                                @if ($rdpPengadaanAdminBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPengadaanAdminBadge }}</span>
+                                @endif
                                 <span>Pengadaan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Data Pengadaan</a></li>
-                                <li class="child"><a href="#">Pengadaan Baru</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.pengadaan.index') }}">
+                                        @if ($rdpPengadaanAdminBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPengadaanAdminBadge }}</span>
+                                        @endif
+                                        Data Pengadaan
+                                    </a>
+                                </li>
+                                <li class="child"><a href="{{ route('rdp.pengadaan.create') }}">Pengadaan Baru</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -314,8 +333,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="waves-effect">
+                            <a href="{{ route('rdp.persetujuan.pengadaan.index') }}" class="waves-effect">
                                 <i class="ri-shopping-cart-line"></i>
+                                @if ($rdpPengadaanPimpinanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPengadaanPimpinanBadge }}</span>
+                                @endif
                                 <span>Data Pengadaan</span>
                             </a>
                         </li>
@@ -342,8 +364,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('rdp.persetujuan.izin-keluar.index') }}" class="waves-effect">
+                            <a href="{{ route('rdp.vendor.pengadaan.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpPengadaanVendorBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPengadaanVendorBadge }}</span>
+                                @endif
                                 <span>Permintaan Pengadaan</span>
                             </a>
                         </li>
