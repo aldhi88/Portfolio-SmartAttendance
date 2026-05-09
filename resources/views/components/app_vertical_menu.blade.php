@@ -8,6 +8,35 @@
                 <!-- Left Menu Start -->
 
                 <ul class="metismenu list-unstyled" id="side-menu">
+                    @php
+                        $rdpPerbaikanAdminBadge = 0;
+                        $rdpPerbaikanKaryawanBadge = 0;
+                        $rdpPerbaikanPimpinanBadge = 0;
+                        $rdpPerbaikanVendorBadge = 0;
+
+                        try {
+                            if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser) {
+                                $rdpPerbaikanAdminBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('admin');
+                            }
+
+                            if (Auth::user()->is_pengawas || Auth::user()->is_karyawan) {
+                                $rdpPerbaikanKaryawanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
+                            }
+
+                            if (Auth::user()->is_manajer) {
+                                $rdpPerbaikanPimpinanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('pimpinan');
+                            }
+
+                            if (Auth::user()->is_vendor_rdp) {
+                                $rdpPerbaikanVendorBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
+                            }
+                        } catch (\Throwable $e) {
+                            $rdpPerbaikanAdminBadge = 0;
+                            $rdpPerbaikanKaryawanBadge = 0;
+                            $rdpPerbaikanPimpinanBadge = 0;
+                            $rdpPerbaikanVendorBadge = 0;
+                        }
+                    @endphp
 
                     {{-- ATTD --}}
 
@@ -143,11 +172,21 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-gear-line"></i>
+                                @if ($rdpPerbaikanAdminBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanAdminBadge }}</span>
+                                @endif
                                 <span>Perbaikan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Data Perbaikan</a></li>
-                                <li class="child"><a href="#">Ajukan Perbaikan</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.perbaikan.index') }}">
+                                        @if ($rdpPerbaikanAdminBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanAdminBadge }}</span>
+                                        @endif
+                                        Data Perbaikan
+                                    </a>
+                                </li>
+                                <li class="child"><a href="{{ route('rdp.perbaikan.create') }}">Ajukan Perbaikan</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -184,11 +223,21 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-gear-line"></i>
+                                @if ($rdpPerbaikanKaryawanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge }}</span>
+                                @endif
                                 <span>Rumah Saya</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="#">Data Perbaikan</a></li>
-                                <li class="child"><a href="#">Ajukan Perbaikan</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.pengajuan.perbaikan.index') }}">
+                                        @if ($rdpPerbaikanKaryawanBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge }}</span>
+                                        @endif
+                                        Data Perbaikan
+                                    </a>
+                                </li>
+                                <li class="child"><a href="{{ route('rdp.pengajuan.perbaikan.create') }}">Ajukan Perbaikan</a></li>
                             </ul>
                         </li>
                         <li>
@@ -209,8 +258,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="waves-effect">
+                            <a href="{{ route('rdp.persetujuan.perbaikan.index') }}" class="waves-effect">
                                 <i class="ri-home-gear-line"></i>
+                                @if ($rdpPerbaikanPimpinanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanPimpinanBadge }}</span>
+                                @endif
                                 <span>Data Perbaikan</span>
                             </a>
                         </li>
@@ -231,8 +283,11 @@
                     {{-- Login Vendor --}}
                     @if (Auth::user()->is_vendor_rdp)
                         <li>
-                            <a href="{{ route('rdp.persetujuan.izin-keluar.index') }}" class="waves-effect">
+                            <a href="{{ route('rdp.vendor.perbaikan.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpPerbaikanVendorBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanVendorBadge }}</span>
+                                @endif
                                 <span>Permintaan Perbaikan</span>
                             </a>
                         </li>

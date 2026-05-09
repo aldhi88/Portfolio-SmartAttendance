@@ -20,6 +20,7 @@ use App\Http\Controllers\Rdp\MasterRumahController;
 use App\Http\Controllers\Rdp\MasterVendorController;
 use App\Http\Controllers\Rdp\KaryawanKeluarController;
 use App\Http\Controllers\Rdp\KaryawanMasukController;
+use App\Http\Controllers\Rdp\PerbaikanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -157,6 +158,19 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
+            Route::prefix('perbaikan')->group(function () {
+                Route::name('perbaikan.')->group(function () {
+                    Route::controller(PerbaikanController::class)->group(function () {
+                        Route::get('index', 'adminIndex')->name('index');
+                        Route::get('create', 'adminCreate')->name('create');
+                        Route::get('detail/{id}', 'adminDetail')->name('detail');
+                        Route::get('edit/{id}', 'adminEdit')->name('edit');
+                        Route::get('spk/{id}', 'spkPdf')->name('spk');
+                        Route::get('indexDT', 'adminIndexDT')->name('indexDT');
+                    });
+                });
+            });
+
             Route::prefix('pengajuan')->group(function () {
                 Route::name('pengajuan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
@@ -184,6 +198,19 @@ Route::middleware('auth:web')->group(function () {
                             });
                         });
                     });
+
+                    Route::prefix('perbaikan')->group(function () {
+                        Route::name('perbaikan.')->group(function () {
+                            Route::controller(PerbaikanController::class)->group(function () {
+                                Route::get('index', 'karyawanIndex')->name('index');
+                                Route::get('create', 'karyawanCreate')->name('create');
+                                Route::get('detail/{id}', 'karyawanDetail')->name('detail');
+                                Route::get('edit/{id}', 'karyawanEdit')->name('edit');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
                 });
             });
 
@@ -205,6 +232,32 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('index', 'pimpinanIndex')->name('index');
                                 Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
                                 Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+
+                    Route::prefix('perbaikan')->group(function () {
+                        Route::name('perbaikan.')->group(function () {
+                            Route::controller(PerbaikanController::class)->group(function () {
+                                Route::get('index', 'pimpinanIndex')->name('index');
+                                Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('vendor')->group(function () {
+                Route::name('vendor.')->group(function () {
+                    Route::prefix('perbaikan')->group(function () {
+                        Route::name('perbaikan.')->group(function () {
+                            Route::controller(PerbaikanController::class)->group(function () {
+                                Route::get('index', 'vendorIndex')->name('index');
+                                Route::get('detail/{id}', 'vendorDetail')->name('detail');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'vendorIndexDT')->name('indexDT');
                             });
                         });
                     });
