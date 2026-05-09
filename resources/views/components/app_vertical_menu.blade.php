@@ -12,6 +12,9 @@
                         $rdpPenempatanAdminBadge = 0;
                         $rdpPenempatanKaryawanBadge = 0;
                         $rdpPenempatanPimpinanBadge = 0;
+                        $rdpKeluarAdminBadge = 0;
+                        $rdpKeluarKaryawanBadge = 0;
+                        $rdpKeluarPimpinanBadge = 0;
                         $rdpPerbaikanAdminBadge = 0;
                         $rdpPerbaikanKaryawanBadge = 0;
                         $rdpPerbaikanPimpinanBadge = 0;
@@ -20,16 +23,19 @@
                         try {
                             if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser) {
                                 $rdpPenempatanAdminBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('admin');
+                                $rdpKeluarAdminBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('admin');
                                 $rdpPerbaikanAdminBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('admin');
                             }
 
                             if (Auth::user()->is_pengawas || Auth::user()->is_karyawan) {
                                 $rdpPenempatanKaryawanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
+                                $rdpKeluarKaryawanBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpPerbaikanKaryawanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                             }
 
                             if (Auth::user()->is_manajer) {
                                 $rdpPenempatanPimpinanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('pimpinan');
+                                $rdpKeluarPimpinanBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('pimpinan');
                                 $rdpPerbaikanPimpinanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('pimpinan');
                             }
 
@@ -40,6 +46,9 @@
                             $rdpPenempatanAdminBadge = 0;
                             $rdpPenempatanKaryawanBadge = 0;
                             $rdpPenempatanPimpinanBadge = 0;
+                            $rdpKeluarAdminBadge = 0;
+                            $rdpKeluarKaryawanBadge = 0;
+                            $rdpKeluarPimpinanBadge = 0;
                             $rdpPerbaikanAdminBadge = 0;
                             $rdpPerbaikanKaryawanBadge = 0;
                             $rdpPerbaikanPimpinanBadge = 0;
@@ -221,10 +230,20 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-logout-box-r-line"></i>
+                                @if ($rdpKeluarAdminBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpKeluarAdminBadge }}</span>
+                                @endif
                                 <span>Keluar RDP</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.index') }}">Data Izin Keluar</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.keluar-rdp.izin-keluar.index') }}">
+                                        @if ($rdpKeluarAdminBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpKeluarAdminBadge }}</span>
+                                        @endif
+                                        Data Izin Keluar
+                                    </a>
+                                </li>
                                 <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.create') }}">Izin Keluar Baru</a></li>
                             </ul>
                         </li>
@@ -265,6 +284,9 @@
                         <li>
                             <a href="{{ route('rdp.pengajuan.izin-keluar.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpKeluarKaryawanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpKeluarKaryawanBadge }}</span>
+                                @endif
                                 <span>Ajukan Keluar</span>
                             </a>
                         </li>
@@ -300,6 +322,9 @@
                         <li>
                             <a href="{{ route('rdp.persetujuan.izin-keluar.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpKeluarPimpinanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpKeluarPimpinanBadge }}</span>
+                                @endif
                                 <span>Data Izin Keluar</span>
                             </a>
                         </li>
