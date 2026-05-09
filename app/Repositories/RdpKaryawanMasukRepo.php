@@ -43,6 +43,20 @@ class RdpKaryawanMasukRepo
         self::DEFAULT_STATUS,
         self::REVISION_STATUS,
     ];
+    public const ADMIN_ACTIONABLE_STATUS = [
+        self::DEFAULT_STATUS,
+        self::REVISION_STATUS,
+        self::PIMPINAN_APPROVED_STATUS,
+        self::ASSET_SUBMITTED_STATUS,
+    ];
+    public const KARYAWAN_ACTIONABLE_STATUS = [
+        self::SPV_REJECTED_STATUS,
+        self::PIMPINAN_APPROVED_STATUS,
+    ];
+    public const PIMPINAN_ACTIONABLE_STATUS = [
+        self::SPV_APPROVED_STATUS,
+        self::ASSET_SPV_APPROVED_STATUS,
+    ];
     public const FILE_DIR = 'rdp/izin-penempatan';
 
     public static function getByKey($id)
@@ -78,6 +92,32 @@ class RdpKaryawanMasukRepo
         }
 
         return $query;
+    }
+
+    public static function countActionable($role, $id = null)
+    {
+        $query = RdpKaryawanMasuk::query();
+
+        if ($role === 'admin') {
+            return $query->whereIn('status', self::ADMIN_ACTIONABLE_STATUS)->count();
+        }
+
+        if ($role === 'karyawan') {
+            if (empty($id)) {
+                return 0;
+            }
+
+            return $query
+                ->where('data_employee_id', $id)
+                ->whereIn('status', self::KARYAWAN_ACTIONABLE_STATUS)
+                ->count();
+        }
+
+        if ($role === 'pimpinan') {
+            return $query->whereIn('status', self::PIMPINAN_ACTIONABLE_STATUS)->count();
+        }
+
+        return 0;
     }
 
     public static function getEmployees()

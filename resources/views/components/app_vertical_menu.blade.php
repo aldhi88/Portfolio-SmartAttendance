@@ -9,6 +9,9 @@
 
                 <ul class="metismenu list-unstyled" id="side-menu">
                     @php
+                        $rdpPenempatanAdminBadge = 0;
+                        $rdpPenempatanKaryawanBadge = 0;
+                        $rdpPenempatanPimpinanBadge = 0;
                         $rdpPerbaikanAdminBadge = 0;
                         $rdpPerbaikanKaryawanBadge = 0;
                         $rdpPerbaikanPimpinanBadge = 0;
@@ -16,14 +19,17 @@
 
                         try {
                             if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser) {
+                                $rdpPenempatanAdminBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('admin');
                                 $rdpPerbaikanAdminBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('admin');
                             }
 
                             if (Auth::user()->is_pengawas || Auth::user()->is_karyawan) {
+                                $rdpPenempatanKaryawanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpPerbaikanKaryawanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                             }
 
                             if (Auth::user()->is_manajer) {
+                                $rdpPenempatanPimpinanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('pimpinan');
                                 $rdpPerbaikanPimpinanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('pimpinan');
                             }
 
@@ -31,6 +37,9 @@
                                 $rdpPerbaikanVendorBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
                             }
                         } catch (\Throwable $e) {
+                            $rdpPenempatanAdminBadge = 0;
+                            $rdpPenempatanKaryawanBadge = 0;
+                            $rdpPenempatanPimpinanBadge = 0;
                             $rdpPerbaikanAdminBadge = 0;
                             $rdpPerbaikanKaryawanBadge = 0;
                             $rdpPerbaikanPimpinanBadge = 0;
@@ -162,10 +171,20 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-6-line"></i>
+                                @if ($rdpPenempatanAdminBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPenempatanAdminBadge }}</span>
+                                @endif
                                 <span>Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="{{ route('rdp.penempatan.izin-penempatan.index') }}">Data Pengajuan SIP</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.penempatan.izin-penempatan.index') }}">
+                                        @if ($rdpPenempatanAdminBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPenempatanAdminBadge }}</span>
+                                        @endif
+                                        Data Pengajuan SIP
+                                    </a>
+                                </li>
                                 <li class="child"><a href="{{ route('rdp.penempatan.izin-penempatan.create') }}">Penempatan Baru</a></li>
                             </ul>
                         </li>
@@ -217,6 +236,9 @@
                         <li>
                             <a href="{{ route('rdp.pengajuan.izin-penempatan.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpPenempatanKaryawanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPenempatanKaryawanBadge }}</span>
+                                @endif
                                 <span>Ajukan SIP</span>
                             </a>
                         </li>
@@ -254,6 +276,9 @@
                         <li>
                             <a href="{{ route('rdp.persetujuan.izin-penempatan.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
+                                @if ($rdpPenempatanPimpinanBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPenempatanPimpinanBadge }}</span>
+                                @endif
                                 <span>Data Pengajuan SIP</span>
                             </a>
                         </li>
