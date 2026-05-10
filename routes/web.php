@@ -22,6 +22,7 @@ use App\Http\Controllers\Rdp\KaryawanKeluarController;
 use App\Http\Controllers\Rdp\KaryawanMasukController;
 use App\Http\Controllers\Rdp\PerbaikanController;
 use App\Http\Controllers\Rdp\PengadaanController;
+use App\Http\Controllers\Rdp\RdpReportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -181,6 +182,38 @@ Route::middleware('auth:web')->group(function () {
                         Route::get('edit/{id}', 'adminEdit')->name('edit');
                         Route::get('spk/{id}', 'spkPdf')->name('spk');
                         Route::get('indexDT', 'adminIndexDT')->name('indexDT');
+                    });
+                });
+            });
+
+            Route::prefix('laporan')->group(function () {
+                Route::name('laporan.')->group(function () {
+                    Route::prefix('aset-standar')->group(function () {
+                        Route::name('aset-standar.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('index', 'asetStandarIndex')->name('index');
+                                Route::get('pdf', 'asetStandarPdf')->name('pdf');
+                            });
+                        });
+                    });
+
+                    Route::prefix('aset-realisasi')->group(function () {
+                        Route::name('aset-realisasi.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('index', 'asetRealisasiIndex')->name('index');
+                                Route::get('pdf', 'asetRealisasiPdf')->name('pdf');
+                                Route::get('pdf-semua', 'asetRealisasiPdfSemua')->name('pdf-semua');
+                            });
+                        });
+                    });
+
+                    Route::prefix('penempatan')->group(function () {
+                        Route::name('penempatan.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('index', 'penempatanIndex')->name('index');
+                                Route::get('pdf', 'penempatanPdf')->name('pdf');
+                            });
+                        });
                     });
                 });
             });

@@ -266,6 +266,17 @@
                                 <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.create') }}">Izin Keluar Baru</a></li>
                             </ul>
                         </li>
+                        <li class="parent">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li class="child"><a href="{{ route('rdp.laporan.aset-standar.index') }}">Aset Standar RDP</a></li>
+                                <li class="child"><a href="{{ route('rdp.laporan.aset-realisasi.index') }}">Aset RDP Realisasi</a></li>
+                                <li class="child"><a href="{{ route('rdp.laporan.penempatan.index') }}">Penempatan RDP</a></li>
+                            </ul>
+                        </li>
                     @endif
 
 
@@ -349,6 +360,17 @@
                                 @endif
                                 <span>Data Izin Keluar</span>
                             </a>
+                        </li>
+                        <li class="parent">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li class="child"><a href="{{ route('rdp.laporan.aset-standar.index') }}">Aset Standar RDP</a></li>
+                                <li class="child"><a href="{{ route('rdp.laporan.aset-realisasi.index') }}">Aset RDP Realisasi</a></li>
+                                <li class="child"><a href="{{ route('rdp.laporan.penempatan.index') }}">Penempatan RDP</a></li>
+                            </ul>
                         </li>
                     @endif
 
