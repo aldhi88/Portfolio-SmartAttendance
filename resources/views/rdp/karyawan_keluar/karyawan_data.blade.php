@@ -1,4 +1,8 @@
 <div>
+    @php
+        $blockOptions = \App\Repositories\RdpMasterRumahRepo::getFilterBlocks();
+        $tipeOptions = \App\Repositories\RdpMasterRumahRepo::getFilterTipes();
+    @endphp
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between row">
@@ -39,8 +43,22 @@
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="date" class="form-control form-control-sm search-col-dt"></th>
                                     <th><input type="date" class="form-control form-control-sm search-col-dt"></th>
-                                    <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
-                                    <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                    <th>
+                                        <select class="form-control form-control-sm search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($blockOptions as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <select class="form-control form-control-sm search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($tipeOptions as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                     <th>
                                         <select class="form-control form-control-sm search-col-dt">

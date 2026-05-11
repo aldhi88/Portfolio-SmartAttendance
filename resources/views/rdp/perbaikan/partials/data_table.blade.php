@@ -1,3 +1,9 @@
+@php
+    $blockOptions = \App\Repositories\RdpMasterRumahRepo::getFilterBlocks();
+    $tipeOptions = \App\Repositories\RdpMasterRumahRepo::getFilterTipes();
+    $vendorOptions = \App\Repositories\RdpMasterVendorRepo::getFilterNames();
+    $positionOptions = \App\Repositories\MasterPositionRepo::getFilterNames();
+@endphp
 <div class="row" wire:ignore>
     <div class="col">
         <div class="card">
@@ -26,11 +32,39 @@
                                 <th></th>
                                 <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                 <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th>
+                                    <select class="form-control form-control-sm search-col-dt">
+                                        <option value="">Semua</option>
+                                        @foreach ($positionOptions as $option)
+                                            <option value="{{ $option }}">{{ $option }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm search-col-dt">
+                                        <option value="">Semua</option>
+                                        @foreach ($blockOptions as $option)
+                                            <option value="{{ $option }}">{{ $option }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th>
+                                    <select class="form-control form-control-sm search-col-dt">
+                                        <option value="">Semua</option>
+                                        @foreach ($tipeOptions as $option)
+                                            <option value="{{ $option }}">{{ $option }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                                 <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
-                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
-                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
-                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
-                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th>
+                                    <select class="form-control form-control-sm search-col-dt">
+                                        <option value="">Semua</option>
+                                        @foreach ($vendorOptions as $option)
+                                            <option value="{{ $option }}">{{ $option }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                                 <th></th>
                                 <th>
                                     <select class="form-control form-control-sm search-col-dt">

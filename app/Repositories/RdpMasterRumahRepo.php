@@ -52,6 +52,40 @@ class RdpMasterRumahRepo
             ]);
     }
 
+    public static function getFilterBlocks()
+    {
+        return RdpMasterRumah::query()
+            ->whereNotNull('block')
+            ->where('block', '!=', '')
+            ->select('block')
+            ->distinct()
+            ->orderBy('block')
+            ->pluck('block');
+    }
+
+    public static function getFilterTipes()
+    {
+        return RdpMasterRumah::query()
+            ->whereNotNull('tipe')
+            ->where('tipe', '!=', '')
+            ->select('tipe')
+            ->distinct()
+            ->orderBy('tipe')
+            ->pluck('tipe');
+    }
+
+    public static function getFilterClusterNames()
+    {
+        return RdpMasterRumah::query()
+            ->join('rdp_master_clusters', 'rdp_master_clusters.id', '=', 'rdp_master_rumahs.rdp_master_cluster_id')
+            ->whereNotNull('rdp_master_clusters.nama_cluster')
+            ->where('rdp_master_clusters.nama_cluster', '!=', '')
+            ->select('rdp_master_clusters.nama_cluster')
+            ->distinct()
+            ->orderBy('rdp_master_clusters.nama_cluster')
+            ->pluck('rdp_master_clusters.nama_cluster');
+    }
+
     public static function create($data)
     {
         try {

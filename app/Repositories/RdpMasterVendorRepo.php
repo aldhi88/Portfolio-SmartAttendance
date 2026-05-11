@@ -25,6 +25,17 @@ class RdpMasterVendorRepo
             ->withCount(['rdp_perbaikans', 'rdp_pengadaans']);
     }
 
+    public static function getFilterNames()
+    {
+        return RdpMasterVendor::query()
+            ->whereNotNull('nama')
+            ->where('nama', '!=', '')
+            ->select('nama')
+            ->distinct()
+            ->orderBy('nama')
+            ->pluck('nama');
+    }
+
     public static function create($data)
     {
         try {

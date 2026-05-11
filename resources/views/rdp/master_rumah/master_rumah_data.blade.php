@@ -1,4 +1,9 @@
 <div>
+    @php
+        $blockOptions = \App\Repositories\RdpMasterRumahRepo::getFilterBlocks();
+        $tipeOptions = \App\Repositories\RdpMasterRumahRepo::getFilterTipes();
+        $clusterOptions = \App\Repositories\RdpMasterRumahRepo::getFilterClusterNames();
+    @endphp
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between row">
@@ -44,16 +49,31 @@
                                     <th class="text-center"></th>
                                     <th class="text-center"></th>
                                     <th class="text-center">
-                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                        <select class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($blockOptions as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <th class="text-center">
+                                        <select class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($tipeOptions as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
+                                        </select>
                                     </th>
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm text-center search-col-dt">
                                     </th>
                                     <th class="text-center">
-                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
-                                    </th>
-                                    <th class="text-center">
-                                        <input type="text" class="form-control form-control-sm text-center search-col-dt">
+                                        <select class="form-control form-control-sm text-center search-col-dt">
+                                            <option value="">Semua</option>
+                                            @foreach ($clusterOptions as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
+                                        </select>
                                     </th>
                                     <th class="text-center">
                                         <select class="form-control form-control-sm text-center search-status-dt">

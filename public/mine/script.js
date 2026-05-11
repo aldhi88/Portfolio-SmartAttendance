@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function initSearchCol(table, headerId, inputClass) {
-    $(headerId).on('input', '.' + inputClass, function () {
+    $(headerId).on('input change', '.' + inputClass, function () {
         const colIndex = $(this).parent().index();
         const searchVal = this.value;
 

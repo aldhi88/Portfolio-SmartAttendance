@@ -44,6 +44,17 @@ class MasterPositionRepo implements MasterPositionFace
         return MasterPosition::all();
     }
 
+    public static function getFilterNames()
+    {
+        return MasterPosition::query()
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->select('name')
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
+    }
+
     public function delete($id)
     {
         if(!$this->dataEmployee->isExistByCol('master_position_id', $id)){
