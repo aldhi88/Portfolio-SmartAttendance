@@ -9,7 +9,8 @@ use Livewire\Component;
 
 class MasterRumahEdit extends Component
 {
-    public const STATUS_LIST = ['Kosong', 'Terisi', 'Maintenance', 'Tidak Aktif'];
+    public const STATUS_LIST = ['Kosong', 'Maintenance', 'Tidak Aktif'];
+    public const SYSTEM_OCCUPIED_STATUS = 'Terisi';
     public const ASET_STATUS_LIST = ['Ada', 'Tidak Ada'];
 
     public $data;
@@ -18,6 +19,7 @@ class MasterRumahEdit extends Component
     public $aset = [];
     public $editId;
     public $originalClusterId;
+    public $isSystemOccupied = false;
 
     public function mount()
     {
@@ -29,6 +31,8 @@ class MasterRumahEdit extends Component
         $this->dt['satuan'] = RdpMasterRumahRepo::SATUAN_LIST;
 
         $rumah = RdpMasterRumahRepo::getByKey($this->editId);
+        $this->isSystemOccupied = $rumah->status === self::SYSTEM_OCCUPIED_STATUS;
+        $this->dt['status_readonly'] = $this->isSystemOccupied;
         $this->originalClusterId = (string) $rumah->rdp_master_cluster_id;
         $this->form = [
             'rdp_master_cluster_id' => (string) $rumah->rdp_master_cluster_id,
@@ -74,12 +78,16 @@ class MasterRumahEdit extends Component
 
     public function rules()
     {
+        $statusList = $this->isSystemOccupied
+            ? array_merge(self::STATUS_LIST, [self::SYSTEM_OCCUPIED_STATUS])
+            : self::STATUS_LIST;
+
         return [
             'form.rdp_master_cluster_id' => 'required|exists:rdp_master_clusters,id',
             'form.block' => 'nullable|string',
             'form.tipe' => 'nullable|string',
             'form.nomor' => 'required|string',
-            'form.status' => 'required|in:' . implode(',', self::STATUS_LIST),
+            'form.status' => 'required|in:' . implode(',', $statusList),
             'aset' => 'array',
             'aset.*.rdp_master_aset_id' => 'required|exists:rdp_master_asets,id',
             'aset.*.jenis' => 'nullable|string',
@@ -112,6 +120,10 @@ class MasterRumahEdit extends Component
         $this->form['block'] = trim($this->form['block'] ?? '');
         $this->form['tipe'] = trim($this->form['tipe'] ?? '');
         $this->form['nomor'] = trim($this->form['nomor'] ?? '');
+        if ($this->isSystemOccupied) {
+            $this->form['status'] = self::SYSTEM_OCCUPIED_STATUS;
+        }
+
         $this->aset = collect($this->aset)
             ->map(function ($item) {
                 return [

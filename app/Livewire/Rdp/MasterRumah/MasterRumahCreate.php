@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class MasterRumahCreate extends Component
 {
-    public const STATUS_LIST = ['Kosong', 'Terisi', 'Maintenance', 'Tidak Aktif'];
+    public const STATUS_LIST = ['Kosong', 'Maintenance', 'Tidak Aktif'];
 
     public $data;
     public $dt;

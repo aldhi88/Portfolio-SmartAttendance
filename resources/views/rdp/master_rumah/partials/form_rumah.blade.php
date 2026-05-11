@@ -43,11 +43,15 @@
 
 <div class="form-group">
     <label>Status</label>
-    <select wire:model="form.status" class="form-control @error('form.status') is-invalid @enderror">
-        @foreach ($dt['status'] as $status)
-            <option value="{{ $status }}">{{ $status }}</option>
-        @endforeach
-    </select>
+    @if ($dt['status_readonly'] ?? false)
+        <input type="text" value="Terisi (otomatis dari penempatan)" class="form-control" readonly>
+    @else
+        <select wire:model="form.status" class="form-control @error('form.status') is-invalid @enderror">
+            @foreach ($dt['status'] as $status)
+                <option value="{{ $status }}">{{ $status }}</option>
+            @endforeach
+        </select>
+    @endif
     @error('form.status')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
