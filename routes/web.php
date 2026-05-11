@@ -70,7 +70,7 @@ Route::middleware('auth:web')->group(function () {
     // RDP
     Route::prefix('rdp')->group(function () {
         Route::name('rdp.')->group(function () {
-            Route::prefix('master')->group(function () {
+            Route::prefix('master')->middleware('rdp.role:admin')->group(function () {
                 Route::name('master.')->group(function () {
 
                     Route::prefix('aset')->group(function () {
@@ -124,7 +124,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('penempatan')->group(function () {
+            Route::prefix('penempatan')->middleware('rdp.role:admin')->group(function () {
                 Route::name('penempatan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
                         Route::name('izin-penempatan.')->group(function () {
@@ -142,7 +142,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('keluar-rdp')->group(function () {
+            Route::prefix('keluar-rdp')->middleware('rdp.role:admin')->group(function () {
                 Route::name('keluar-rdp.')->group(function () {
                     Route::prefix('izin-keluar')->group(function () {
                         Route::name('izin-keluar.')->group(function () {
@@ -160,7 +160,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('perbaikan')->group(function () {
+            Route::prefix('perbaikan')->middleware('rdp.role:admin')->group(function () {
                 Route::name('perbaikan.')->group(function () {
                     Route::controller(PerbaikanController::class)->group(function () {
                         Route::get('index', 'adminIndex')->name('index');
@@ -173,7 +173,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('pengadaan')->group(function () {
+            Route::prefix('pengadaan')->middleware('rdp.role:admin')->group(function () {
                 Route::name('pengadaan.')->group(function () {
                     Route::controller(PengadaanController::class)->group(function () {
                         Route::get('index', 'adminIndex')->name('index');
@@ -186,7 +186,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('laporan')->group(function () {
+            Route::prefix('laporan')->middleware('rdp.role:admin,pimpinan')->group(function () {
                 Route::name('laporan.')->group(function () {
                     Route::prefix('aset-standar')->group(function () {
                         Route::name('aset-standar.')->group(function () {
@@ -218,7 +218,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('pengajuan')->group(function () {
+            Route::prefix('pengajuan')->middleware('rdp.role:employee')->group(function () {
                 Route::name('pengajuan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
                         Route::name('izin-penempatan.')->group(function () {
@@ -261,7 +261,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('persetujuan')->group(function () {
+            Route::prefix('persetujuan')->middleware('rdp.role:pimpinan')->group(function () {
                 Route::name('persetujuan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
                         Route::name('izin-penempatan.')->group(function () {
@@ -307,7 +307,7 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('vendor')->group(function () {
+            Route::prefix('vendor')->middleware('rdp.role:vendor')->group(function () {
                 Route::name('vendor.')->group(function () {
                     Route::prefix('perbaikan')->group(function () {
                         Route::name('perbaikan.')->group(function () {

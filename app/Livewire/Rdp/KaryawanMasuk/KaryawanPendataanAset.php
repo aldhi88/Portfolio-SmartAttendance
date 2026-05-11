@@ -4,6 +4,7 @@ namespace App\Livewire\Rdp\KaryawanMasuk;
 
 use App\Repositories\RdpKaryawanMasukRepo;
 use App\Repositories\RdpMasterRumahRepo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -19,6 +20,8 @@ class KaryawanPendataanAset extends Component
     public function mount()
     {
         $this->item = RdpKaryawanMasukRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
+        abort_if((int) $this->item->data_employee_id !== (int) Auth::user()->data_employees?->id, 404);
         $this->isEditable = $this->item->status === RdpKaryawanMasukRepo::PIMPINAN_APPROVED_STATUS;
 
         if ($this->isEditable) {

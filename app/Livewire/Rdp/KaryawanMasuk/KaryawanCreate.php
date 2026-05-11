@@ -34,6 +34,7 @@ class KaryawanCreate extends Component
     public function wireSubmit()
     {
         $form = $this->validate($this->rules());
+        $form['form']['data_employee_id'] = Auth::user()->data_employees?->id;
         $form['form']['rdp_master_rumah_id'] = null;
         $form['form']['status'] = RdpKaryawanMasukRepo::DEFAULT_STATUS;
 

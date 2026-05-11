@@ -34,6 +34,7 @@ class RdpPengadaanRepo
         self::FINISHED_STATUS,
         self::CANCEL_STATUS,
     ];
+    public const STATUS_FLOW = self::STATUS_LIST;
 
     public const ADMIN_ACTIONABLE_STATUS = [
         self::PROPOSAL_SUBMITTED_STATUS,
@@ -130,12 +131,32 @@ class RdpPengadaanRepo
         }
     }
 
-    public static function update($id, $data, $items = null)
+    public static function update($id, $data, $items = null, $allowForwardStatus = true)
     {
         try {
-            DB::transaction(function () use ($id, $data, $items) {
+            DB::transaction(function () use ($id, $data, $items, $allowForwardStatus) {
                 $pengadaan = RdpPengadaan::findOrFail($id);
-                $pengadaan->update(self::normalizePayload($data, $pengadaan));
+                $payload = self::normalizePayload($data, $pengadaan);
+
+                if (
+                    !$allowForwardStatus
+                    && isset($payload['status'])
+                    && $payload['status'] !== $pengadaan->status
+                    && !self::isBackwardOrSameStatus($pengadaan->status, $payload['status'])
+                ) {
+                    throw new \Exception('Status hanya boleh dimundurkan dari halaman edit admin.');
+                }
+
+                if (
+                    !$allowForwardStatus
+                    && isset($payload['status'])
+                    && $payload['status'] !== $pengadaan->status
+                    && self::isBackwardOrSameStatus($pengadaan->status, $payload['status'])
+                ) {
+                    self::rollbackProcessArtifacts($pengadaan, $payload['status'], $payload);
+                }
+
+                $pengadaan->update($payload);
 
                 if ($items !== null) {
                     self::syncItems($pengadaan, $items);
@@ -154,6 +175,10 @@ class RdpPengadaanRepo
         try {
             DB::transaction(function () use ($id) {
                 $item = RdpPengadaan::with('rdp_pengadaan_items')->findOrFail($id);
+                if (self::statusIndex($item->status) >= self::statusIndex(self::PROPOSAL_SUBMITTED_STATUS)) {
+                    throw new \Exception('Pengadaan sudah masuk proses vendor.');
+                }
+
                 self::deleteFiles($item);
                 $item->delete();
             });
@@ -195,9 +220,23 @@ class RdpPengadaanRepo
 
     public static function requestProposalRevision($id)
     {
-        return self::transition($id, [self::PROPOSAL_SUBMITTED_STATUS], [
-            'status' => self::VENDOR_ASSIGNED_STATUS,
-        ], 'Request proposal revision rdp_pengadaans failed');
+        try {
+            DB::transaction(function () use ($id) {
+                $item = RdpPengadaan::findOrFail($id);
+                if ($item->status !== self::PROPOSAL_SUBMITTED_STATUS) {
+                    throw new \Exception('Invalid status.');
+                }
+
+                $payload = ['status' => self::VENDOR_ASSIGNED_STATUS];
+                self::rollbackProcessArtifacts($item, self::VENDOR_ASSIGNED_STATUS, $payload);
+                $item->update($payload);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Request proposal revision rdp_pengadaans failed', ['error' => $e->getMessage()]);
+            return false;
+        }
     }
 
     public static function approveProposalAdmin($id)
@@ -294,7 +333,10 @@ class RdpPengadaanRepo
     {
         try {
             $item = RdpPengadaan::findOrFail($id);
-            if (in_array($item->status, [self::FINISHED_STATUS, self::CANCEL_STATUS], true)) {
+            if (
+                in_array($item->status, [self::FINISHED_STATUS, self::CANCEL_STATUS], true)
+                || self::statusIndex($item->status) >= self::statusIndex(self::WORK_RUNNING_STATUS)
+            ) {
                 return false;
             }
 
@@ -334,6 +376,52 @@ class RdpPengadaanRepo
         }
 
         return $payload;
+    }
+
+    public static function isBackwardOrSameStatus($fromStatus, $toStatus)
+    {
+        if ($fromStatus === self::CANCEL_STATUS || $toStatus === self::CANCEL_STATUS) {
+            return $fromStatus === $toStatus;
+        }
+
+        $fromIndex = array_search($fromStatus, self::STATUS_FLOW, true);
+        $toIndex = array_search($toStatus, self::STATUS_FLOW, true);
+
+        if ($fromIndex === false || $toIndex === false) {
+            return false;
+        }
+
+        return $toIndex <= $fromIndex;
+    }
+
+    protected static function statusIndex($status)
+    {
+        $index = array_search($status, self::STATUS_FLOW, true);
+
+        return $index === false ? null : $index;
+    }
+
+    protected static function rollbackProcessArtifacts($pengadaan, $targetStatus, &$payload)
+    {
+        $targetIndex = self::statusIndex($targetStatus);
+        if ($targetIndex === null) {
+            return;
+        }
+
+        if ($targetIndex < self::statusIndex(self::PROPOSAL_SUBMITTED_STATUS)) {
+            self::deleteFile(self::FILE_DIR_PROPOSAL, $pengadaan->file_proposal);
+            $payload['file_proposal'] = null;
+        }
+
+        if ($targetIndex < self::statusIndex(self::VENDOR_FINISHED_STATUS)) {
+            $pengadaan->rdp_pengadaan_items()->get()->each(function ($item) {
+                self::deleteFile(self::FILE_DIR_HASIL, $item->foto_hasil_pengadaan);
+                $item->update([
+                    'narasi_hasil_pengadaan' => null,
+                    'foto_hasil_pengadaan' => null,
+                ]);
+            });
+        }
     }
 
     protected static function syncItems($pengadaan, $items)

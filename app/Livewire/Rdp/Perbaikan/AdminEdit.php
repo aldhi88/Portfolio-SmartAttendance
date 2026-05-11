@@ -23,6 +23,10 @@ class AdminEdit extends Component
     {
         $this->item = RdpPerbaikanRepo::getByKey($this->data['id']);
         abort_if(!$this->item, 404);
+        $this->statusList = collect(RdpPerbaikanRepo::STATUS_LIST)
+            ->filter(fn ($status) => RdpPerbaikanRepo::isBackwardOrSameStatus($this->item->status, $status))
+            ->values()
+            ->all();
         $this->isReviewStep = in_array($this->item->status, RdpPerbaikanRepo::ADMIN_REVIEWABLE_STATUS, true);
 
         $this->dt['penempatans'] = RdpPerbaikanRepo::getActivePenempatans()->toArray();
@@ -98,7 +102,7 @@ class AdminEdit extends Component
             $form['form']['catatan_revisi'] = null;
         }
 
-        if (RdpPerbaikanRepo::update($this->data['id'], $form['form'], $form['items'])) {
+        if (RdpPerbaikanRepo::update($this->data['id'], $form['form'], $form['items'], $this->isReviewStep)) {
             session()->flash('success', $this->isReviewStep ? 'Pengajuan perbaikan berhasil disetujui dan vendor ditugaskan.' : 'Data perbaikan berhasil diperbarui.');
             return redirect()->route('rdp.perbaikan.index');
         }

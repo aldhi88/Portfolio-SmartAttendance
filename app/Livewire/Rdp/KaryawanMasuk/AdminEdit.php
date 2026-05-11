@@ -22,6 +22,11 @@ class AdminEdit extends Component
     public function mount()
     {
         $this->item = RdpKaryawanMasukRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
+        $this->statusList = collect(RdpKaryawanMasukRepo::STATUS_LIST)
+            ->filter(fn ($status) => RdpKaryawanMasukRepo::isBackwardOrSameStatus($this->item->status, $status))
+            ->values()
+            ->all();
         $this->isReviewStep = in_array($this->item->status, RdpKaryawanMasukRepo::ADMIN_REVIEWABLE_STATUS, true);
         $this->form = $this->item->only([
             'data_employee_id',
@@ -79,7 +84,7 @@ class AdminEdit extends Component
             return;
         }
 
-        if (RdpKaryawanMasukRepo::update($this->data['id'], $form['form'])) {
+        if (RdpKaryawanMasukRepo::update($this->data['id'], $form['form'], false)) {
             session()->flash('success', 'Data izin penempatan berhasil disimpan.');
             return redirect()->route('rdp.penempatan.izin-penempatan.index');
         }

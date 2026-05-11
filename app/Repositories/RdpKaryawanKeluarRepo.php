@@ -39,6 +39,17 @@ class RdpKaryawanKeluarRepo
         'Keluar RDP Selesai',
         'Keluar RDP Dibatalkan',
     ];
+    public const STATUS_FLOW = [
+        self::DEFAULT_STATUS,
+        self::SPV_REJECTED_STATUS,
+        self::REVISION_STATUS,
+        self::SPV_APPROVED_STATUS,
+        self::PIMPINAN_APPROVED_STATUS,
+        self::ASSET_SUBMITTED_STATUS,
+        self::ASSET_SPV_APPROVED_STATUS,
+        self::FINISHED_STATUS,
+        self::CANCEL_STATUS,
+    ];
     public const PIMPINAN_VISIBLE_STATUS = self::STATUS_LIST;
     public const ADMIN_REVIEWABLE_STATUS = [
         self::DEFAULT_STATUS,
@@ -208,6 +219,14 @@ class RdpKaryawanKeluarRepo
         try {
             DB::transaction(function () use ($data) {
                 $payload = self::normalizePayload($data);
+                if (!self::employeeOccupiesRumah($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null)) {
+                    throw new \Exception('Karyawan tidak sedang menempati rumah tersebut.');
+                }
+
+                if (self::hasActiveOrPendingKeluar($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null)) {
+                    throw new \Exception('Karyawan masih memiliki pengajuan keluar aktif.');
+                }
+
                 RdpKaryawanKeluar::create($payload);
             });
 
@@ -223,6 +242,14 @@ class RdpKaryawanKeluarRepo
         try {
             DB::transaction(function () use ($data, $asetData) {
                 $payload = self::normalizePayload($data);
+                if (!self::employeeOccupiesRumah($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null)) {
+                    throw new \Exception('Karyawan tidak sedang menempati rumah tersebut.');
+                }
+
+                if (self::hasActiveOrPendingKeluar($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null)) {
+                    throw new \Exception('Karyawan masih memiliki pengajuan keluar aktif.');
+                }
+
                 RdpKaryawanKeluar::create($payload);
                 self::updateRumahAsets($payload['rdp_master_rumah_id'] ?? null, $asetData);
             });
@@ -234,13 +261,31 @@ class RdpKaryawanKeluarRepo
         }
     }
 
-    public static function update($id, $data)
+    public static function update($id, $data, $allowForwardStatus = true)
     {
         try {
-            DB::transaction(function () use ($id, $data) {
+            DB::transaction(function () use ($id, $data, $allowForwardStatus) {
                 $item = RdpKaryawanKeluar::findOrFail($id);
                 $oldRumahId = $item->rdp_master_rumah_id;
                 $payload = self::normalizePayload($data, $item);
+
+                if (
+                    !$allowForwardStatus
+                    && isset($payload['status'])
+                    && $payload['status'] !== $item->status
+                    && !self::isBackwardOrSameStatus($item->status, $payload['status'])
+                ) {
+                    throw new \Exception('Status hanya boleh dimundurkan dari halaman edit admin.');
+                }
+
+                if (!self::employeeOccupiesRumah($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null, $item->id)) {
+                    throw new \Exception('Karyawan tidak sedang menempati rumah tersebut.');
+                }
+
+                if (self::hasActiveOrPendingKeluar($payload['data_employee_id'] ?? null, $payload['rdp_master_rumah_id'] ?? null, $item->id)) {
+                    throw new \Exception('Karyawan masih memiliki pengajuan keluar aktif.');
+                }
+
                 $item->update($payload);
                 RdpRumahStatusRepo::syncMany([$oldRumahId, $item->fresh()->rdp_master_rumah_id]);
             });
@@ -294,6 +339,10 @@ class RdpKaryawanKeluarRepo
             }
 
             if (empty($rumahId)) {
+                return false;
+            }
+
+            if (!self::employeeOccupiesRumah($item->data_employee_id, $rumahId, $item->id, false)) {
                 return false;
             }
 
@@ -356,6 +405,10 @@ class RdpKaryawanKeluarRepo
                 }
 
                 DB::transaction(function () use ($item) {
+                    if (!self::employeeOccupiesRumah($item->data_employee_id, $item->rdp_master_rumah_id, $item->id, false)) {
+                        throw new \Exception('Karyawan tidak sedang menempati rumah tersebut.');
+                    }
+
                     $item->update(['status' => self::FINISHED_STATUS]);
                     RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
                 });
@@ -463,6 +516,59 @@ class RdpKaryawanKeluarRepo
         }
 
         return $payload;
+    }
+
+    public static function isBackwardOrSameStatus($fromStatus, $toStatus)
+    {
+        if ($fromStatus === self::CANCEL_STATUS || $toStatus === self::CANCEL_STATUS) {
+            return $fromStatus === $toStatus;
+        }
+
+        $fromIndex = array_search($fromStatus, self::STATUS_FLOW, true);
+        $toIndex = array_search($toStatus, self::STATUS_FLOW, true);
+
+        if ($fromIndex === false || $toIndex === false) {
+            return false;
+        }
+
+        return $toIndex <= $fromIndex;
+    }
+
+    public static function hasActiveOrPendingKeluar($employeeId, $rumahId = null, $excludeId = null)
+    {
+        if (empty($employeeId)) {
+            return false;
+        }
+
+        return RdpKaryawanKeluar::query()
+            ->where('data_employee_id', $employeeId)
+            ->when($rumahId, fn ($query) => $query->where('rdp_master_rumah_id', $rumahId))
+            ->when($excludeId, fn ($query) => $query->whereKeyNot($excludeId))
+            ->whereNotIn('status', [self::FINISHED_STATUS, self::CANCEL_STATUS])
+            ->exists();
+    }
+
+    public static function employeeOccupiesRumah($employeeId, $rumahId, $currentKeluarId = null, $allowCurrentRecord = true)
+    {
+        if (empty($employeeId) || empty($rumahId)) {
+            return false;
+        }
+
+        if (
+            $allowCurrentRecord
+            &&
+            !empty($currentKeluarId)
+            && RdpKaryawanKeluar::whereKey($currentKeluarId)
+                ->where('data_employee_id', $employeeId)
+                ->where('rdp_master_rumah_id', $rumahId)
+                ->exists()
+        ) {
+            return true;
+        }
+
+        $rumah = self::getCurrentRumahByEmployee($employeeId);
+
+        return (int) ($rumah?->id) === (int) $rumahId;
     }
 
     protected static function updateRumahAsets($rumahId, $asetData)

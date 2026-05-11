@@ -20,6 +20,7 @@ class AdminPendataanAset extends Component
     public function mount()
     {
         $this->item = RdpKaryawanKeluarRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
         $this->isEditable = $this->item->status === RdpKaryawanKeluarRepo::PIMPINAN_APPROVED_STATUS;
         $this->canViewAset = in_array($this->item->status, [
             RdpKaryawanKeluarRepo::PIMPINAN_APPROVED_STATUS,

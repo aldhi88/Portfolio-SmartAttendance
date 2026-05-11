@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rdp;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\RdpAccess;
 use App\Repositories\RdpKaryawanMasukRepo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
@@ -97,6 +98,11 @@ class KaryawanMasukController extends Controller
 
         abort_if(!$item, 404);
         abort_if($item->status !== RdpKaryawanMasukRepo::FINISHED_STATUS, 404);
+        abort_if(!(
+            RdpAccess::isAdmin()
+            || RdpAccess::isPimpinan()
+            || (RdpAccess::isEmployee() && (int) $item->data_employee_id === (int) RdpAccess::employeeId())
+        ), 404);
 
         $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('item'))
             ->setPaper('A4', 'portrait');

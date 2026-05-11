@@ -14,7 +14,7 @@
     <form wire:submit.prevent="wireSubmit">
         <div class="card">
             <div class="card-body">
-                @include('rdp.pengadaan.partials.form', ['showVendor' => true, 'showStatus' => false])
+                @include('rdp.pengadaan.partials.form', ['showVendor' => true, 'showStatus' => true])
             </div>
             <div class="card-footer text-right">
                 <button type="submit" class="btn btn-primary">

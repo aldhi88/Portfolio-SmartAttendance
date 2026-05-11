@@ -22,6 +22,11 @@ class AdminEdit extends Component
     public function mount()
     {
         $this->item = RdpKaryawanKeluarRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
+        $this->statusList = collect(RdpKaryawanKeluarRepo::STATUS_LIST)
+            ->filter(fn ($status) => RdpKaryawanKeluarRepo::isBackwardOrSameStatus($this->item->status, $status))
+            ->values()
+            ->all();
         $this->isReviewStep = in_array($this->item->status, RdpKaryawanKeluarRepo::ADMIN_REVIEWABLE_STATUS, true);
         $this->form = $this->item->only([
             'data_employee_id',
@@ -33,7 +38,7 @@ class AdminEdit extends Component
             'status',
         ]);
         $this->fileOld = $this->item->file_sk_keluar;
-        $this->dt['employees'] = RdpKaryawanKeluarRepo::getEmployees()->toArray();
+        $this->dt['employees'] = RdpKaryawanKeluarRepo::getEmployeesWithActiveRumah()->toArray();
         $this->dt['rumahs'] = RdpKaryawanKeluarRepo::getRumahs($this->item->rdp_master_rumah_id)->toArray();
     }
 
@@ -79,7 +84,7 @@ class AdminEdit extends Component
             return;
         }
 
-        if (RdpKaryawanKeluarRepo::update($this->data['id'], $form['form'])) {
+        if (RdpKaryawanKeluarRepo::update($this->data['id'], $form['form'], false)) {
             session()->flash('success', 'Data izin keluar berhasil disimpan.');
             return redirect()->route('rdp.keluar-rdp.izin-keluar.index');
         }

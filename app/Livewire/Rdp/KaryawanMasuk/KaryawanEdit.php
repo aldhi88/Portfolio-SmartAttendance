@@ -3,6 +3,7 @@
 namespace App\Livewire\Rdp\KaryawanMasuk;
 
 use App\Repositories\RdpKaryawanMasukRepo;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -19,6 +20,8 @@ class KaryawanEdit extends Component
     public function mount()
     {
         $this->item = RdpKaryawanMasukRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
+        abort_if((int) $this->item->data_employee_id !== (int) Auth::user()->data_employees?->id, 404);
         $this->isEditable = in_array($this->item->status, RdpKaryawanMasukRepo::EDITABLE_STATUS);
         $this->form = $this->item->only([
             'data_employee_id',

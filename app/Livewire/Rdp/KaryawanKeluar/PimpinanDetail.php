@@ -13,6 +13,8 @@ class PimpinanDetail extends Component
     public function mount()
     {
         $this->item = RdpKaryawanKeluarRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
+        abort_if(!in_array($this->item->status, RdpKaryawanKeluarRepo::PIMPINAN_VISIBLE_STATUS, true), 404);
     }
 
     public function wireApprove()

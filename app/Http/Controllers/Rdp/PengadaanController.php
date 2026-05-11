@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rdp;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\RdpAccess;
 use App\Repositories\RdpPengadaanRepo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
@@ -125,6 +126,11 @@ class PengadaanController extends Controller
 
         abort_if(!$item, 404);
         abort_if(!in_array($item->status, $visibleStatus, true), 404);
+        abort_if(!(
+            RdpAccess::isAdmin()
+            || RdpAccess::isPimpinan()
+            || (RdpAccess::isVendor() && (int) $item->rdp_master_vendor_id === (int) RdpAccess::vendorId())
+        ), 404);
 
         $pdf = Pdf::loadView('rdp.pengadaan.pdf.spk', compact('item'))
             ->setPaper('A4', 'portrait');

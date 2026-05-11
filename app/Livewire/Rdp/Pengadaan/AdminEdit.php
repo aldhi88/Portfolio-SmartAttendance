@@ -15,15 +15,21 @@ class AdminEdit extends Component
     public $items = [];
     public $dt = [];
     public $satuanList = RdpMasterRumahRepo::SATUAN_LIST;
+    public $statusList = RdpPengadaanRepo::STATUS_LIST;
 
     public function mount()
     {
         $this->item = RdpPengadaanRepo::getByKey($this->data['id']);
         abort_if(!$this->item, 404);
+        $this->statusList = collect(RdpPengadaanRepo::STATUS_LIST)
+            ->filter(fn ($status) => RdpPengadaanRepo::isBackwardOrSameStatus($this->item->status, $status))
+            ->values()
+            ->all();
 
         $this->dt['vendors'] = RdpPengadaanRepo::getVendors()->toArray();
         $this->form = [
             'rdp_master_vendor_id' => $this->item->rdp_master_vendor_id,
+            'status' => $this->item->status,
         ];
         $this->items = $this->item->rdp_pengadaan_items->map(fn ($item) => [
             'id' => $item->id,
@@ -38,6 +44,7 @@ class AdminEdit extends Component
     {
         return [
             'form.rdp_master_vendor_id' => 'required|exists:rdp_master_vendors,id',
+            'form.status' => ['required', Rule::in(RdpPengadaanRepo::STATUS_LIST)],
             'items' => 'required|array|min:1',
             'items.*.id' => [
                 'nullable',
@@ -70,7 +77,7 @@ class AdminEdit extends Component
     {
         $form = $this->validate($this->rules());
 
-        if (RdpPengadaanRepo::update($this->data['id'], $form['form'], $form['items'])) {
+        if (RdpPengadaanRepo::update($this->data['id'], $form['form'], $form['items'], false)) {
             session()->flash('success', 'Data pengadaan berhasil diperbarui.');
             return redirect()->route('rdp.pengadaan.index');
         }
@@ -80,6 +87,7 @@ class AdminEdit extends Component
 
     public $validationAttributes = [
         'form.rdp_master_vendor_id' => 'Vendor',
+        'form.status' => 'Status',
         'items.*.id' => 'Item pengadaan',
         'items.*.nama_item' => 'Nama item',
         'items.*.deskripsi_item' => 'Deskripsi item',

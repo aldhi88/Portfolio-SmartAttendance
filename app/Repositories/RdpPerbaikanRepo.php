@@ -40,6 +40,7 @@ class RdpPerbaikanRepo
         self::FINISHED_STATUS,
         self::CANCEL_STATUS,
     ];
+    public const STATUS_FLOW = self::STATUS_LIST;
 
     public const EDITABLE_STATUS = [
         self::DEFAULT_STATUS,
@@ -205,7 +206,12 @@ class RdpPerbaikanRepo
     {
         try {
             DB::transaction(function () use ($data, $items) {
-                $perbaikan = RdpPerbaikan::create(self::normalizePayload($data));
+                $payload = self::normalizePayload($data);
+                if (!self::isActivePenempatan($payload['rdp_karyawan_masuk_id'] ?? null)) {
+                    throw new \Exception('Penempatan tidak aktif.');
+                }
+
+                $perbaikan = RdpPerbaikan::create($payload);
                 self::syncItems($perbaikan, $items);
             });
 
@@ -216,12 +222,40 @@ class RdpPerbaikanRepo
         }
     }
 
-    public static function update($id, $data, $items = null)
+    public static function update($id, $data, $items = null, $allowForwardStatus = true)
     {
         try {
-            DB::transaction(function () use ($id, $data, $items) {
+            DB::transaction(function () use ($id, $data, $items, $allowForwardStatus) {
                 $perbaikan = RdpPerbaikan::findOrFail($id);
-                $perbaikan->update(self::normalizePayload($data, $perbaikan));
+                $payload = self::normalizePayload($data, $perbaikan);
+
+                if (
+                    !$allowForwardStatus
+                    && isset($payload['status'])
+                    && $payload['status'] !== $perbaikan->status
+                    && !self::isBackwardOrSameStatus($perbaikan->status, $payload['status'])
+                ) {
+                    throw new \Exception('Status hanya boleh dimundurkan dari halaman edit admin.');
+                }
+
+                if (
+                    !empty($payload['rdp_karyawan_masuk_id'])
+                    && (int) $payload['rdp_karyawan_masuk_id'] !== (int) $perbaikan->rdp_karyawan_masuk_id
+                    && !self::isActivePenempatan($payload['rdp_karyawan_masuk_id'])
+                ) {
+                    throw new \Exception('Penempatan tidak aktif.');
+                }
+
+                if (
+                    !$allowForwardStatus
+                    && isset($payload['status'])
+                    && $payload['status'] !== $perbaikan->status
+                    && self::isBackwardOrSameStatus($perbaikan->status, $payload['status'])
+                ) {
+                    self::rollbackProcessArtifacts($perbaikan, $payload['status'], $payload);
+                }
+
+                $perbaikan->update($payload);
 
                 if ($items !== null) {
                     self::syncItems($perbaikan, $items);
@@ -240,6 +274,10 @@ class RdpPerbaikanRepo
         try {
             DB::transaction(function () use ($id) {
                 $item = RdpPerbaikan::with('rdp_perbaikan_items')->findOrFail($id);
+                if (self::statusIndex($item->status) >= self::statusIndex(self::PROPOSAL_SUBMITTED_STATUS)) {
+                    throw new \Exception('Perbaikan sudah masuk proses vendor.');
+                }
+
                 self::deleteFiles($item);
                 $item->delete();
             });
@@ -298,9 +336,23 @@ class RdpPerbaikanRepo
 
     public static function requestProposalRevision($id)
     {
-        return self::transition($id, [self::PROPOSAL_SUBMITTED_STATUS], [
-            'status' => self::VENDOR_ASSIGNED_STATUS,
-        ], 'Request proposal revision rdp_perbaikans failed');
+        try {
+            DB::transaction(function () use ($id) {
+                $item = RdpPerbaikan::findOrFail($id);
+                if ($item->status !== self::PROPOSAL_SUBMITTED_STATUS) {
+                    throw new \Exception('Invalid status.');
+                }
+
+                $payload = ['status' => self::VENDOR_ASSIGNED_STATUS];
+                self::rollbackProcessArtifacts($item, self::VENDOR_ASSIGNED_STATUS, $payload);
+                $item->update($payload);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Request proposal revision rdp_perbaikans failed', ['error' => $e->getMessage()]);
+            return false;
+        }
     }
 
     public static function approveProposalAdmin($id)
@@ -397,7 +449,10 @@ class RdpPerbaikanRepo
     {
         try {
             $item = RdpPerbaikan::findOrFail($id);
-            if (in_array($item->status, [self::FINISHED_STATUS, self::CANCEL_STATUS], true)) {
+            if (
+                in_array($item->status, [self::FINISHED_STATUS, self::CANCEL_STATUS], true)
+                || self::statusIndex($item->status) >= self::statusIndex(self::WORK_RUNNING_STATUS)
+            ) {
                 return false;
             }
 
@@ -458,6 +513,71 @@ class RdpPerbaikanRepo
         }
 
         return $payload;
+    }
+
+    public static function isBackwardOrSameStatus($fromStatus, $toStatus)
+    {
+        if ($fromStatus === self::CANCEL_STATUS || $toStatus === self::CANCEL_STATUS) {
+            return $fromStatus === $toStatus;
+        }
+
+        $fromIndex = array_search($fromStatus, self::STATUS_FLOW, true);
+        $toIndex = array_search($toStatus, self::STATUS_FLOW, true);
+
+        if ($fromIndex === false || $toIndex === false) {
+            return false;
+        }
+
+        return $toIndex <= $fromIndex;
+    }
+
+    public static function isActivePenempatan($penempatanId)
+    {
+        if (empty($penempatanId)) {
+            return false;
+        }
+
+        return RdpKaryawanMasuk::query()
+            ->whereKey($penempatanId)
+            ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('rdp_master_rumahs', function ($query) {
+                $query->where('status', RdpRumahStatusRepo::TERISI);
+            })
+            ->exists();
+    }
+
+    protected static function statusIndex($status)
+    {
+        $index = array_search($status, self::STATUS_FLOW, true);
+
+        return $index === false ? null : $index;
+    }
+
+    protected static function rollbackProcessArtifacts($perbaikan, $targetStatus, &$payload)
+    {
+        $targetIndex = self::statusIndex($targetStatus);
+        if ($targetIndex === null) {
+            return;
+        }
+
+        if ($targetIndex < self::statusIndex(self::VENDOR_ASSIGNED_STATUS)) {
+            $payload['rdp_master_vendor_id'] = null;
+        }
+
+        if ($targetIndex < self::statusIndex(self::PROPOSAL_SUBMITTED_STATUS)) {
+            self::deleteFile(self::FILE_DIR_PROPOSAL, $perbaikan->file_proposal);
+            $payload['file_proposal'] = null;
+        }
+
+        if ($targetIndex < self::statusIndex(self::VENDOR_FINISHED_STATUS)) {
+            $perbaikan->rdp_perbaikan_items()->get()->each(function ($item) {
+                self::deleteFile(self::FILE_DIR_HASIL, $item->foto_hasil_perbaikan);
+                $item->update([
+                    'narasi_hasil_perbaikan' => null,
+                    'foto_hasil_perbaikan' => null,
+                ]);
+            });
+        }
     }
 
     protected static function syncItems($perbaikan, $items)

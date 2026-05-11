@@ -17,6 +17,7 @@ class AdminDetail extends Component
     public function mount()
     {
         $this->item = RdpKaryawanKeluarRepo::getByKey($this->data['id']);
+        abort_if(!$this->item, 404);
         $this->approveRumahId = $this->item->rdp_master_rumah_id;
         $this->dt['rumahs'] = RdpKaryawanKeluarRepo::getRumahs($this->item->rdp_master_rumah_id)->toArray();
     }
