@@ -13,6 +13,8 @@
     var detailBaseUrl = @json($detailBase);
     var editBaseUrl = @json($editBase);
     var spkBaseUrl = @json($spkBase);
+    var editableStatus = @json(\App\Repositories\RdpPengadaanRepo::EDITABLE_STATUS);
+    var adminReviewableStatus = @json(\App\Repositories\RdpPengadaanRepo::ADMIN_REVIEWABLE_STATUS);
     var proposalSubmittedStatus = @json(\App\Repositories\RdpPengadaanRepo::PROPOSAL_SUBMITTED_STATUS);
     var proposalSpvApprovedStatus = @json(\App\Repositories\RdpPengadaanRepo::PROPOSAL_SPV_APPROVED_STATUS);
     var spkReadyStatus = @json(\App\Repositories\RdpPengadaanRepo::SPK_READY_STATUS);
@@ -28,6 +30,9 @@
         }
 
         const statusClass = {
+            'Diajukan': 'badge-soft-primary',
+            'Pengajuan Ditolak SPV, cek catatan': 'badge-soft-danger',
+            'Pengajuan Revisi': 'badge-soft-warning',
             'Vendor Ditugaskan, menunggu proposal vendor': 'badge-soft-info',
             'Proposal Vendor Diajukan, menunggu persetujuan Admin/SPV': 'badge-soft-warning',
             'Proposal Disetujui SPV, menunggu Pimpinan': 'badge-soft-primary',
@@ -43,8 +48,18 @@
         return `<span class="badge ${statusClass[status] || 'badge-soft-secondary'} d-inline-block text-wrap px-2 py-1" style="font-size:13px; line-height:1.25; max-width:190px; white-space:normal;">${status || '-'}</span>`;
     }
 
+    function rumahFromRow(data) {
+        return data.rdp_karyawan_masuks?.rdp_master_rumahs || {};
+    }
+
+    function employeeFromRow(data) {
+        return data.rdp_karyawan_masuks?.data_employees || {};
+    }
+
     function renderPengadaanAction(data) {
         const vendor = data.rdp_master_vendors?.nama || '-';
+        const employee = employeeFromRow(data);
+        const nama = employee.name || '-';
         let detailLabel = 'Detail Data';
         if (rolePengadaan === 'vendor') {
             if (data.status === @json(\App\Repositories\RdpPengadaanRepo::VENDOR_ASSIGNED_STATUS)) {
@@ -64,8 +79,14 @@
         if (rolePengadaan === 'admin') {
             actions += `
                 <a href="${editBaseUrl}/${data.id}" class="dropdown-item">
-                    <i class="fas fa-edit fa-fw"></i> Edit Data
+                    <i class="fas fa-edit fa-fw"></i> ${adminReviewableStatus.includes(data.status) ? 'Edit & Setujui' : 'Edit Data'}
                 </a>`;
+            if (adminReviewableStatus.includes(data.status)) {
+                actions += `
+                    <a data-json='${JSON.stringify({msg: `Minta revisi pengajuan ${nama}`, id: data.id})}' class="dropdown-item text-warning review-pengadaan" data-toggle="modal" data-target="#modalReviewPengadaan" href="javascript:void(0);">
+                        <i class="fas fa-undo fa-fw"></i> Minta Revisi
+                    </a>`;
+            }
             if (data.status === proposalSubmittedStatus) {
                 actions += `
                     <a data-json='${JSON.stringify({msg: `Setujui proposal vendor ${vendor}?`, id: data.id})}' class="dropdown-item text-success delete" data-toggle="modal" data-target="#modalConfirmDelete" data-dispatch="wireApproveProposal()" data-submit-label="Setujui" href="javascript:void(0);">
@@ -99,6 +120,18 @@
                 </a>`;
         }
 
+        if (rolePengadaan === 'karyawan') {
+            if (editableStatus.includes(data.status)) {
+                actions += `
+                    <a href="${editBaseUrl}/${data.id}" class="dropdown-item">
+                        <i class="fas fa-edit fa-fw"></i> Edit Data
+                    </a>
+                    <a data-json='${JSON.stringify({msg: `Batalkan pengajuan pengadaan ${nama}?`, id: data.id})}' class="dropdown-item text-danger delete" data-toggle="modal" data-target="#modalConfirmDelete" data-dispatch="wireCancel()" data-submit-label="Batalkan" href="javascript:void(0);">
+                        <i class="fas fa-ban fa-fw"></i> Batalkan
+                    </a>`;
+            }
+        }
+
         if (rolePengadaan === 'pimpinan') {
             if ([proposalSpvApprovedStatus, resultSpvApprovedStatus].includes(data.status)) {
                 actions += `
@@ -127,7 +160,7 @@
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
         order: [[1, 'desc']],
         columnDefs: [
-            { className: 'text-left', targets: [2,4] },
+            { className: 'text-left', targets: [2,3,4,5,6,7,8,10] },
             { className: 'px-0', targets: [0] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -135,6 +168,12 @@
         columns: [
             { data: null, name: 'created_at', orderable: false, searchable: false, render: renderPengadaanAction },
             { data: null, name: 'DT_RowIndex', orderable: false, searchable: false, render: function (data, type, row, meta) { return meta.row + meta.settings._iDisplayStart + 1; } },
+            { data: null, name: 'rdp_karyawan_masuks.data_employees.name', render: function(data) { return employeeFromRow(data).name || '-'; } },
+            { data: null, name: 'rdp_karyawan_masuks.data_employees.number', render: function(data) { return employeeFromRow(data).number || '-'; } },
+            { data: null, name: 'rdp_karyawan_masuks.data_employees.master_positions.name', render: function(data) { return employeeFromRow(data).master_positions?.name || '-'; } },
+            { data: null, name: 'rdp_karyawan_masuks.rdp_master_rumahs.block', render: function(data) { return rumahFromRow(data).block || '-'; } },
+            { data: null, name: 'rdp_karyawan_masuks.rdp_master_rumahs.tipe', render: function(data) { return rumahFromRow(data).tipe || '-'; } },
+            { data: null, name: 'rdp_karyawan_masuks.rdp_master_rumahs.nomor', render: function(data) { return rumahFromRow(data).nomor || '-'; } },
             { data: null, name: 'rdp_master_vendors.nama', render: function(data) { return data.rdp_master_vendors?.nama || '-'; } },
             { data: 'rdp_pengadaan_items_count', name: 'rdp_pengadaan_items_count', searchable: false },
             { data: 'status', name: 'status', render: pengadaanStatusBadge },
@@ -152,6 +191,14 @@
         initComplete: function(settings){
             table = settings.oInstance.api();
             initSearchCol(table,'#header-filter','search-col-dt');
+        }
+    });
+
+    $('#modalReviewPengadaan').on('show.bs.modal', function(e) {
+        const data = $(e.relatedTarget).data('json');
+        if (data) {
+            $(this).find('.msg').text(data.msg);
+            Livewire.dispatch('setDeleteId', {id: data.id});
         }
     });
 </script>

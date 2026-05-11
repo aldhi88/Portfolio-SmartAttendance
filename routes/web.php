@@ -258,6 +258,19 @@ Route::middleware('auth:web')->group(function () {
                             });
                         });
                     });
+
+                    Route::prefix('pengadaan')->group(function () {
+                        Route::name('pengadaan.')->group(function () {
+                            Route::controller(PengadaanController::class)->group(function () {
+                                Route::get('index', 'karyawanIndex')->name('index');
+                                Route::get('create', 'karyawanCreate')->name('create');
+                                Route::get('detail/{id}', 'karyawanDetail')->name('detail');
+                                Route::get('edit/{id}', 'karyawanEdit')->name('edit');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
+                                Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
                 });
             });
 

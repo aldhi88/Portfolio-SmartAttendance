@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\RdpKaryawanMasuk;
 use App\Models\RdpMasterVendor;
 use App\Models\RdpPengadaan;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 
 class RdpPengadaanRepo
 {
+    public const DEFAULT_STATUS = 'Diajukan';
+    public const SPV_REJECTED_STATUS = 'Pengajuan Ditolak SPV, cek catatan';
+    public const REVISION_STATUS = 'Pengajuan Revisi';
     public const VENDOR_ASSIGNED_STATUS = 'Vendor Ditugaskan, menunggu proposal vendor';
     public const PROPOSAL_SUBMITTED_STATUS = 'Proposal Vendor Diajukan, menunggu persetujuan Admin/SPV';
     public const PROPOSAL_SPV_APPROVED_STATUS = 'Proposal Disetujui SPV, menunggu Pimpinan';
@@ -20,9 +24,11 @@ class RdpPengadaanRepo
     public const RESULT_SPV_APPROVED_STATUS = 'Pengadaan Disetujui SPV, menunggu Pimpinan';
     public const FINISHED_STATUS = 'Pengadaan Selesai';
     public const CANCEL_STATUS = 'Pengadaan Dibatalkan';
-    public const DEFAULT_STATUS = self::VENDOR_ASSIGNED_STATUS;
 
     public const STATUS_LIST = [
+        self::DEFAULT_STATUS,
+        self::SPV_REJECTED_STATUS,
+        self::REVISION_STATUS,
         self::VENDOR_ASSIGNED_STATUS,
         self::PROPOSAL_SUBMITTED_STATUS,
         self::PROPOSAL_SPV_APPROVED_STATUS,
@@ -36,7 +42,20 @@ class RdpPengadaanRepo
     ];
     public const STATUS_FLOW = self::STATUS_LIST;
 
+    public const EDITABLE_STATUS = [
+        self::DEFAULT_STATUS,
+        self::SPV_REJECTED_STATUS,
+        self::REVISION_STATUS,
+    ];
+
+    public const ADMIN_REVIEWABLE_STATUS = [
+        self::DEFAULT_STATUS,
+        self::REVISION_STATUS,
+    ];
+
     public const ADMIN_ACTIONABLE_STATUS = [
+        self::DEFAULT_STATUS,
+        self::REVISION_STATUS,
         self::PROPOSAL_SUBMITTED_STATUS,
         self::SPK_READY_STATUS,
         self::VENDOR_FINISHED_STATUS,
@@ -52,6 +71,10 @@ class RdpPengadaanRepo
         self::WORK_RUNNING_STATUS,
     ];
 
+    public const KARYAWAN_ACTIONABLE_STATUS = [
+        self::SPV_REJECTED_STATUS,
+    ];
+
     public const PIMPINAN_VISIBLE_STATUS = self::STATUS_LIST;
     public const FILE_DIR_PROPOSAL = 'rdp/pengadaan/proposal';
     public const FILE_DIR_HASIL = 'rdp/pengadaan/hasil';
@@ -64,8 +87,22 @@ class RdpPengadaanRepo
     public static function getDT($data = [])
     {
         $query = RdpPengadaan::query()
-            ->with('rdp_master_vendors')
+            ->with([
+                'rdp_karyawan_masuks.data_employees.master_positions',
+                'rdp_karyawan_masuks.rdp_master_rumahs.rdp_master_clusters',
+                'rdp_master_vendors',
+            ])
             ->withCount('rdp_pengadaan_items');
+
+        if (array_key_exists('data_employee_id', $data)) {
+            if (empty($data['data_employee_id'])) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('rdp_karyawan_masuks', function ($q) use ($data) {
+                    $q->where('data_employee_id', $data['data_employee_id']);
+                });
+            }
+        }
 
         if (array_key_exists('vendor_id', $data)) {
             if (empty($data['vendor_id'])) {
@@ -88,6 +125,19 @@ class RdpPengadaanRepo
 
         if ($role === 'admin') {
             return $query->whereIn('status', self::ADMIN_ACTIONABLE_STATUS)->count();
+        }
+
+        if ($role === 'karyawan') {
+            if (empty($id)) {
+                return 0;
+            }
+
+            return $query
+                ->whereIn('status', self::KARYAWAN_ACTIONABLE_STATUS)
+                ->whereHas('rdp_karyawan_masuks', function ($q) use ($id) {
+                    $q->where('data_employee_id', $id);
+                })
+                ->count();
         }
 
         if ($role === 'pimpinan') {
@@ -116,11 +166,59 @@ class RdpPengadaanRepo
             ->get();
     }
 
+    public static function getActivePenempatans()
+    {
+        return RdpKaryawanMasuk::query()
+            ->with([
+                'data_employees.master_organizations:id,name,is_rdp_eligible',
+                'data_employees.master_positions:id,name',
+                'rdp_master_rumahs.rdp_master_clusters:id,nama_cluster',
+            ])
+            ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
+            ->whereHas('rdp_master_rumahs', function ($query) {
+                $query->where('status', RdpRumahStatusRepo::TERISI);
+            })
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    public static function getCurrentPenempatanByEmployee($employeeId)
+    {
+        if (empty($employeeId)) {
+            return null;
+        }
+
+        return RdpKaryawanMasuk::query()
+            ->with([
+                'data_employees.master_organizations:id,name,is_rdp_eligible',
+                'data_employees.master_positions:id,name',
+                'rdp_master_rumahs.rdp_master_clusters:id,nama_cluster',
+            ])
+            ->where('data_employee_id', $employeeId)
+            ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
+            ->whereHas('rdp_master_rumahs', function ($query) {
+                $query->where('status', RdpRumahStatusRepo::TERISI);
+            })
+            ->latest('id')
+            ->first();
+    }
+
     public static function create($data, $items)
     {
         try {
             DB::transaction(function () use ($data, $items) {
-                $pengadaan = RdpPengadaan::create(self::normalizePayload($data));
+                $payload = self::normalizePayload($data);
+                if (!self::isActivePenempatan($payload['rdp_karyawan_masuk_id'] ?? null)) {
+                    throw new \Exception('Penempatan tidak aktif.');
+                }
+
+                $pengadaan = RdpPengadaan::create($payload);
                 self::syncItems($pengadaan, $items);
             });
 
@@ -137,6 +235,14 @@ class RdpPengadaanRepo
             DB::transaction(function () use ($id, $data, $items, $allowForwardStatus) {
                 $pengadaan = RdpPengadaan::findOrFail($id);
                 $payload = self::normalizePayload($data, $pengadaan);
+
+                if (
+                    !empty($payload['rdp_karyawan_masuk_id'])
+                    && (int) $payload['rdp_karyawan_masuk_id'] !== (int) $pengadaan->rdp_karyawan_masuk_id
+                    && !self::isActivePenempatan($payload['rdp_karyawan_masuk_id'])
+                ) {
+                    throw new \Exception('Penempatan tidak aktif.');
+                }
 
                 if (
                     !$allowForwardStatus
@@ -188,6 +294,14 @@ class RdpPengadaanRepo
             Log::error("Delete rdp_pengadaans failed", ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    public static function requestRevision($id, $catatan)
+    {
+        return self::transition($id, self::ADMIN_REVIEWABLE_STATUS, [
+            'status' => self::SPV_REJECTED_STATUS,
+            'catatan_revisi' => $catatan,
+        ], 'Request revision rdp_pengadaans failed');
     }
 
     public static function submitProposal($id, $file, $items, $vendorId = null)
@@ -348,6 +462,25 @@ class RdpPengadaanRepo
         }
     }
 
+    public static function cancelByKaryawan($id, $employeeId)
+    {
+        try {
+            $item = RdpPengadaan::whereHas('rdp_karyawan_masuks', function ($query) use ($employeeId) {
+                $query->where('data_employee_id', $employeeId);
+            })->findOrFail($id);
+
+            if (!in_array($item->status, self::EDITABLE_STATUS, true)) {
+                return false;
+            }
+
+            $item->update(['status' => self::CANCEL_STATUS]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Cancel karyawan rdp_pengadaans failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
     protected static function transition($id, $allowedStatus, $payload, $logMessage)
     {
         try {
@@ -367,7 +500,9 @@ class RdpPengadaanRepo
     protected static function normalizePayload($data, $existing = null)
     {
         $payload = collect($data)->only([
+            'rdp_karyawan_masuk_id',
             'rdp_master_vendor_id',
+            'catatan_revisi',
             'status',
         ])->toArray();
 
@@ -401,6 +536,24 @@ class RdpPengadaanRepo
         return $index === false ? null : $index;
     }
 
+    public static function isActivePenempatan($penempatanId)
+    {
+        if (empty($penempatanId)) {
+            return false;
+        }
+
+        return RdpKaryawanMasuk::query()
+            ->whereKey($penempatanId)
+            ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
+            ->whereHas('rdp_master_rumahs', function ($query) {
+                $query->where('status', RdpRumahStatusRepo::TERISI);
+            })
+            ->exists();
+    }
+
     protected static function rollbackProcessArtifacts($pengadaan, $targetStatus, &$payload)
     {
         $targetIndex = self::statusIndex($targetStatus);
@@ -411,6 +564,10 @@ class RdpPengadaanRepo
         if ($targetIndex < self::statusIndex(self::PROPOSAL_SUBMITTED_STATUS)) {
             self::deleteFile(self::FILE_DIR_PROPOSAL, $pengadaan->file_proposal);
             $payload['file_proposal'] = null;
+        }
+
+        if ($targetIndex < self::statusIndex(self::VENDOR_ASSIGNED_STATUS)) {
+            $payload['rdp_master_vendor_id'] = null;
         }
 
         if ($targetIndex < self::statusIndex(self::VENDOR_FINISHED_STATUS)) {
@@ -480,6 +637,11 @@ class RdpPengadaanRepo
     protected static function relations()
     {
         return [
+            'rdp_karyawan_masuks.data_employees.master_organizations',
+            'rdp_karyawan_masuks.data_employees.master_positions',
+            'rdp_karyawan_masuks.data_employees.master_locations',
+            'rdp_karyawan_masuks.data_employees.master_functions',
+            'rdp_karyawan_masuks.rdp_master_rumahs.rdp_master_clusters',
             'rdp_master_vendors',
             'rdp_pengadaan_items',
         ];

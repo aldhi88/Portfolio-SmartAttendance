@@ -13,10 +13,12 @@ class KaryawanCreate extends Component
 
     public $data;
     public $form = [];
+    public $isRdpEligible = false;
 
     public function mount()
     {
         $this->form['data_employee_id'] = Auth::user()->data_employees?->id;
+        $this->isRdpEligible = RdpKaryawanMasukRepo::isEmployeeEligible($this->form['data_employee_id']);
         $this->form['status'] = RdpKaryawanMasukRepo::DEFAULT_STATUS;
     }
 
@@ -33,6 +35,11 @@ class KaryawanCreate extends Component
 
     public function wireSubmit()
     {
+        if (!$this->isRdpEligible) {
+            $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Perusahaan karyawan belum berhak fasilitas RDP.']);
+            return;
+        }
+
         $form = $this->validate($this->rules());
         $form['form']['data_employee_id'] = Auth::user()->data_employees?->id;
         $form['form']['rdp_master_rumah_id'] = null;

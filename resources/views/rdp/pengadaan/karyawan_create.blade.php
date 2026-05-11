@@ -4,7 +4,7 @@
             <div class="page-title-box d-flex align-items-center justify-content-between row">
                 @include('components.app_layout_title', ['pass' => $data])
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
-                    <a href="{{ route('rdp.pengadaan.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('rdp.pengajuan.pengadaan.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left fa-fw"></i> Kembali
                     </a>
                 </div>
@@ -14,11 +14,11 @@
     <form wire:submit.prevent="wireSubmit">
         <div class="card">
             <div class="card-body">
-                @include('rdp.pengadaan.partials.form', ['mode' => 'admin', 'showVendor' => true, 'showStatus' => !$isReviewStep])
+                @include('rdp.pengadaan.partials.form', ['mode' => 'karyawan', 'showVendor' => false, 'showStatus' => false])
             </div>
             <div class="card-footer text-right">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save fa-fw"></i> {{ $isReviewStep ? 'Simpan dan Setujui' : 'Simpan Perubahan' }}
+                <button type="submit" class="btn btn-primary" @if (!$penempatan) disabled @endif>
+                    <i class="fas fa-paper-plane fa-fw"></i> Ajukan Pengadaan
                 </button>
             </div>
         </div>

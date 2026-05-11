@@ -5,6 +5,7 @@ namespace App\Livewire\Rdp\MasterRumah;
 use App\Repositories\RdpMasterClusterRepo;
 use App\Repositories\RdpMasterAsetRepo;
 use App\Repositories\RdpMasterRumahRepo;
+use App\Repositories\RdpRumahStatusRepo;
 use Livewire\Component;
 
 class MasterRumahEdit extends Component
@@ -30,6 +31,7 @@ class MasterRumahEdit extends Component
         $this->dt['aset_status'] = self::ASET_STATUS_LIST;
         $this->dt['satuan'] = RdpMasterRumahRepo::SATUAN_LIST;
 
+        RdpRumahStatusRepo::sync($this->editId);
         $rumah = RdpMasterRumahRepo::getByKey($this->editId);
         $this->isSystemOccupied = $rumah->status === self::SYSTEM_OCCUPIED_STATUS;
         $this->dt['status_readonly'] = $this->isSystemOccupied;

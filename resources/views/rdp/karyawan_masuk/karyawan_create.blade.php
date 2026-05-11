@@ -17,9 +17,14 @@
     <form wire:submit.prevent="wireSubmit">
         <div class="card">
             <div class="card-body">
+                @if (!$isRdpEligible)
+                    <div class="alert alert-warning">
+                        Perusahaan Anda belum berhak fasilitas RDP.
+                    </div>
+                @endif
                 @include('rdp.karyawan_masuk.partials.karyawan_form')
                 <div class="text-right">
-                    <button type="submit" class="btn btn-primary">Kirim Pengajuan</button>
+                    <button type="submit" class="btn btn-primary" @disabled(!$isRdpEligible)>Kirim Pengajuan</button>
                 </div>
             </div>
         </div>

@@ -4,36 +4,28 @@ namespace App\Livewire\Rdp\Pengadaan;
 
 use App\Repositories\RdpMasterRumahRepo;
 use App\Repositories\RdpPengadaanRepo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-class AdminEdit extends Component
+class KaryawanEdit extends Component
 {
     public $data;
     public $item;
+    public $isEditable = false;
     public $form = [];
     public $items = [];
-    public $dt = [];
     public $satuanList = RdpMasterRumahRepo::SATUAN_LIST;
-    public $statusList = RdpPengadaanRepo::STATUS_LIST;
-    public $isReviewStep = false;
 
     public function mount()
     {
         $this->item = RdpPengadaanRepo::getByKey($this->data['id']);
         abort_if(!$this->item, 404);
-        $this->statusList = collect(RdpPengadaanRepo::STATUS_LIST)
-            ->filter(fn ($status) => RdpPengadaanRepo::isBackwardOrSameStatus($this->item->status, $status))
-            ->values()
-            ->all();
-        $this->isReviewStep = in_array($this->item->status, RdpPengadaanRepo::ADMIN_REVIEWABLE_STATUS, true);
+        abort_if((int) $this->item->rdp_karyawan_masuks?->data_employee_id !== (int) Auth::user()->data_employees?->id, 404);
 
-        $this->dt['penempatans'] = RdpPengadaanRepo::getActivePenempatans()->toArray();
-        $this->dt['vendors'] = RdpPengadaanRepo::getVendors()->toArray();
+        $this->isEditable = in_array($this->item->status, RdpPengadaanRepo::EDITABLE_STATUS, true);
         $this->form = [
             'rdp_karyawan_masuk_id' => $this->item->rdp_karyawan_masuk_id,
-            'rdp_master_vendor_id' => $this->item->rdp_master_vendor_id,
-            'catatan_revisi' => $this->item->catatan_revisi,
             'status' => $this->item->status,
         ];
         $this->items = $this->item->rdp_pengadaan_items->map(fn ($item) => [
@@ -47,9 +39,8 @@ class AdminEdit extends Component
 
     public function rules()
     {
-        $rules = [
+        return [
             'form.rdp_karyawan_masuk_id' => 'required|exists:rdp_karyawan_masuks,id',
-            'form.rdp_master_vendor_id' => 'required|exists:rdp_master_vendors,id',
             'items' => 'required|array|min:1',
             'items.*.id' => [
                 'nullable',
@@ -60,13 +51,6 @@ class AdminEdit extends Component
             'items.*.jumlah' => 'required|integer|min:1',
             'items.*.satuan' => ['required', Rule::in($this->satuanList)],
         ];
-
-        if (!$this->isReviewStep) {
-            $rules['form.status'] = ['required', Rule::in(RdpPengadaanRepo::STATUS_LIST)];
-            $rules['form.catatan_revisi'] = 'nullable|string';
-        }
-
-        return $rules;
     }
 
     public function addItem()
@@ -87,31 +71,24 @@ class AdminEdit extends Component
 
     public function wireSubmit()
     {
-        $form = $this->validate($this->rules());
-
-        if ($this->isReviewStep) {
-            $form['form']['status'] = RdpPengadaanRepo::VENDOR_ASSIGNED_STATUS;
-            $form['form']['catatan_revisi'] = null;
+        if (!$this->isEditable) {
+            $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Pengajuan tidak bisa diedit pada status saat ini.']);
+            return;
         }
 
-        if (RdpPengadaanRepo::update($this->data['id'], $form['form'], $form['items'], $this->isReviewStep)) {
-            session()->flash('success', $this->isReviewStep ? 'Pengajuan pengadaan berhasil disetujui dan vendor ditugaskan.' : 'Data pengadaan berhasil diperbarui.');
-            return redirect()->route('rdp.pengadaan.index');
+        $form = $this->validate($this->rules());
+        $form['form']['rdp_karyawan_masuk_id'] = $this->item->rdp_karyawan_masuk_id;
+        $form['form']['status'] = RdpPengadaanRepo::REVISION_STATUS;
+
+        if (RdpPengadaanRepo::update($this->data['id'], $form['form'], $form['items'])) {
+            session()->flash('success', 'Pengajuan pengadaan berhasil dikirim ulang.');
+            return redirect()->route('rdp.pengajuan.pengadaan.index');
         }
 
         $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
-    public function selectedPenempatan()
-    {
-        return collect($this->dt['penempatans'])->firstWhere('id', (int) ($this->form['rdp_karyawan_masuk_id'] ?? 0))
-            ?: $this->item?->rdp_karyawan_masuks?->toArray();
-    }
-
     public $validationAttributes = [
-        'form.rdp_karyawan_masuk_id' => 'Rumah/Karyawan',
-        'form.rdp_master_vendor_id' => 'Vendor',
-        'form.status' => 'Status',
         'items.*.id' => 'Item pengadaan',
         'items.*.nama_item' => 'Nama item',
         'items.*.deskripsi_item' => 'Deskripsi item',
@@ -121,6 +98,6 @@ class AdminEdit extends Component
 
     public function render()
     {
-        return view('rdp.pengadaan.admin_edit');
+        return view('rdp.pengadaan.karyawan_edit');
     }
 }

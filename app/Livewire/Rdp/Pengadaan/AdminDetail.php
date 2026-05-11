@@ -9,11 +9,21 @@ class AdminDetail extends Component
 {
     public $data;
     public $item;
+    public $catatanRevisi;
 
     public function mount()
     {
         $this->item = RdpPengadaanRepo::getByKey($this->data['id']);
         abort_if(!$this->item, 404);
+    }
+
+    public function wireRequestRevision()
+    {
+        $this->validate(['catatanRevisi' => 'required|string'], [], ['catatanRevisi' => 'Catatan revisi']);
+        if (RdpPengadaanRepo::requestRevision($this->data['id'], $this->catatanRevisi)) {
+            return redirect()->route('rdp.pengadaan.detail', $this->data['id']);
+        }
+        $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Pengajuan tidak bisa direvisi pada status saat ini.']);
     }
 
     public function wireApproveProposal()

@@ -58,6 +58,55 @@ class PengadaanController extends Controller
         return $this->datatable(RdpPengadaanRepo::getDT())->toJson();
     }
 
+    public function karyawanIndex()
+    {
+        $data['tab_title'] = "Pengajuan Pengadaan RDP | RDP";
+        $data['page_title'] = "Pengajuan Pengadaan RDP";
+        $data['page_desc'] = "Pengajuan pengadaan barang dan perlengkapan RDP.";
+        $data['lw'] = "rdp.pengadaan.karyawan-data";
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function karyawanCreate()
+    {
+        $data['tab_title'] = "Tambah Pengajuan Pengadaan RDP | RDP";
+        $data['page_title'] = "Tambah Pengajuan Pengadaan RDP";
+        $data['page_desc'] = "Tambah pengajuan pengadaan barang dan perlengkapan RDP.";
+        $data['lw'] = "rdp.pengadaan.karyawan-create";
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function karyawanEdit($id)
+    {
+        $data['tab_title'] = "Edit Pengajuan Pengadaan RDP | RDP";
+        $data['page_title'] = "Edit Pengajuan Pengadaan RDP";
+        $data['page_desc'] = "Ubah pengajuan pengadaan barang dan perlengkapan RDP.";
+        $data['lw'] = "rdp.pengadaan.karyawan-edit";
+        $data['id'] = $id;
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function karyawanDetail($id)
+    {
+        $data['tab_title'] = "Detail Pengajuan Pengadaan RDP | RDP";
+        $data['page_title'] = "Detail Pengajuan Pengadaan RDP";
+        $data['page_desc'] = "Detail pengajuan pengadaan barang dan perlengkapan RDP.";
+        $data['lw'] = "rdp.pengadaan.karyawan-detail";
+        $data['id'] = $id;
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function karyawanIndexDT()
+    {
+        return $this->datatable(RdpPengadaanRepo::getDT([
+            'data_employee_id' => Auth::user()->data_employees?->id,
+        ]))->toJson();
+    }
+
     public function pimpinanIndex()
     {
         $data['tab_title'] = "Persetujuan Pengadaan RDP | RDP";
@@ -130,6 +179,7 @@ class PengadaanController extends Controller
             RdpAccess::isAdmin()
             || RdpAccess::isPimpinan()
             || (RdpAccess::isVendor() && (int) $item->rdp_master_vendor_id === (int) RdpAccess::vendorId())
+            || (RdpAccess::isEmployee() && (int) $item->rdp_karyawan_masuks?->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
         $pdf = Pdf::loadView('rdp.pengadaan.pdf.spk', compact('item'))
@@ -141,6 +191,36 @@ class PengadaanController extends Controller
     protected function datatable($query)
     {
         return DataTables::of($query)
+            ->filterColumn('rdp_karyawan_masuks.data_employees.name', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.data_employees', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_karyawan_masuks.data_employees.number', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.data_employees', function ($q) use ($keyword) {
+                    $q->where('number', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_karyawan_masuks.data_employees.master_positions.name', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.data_employees.master_positions', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_karyawan_masuks.rdp_master_rumahs.block', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.rdp_master_rumahs', function ($q) use ($keyword) {
+                    $q->where('block', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_karyawan_masuks.rdp_master_rumahs.tipe', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.rdp_master_rumahs', function ($q) use ($keyword) {
+                    $q->where('tipe', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_karyawan_masuks.rdp_master_rumahs.nomor', function ($query, $keyword) {
+                $query->whereHas('rdp_karyawan_masuks.rdp_master_rumahs', function ($q) use ($keyword) {
+                    $q->where('nomor', 'like', "%$keyword%");
+                });
+            })
             ->filterColumn('rdp_master_vendors.nama', function ($query, $keyword) {
                 $query->whereHas('rdp_master_vendors', function ($q) use ($keyword) {
                     $q->where('nama', 'like', "%$keyword%");

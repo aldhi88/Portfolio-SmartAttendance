@@ -12,6 +12,6 @@
         'ajaxRoute' => route('rdp.vendor.pengadaan.indexDT'),
         'detailBase' => url('rdp/vendor/pengadaan/detail'),
         'editBase' => '',
-        'spkBase' => url('rdp/pengadaan/spk'),
+        'spkBase' => url('rdp/vendor/pengadaan/spk'),
     ])
 </div>

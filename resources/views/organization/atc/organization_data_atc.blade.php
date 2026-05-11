@@ -13,7 +13,7 @@
         order: [[1, 'asc']],
         columnDefs: [
             { className: 'text-left', targets: [3] },
-            { className: 'text-center text-muted', targets: [4] },
+            { className: 'text-center text-muted', targets: [5] },
             { className: 'px-0', targets: [1] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -78,6 +78,16 @@
             },
             { data: 'name', name: 'name', orderable: true, searchable:true },
             {
+                data: 'is_rdp_eligible', name: 'is_rdp_eligible', orderable: true, searchable:false,
+                render: function(data, type, row) {
+                    if (data) {
+                        return '<span class="badge badge-success">Eligible</span>';
+                    }
+
+                    return '<span class="badge badge-secondary">Tidak</span>';
+                }
+            },
+            {
                 data: null, name: 'id', orderable: false, searchable:false,
                 render: function(data, type, row) {
                     return '<small>#'+data.id+'</small>';
@@ -131,5 +141,4 @@
     });
 </script>
 @endpush
-
 

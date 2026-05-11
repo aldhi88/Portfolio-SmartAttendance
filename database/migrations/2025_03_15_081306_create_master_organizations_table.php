@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('master_organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('is_rdp_eligible')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

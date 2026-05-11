@@ -29,6 +29,7 @@
                                 <th class="text-center" style="max-width: 5px"></th>
                                 <th class="text-center" width="10">No</th>
                                 <th class="text-center">Nama</th>
+                                <th class="text-center">RDP</th>
                                 <th class="text-center" style="min-width: 10px">#ID</th>
                             </tr>
                             </thead>
@@ -43,6 +44,7 @@
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm text-center search-col-dt">
                                     </th>
+                                    <th class="text-center"></th>
                                     <th class="text-center"></th>
                                 </tr>
                             </thead>

@@ -12,7 +12,7 @@
         'ajaxRoute' => route('rdp.persetujuan.pengadaan.indexDT'),
         'detailBase' => url('rdp/persetujuan/pengadaan/detail'),
         'editBase' => '',
-        'spkBase' => url('rdp/pengadaan/spk'),
+        'spkBase' => url('rdp/persetujuan/pengadaan/spk'),
     ])
     @include('components.modal.modal_confirm_delete')
 </div>

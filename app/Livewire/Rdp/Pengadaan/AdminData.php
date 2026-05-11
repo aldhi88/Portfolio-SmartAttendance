@@ -10,6 +10,7 @@ class AdminData extends Component
 {
     public $data;
     public $actionId;
+    public $catatanRevisi;
     public $statusList = RdpPengadaanRepo::STATUS_LIST;
 
     #[On('setDeleteId')]
@@ -26,6 +27,19 @@ class AdminData extends Component
         }
 
         $this->error();
+    }
+
+    public function wireRequestRevision()
+    {
+        $this->validate(['catatanRevisi' => 'required|string'], [], ['catatanRevisi' => 'Catatan revisi']);
+
+        if (RdpPengadaanRepo::requestRevision($this->actionId, $this->catatanRevisi)) {
+            $this->catatanRevisi = null;
+            $this->success('Pengajuan berhasil dikirim untuk revisi.', 'modalReviewPengadaan');
+            return;
+        }
+
+        $this->error('Pengajuan tidak bisa direvisi pada status saat ini.');
     }
 
     public function wireRequestProposalRevision()

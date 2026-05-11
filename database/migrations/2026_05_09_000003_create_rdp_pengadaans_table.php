@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\RdpMasterVendor;
+use App\Models\RdpKaryawanMasuk;
 use App\Models\RdpPengadaan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('rdp_pengadaans', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(RdpKaryawanMasuk::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(RdpMasterVendor::class)->nullable()->constrained()->nullOnDelete();
             $table->string('file_proposal')->nullable();
+            $table->text('catatan_revisi')->nullable();
             $table->enum('status', [
+                'Diajukan',
+                'Pengajuan Ditolak SPV, cek catatan',
+                'Pengajuan Revisi',
                 'Vendor Ditugaskan, menunggu proposal vendor',
                 'Proposal Vendor Diajukan, menunggu persetujuan Admin/SPV',
                 'Proposal Disetujui SPV, menunggu Pimpinan',
@@ -25,7 +31,7 @@ return new class extends Migration
                 'Pengadaan Disetujui SPV, menunggu Pimpinan',
                 'Pengadaan Selesai',
                 'Pengadaan Dibatalkan',
-            ])->default('Vendor Ditugaskan, menunggu proposal vendor');
+            ])->default('Diajukan');
             $table->timestamps();
         });
 

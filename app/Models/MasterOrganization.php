@@ -11,6 +11,10 @@ class MasterOrganization extends Model
     use SoftDeletes;
     protected $guarded = [];
 
+    protected $casts = [
+        'is_rdp_eligible' => 'boolean',
+    ];
+
     public function data_employees():HasMany
     {
         return $this->hasMany(DataEmployee::class, 'master_organization_id', 'id');

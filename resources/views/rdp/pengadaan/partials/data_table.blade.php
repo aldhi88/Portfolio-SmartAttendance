@@ -8,6 +8,12 @@
                             <tr>
                                 <th class="text-center"></th>
                                 <th class="text-center">No</th>
+                                <th class="text-center">Nama</th>
+                                <th class="text-center">Nopek</th>
+                                <th class="text-center">Jabatan</th>
+                                <th class="text-center">Block</th>
+                                <th class="text-center">Tipe</th>
+                                <th class="text-center">Nomor</th>
                                 <th class="text-center">Vendor</th>
                                 <th class="text-center">Item</th>
                                 <th class="text-center">Status</th>
@@ -18,6 +24,12 @@
                             <tr>
                                 <th></th>
                                 <th></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                 <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                 <th></th>
                                 <th>

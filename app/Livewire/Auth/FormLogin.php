@@ -24,6 +24,11 @@ class FormLogin extends Component
             return;
         }
 
+        if($cekLogin==='not_rdp_eligible'){
+            session()->flash('message', 'Akses login karyawan tidak diizinkan.');
+            return;
+        }
+
         if($cekLogin){
             return redirect()->route('anchor');
         }

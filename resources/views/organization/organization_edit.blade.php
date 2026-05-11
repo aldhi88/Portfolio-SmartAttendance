@@ -19,6 +19,15 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="form-group mb-0">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" wire:model="update.is_rdp_eligible" id="update_is_rdp_eligible" class="custom-control-input @error('update.is_rdp_eligible') is-invalid @enderror">
+                                        <label class="custom-control-label" for="update_is_rdp_eligible">Berhak Fasilitas RDP</label>
+                                        @error('update.is_rdp_eligible')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">

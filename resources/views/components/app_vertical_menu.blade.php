@@ -20,6 +20,7 @@
                         $rdpPerbaikanPimpinanBadge = 0;
                         $rdpPerbaikanVendorBadge = 0;
                         $rdpPengadaanAdminBadge = 0;
+                        $rdpPengadaanKaryawanBadge = 0;
                         $rdpPengadaanPimpinanBadge = 0;
                         $rdpPengadaanVendorBadge = 0;
 
@@ -35,6 +36,7 @@
                                 $rdpPenempatanKaryawanBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpKeluarKaryawanBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpPerbaikanKaryawanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
+                                $rdpPengadaanKaryawanBadge = \App\Repositories\RdpPengadaanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                             }
 
                             if (Auth::user()->is_manajer) {
@@ -60,6 +62,7 @@
                             $rdpPerbaikanPimpinanBadge = 0;
                             $rdpPerbaikanVendorBadge = 0;
                             $rdpPengadaanAdminBadge = 0;
+                            $rdpPengadaanKaryawanBadge = 0;
                             $rdpPengadaanPimpinanBadge = 0;
                             $rdpPengadaanVendorBadge = 0;
                         }
@@ -294,8 +297,8 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-gear-line"></i>
-                                @if ($rdpPerbaikanKaryawanBadge > 0)
-                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge }}</span>
+                                @if (($rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge) > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge }}</span>
                                 @endif
                                 <span>Rumah Saya</span>
                             </a>
@@ -308,7 +311,14 @@
                                         Data Perbaikan
                                     </a>
                                 </li>
-                                <li class="child"><a href="{{ route('rdp.pengajuan.perbaikan.create') }}">Ajukan Perbaikan</a></li>
+                                <li class="child">
+                                    <a href="{{ route('rdp.pengajuan.pengadaan.index') }}">
+                                        @if ($rdpPengadaanKaryawanBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPengadaanKaryawanBadge }}</span>
+                                        @endif
+                                        Data Pengadaan
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li>

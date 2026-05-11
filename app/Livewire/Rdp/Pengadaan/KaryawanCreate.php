@@ -4,23 +4,24 @@ namespace App\Livewire\Rdp\Pengadaan;
 
 use App\Repositories\RdpMasterRumahRepo;
 use App\Repositories\RdpPengadaanRepo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-class AdminCreate extends Component
+class KaryawanCreate extends Component
 {
     public $data;
+    public $penempatan;
     public $form = [
-        'status' => RdpPengadaanRepo::VENDOR_ASSIGNED_STATUS,
+        'status' => RdpPengadaanRepo::DEFAULT_STATUS,
     ];
     public $items = [];
-    public $dt = [];
     public $satuanList = RdpMasterRumahRepo::SATUAN_LIST;
 
     public function mount()
     {
-        $this->dt['penempatans'] = RdpPengadaanRepo::getActivePenempatans()->toArray();
-        $this->dt['vendors'] = RdpPengadaanRepo::getVendors()->toArray();
+        $this->penempatan = RdpPengadaanRepo::getCurrentPenempatanByEmployee(Auth::user()->data_employees?->id);
+        $this->form['rdp_karyawan_masuk_id'] = $this->penempatan?->id;
         $this->addItem();
     }
 
@@ -28,7 +29,6 @@ class AdminCreate extends Component
     {
         return [
             'form.rdp_karyawan_masuk_id' => 'required|exists:rdp_karyawan_masuks,id',
-            'form.rdp_master_vendor_id' => 'required|exists:rdp_master_vendors,id',
             'items' => 'required|array|min:1',
             'items.*.nama_item' => 'required|string',
             'items.*.deskripsi_item' => 'required|string',
@@ -56,24 +56,19 @@ class AdminCreate extends Component
     public function wireSubmit()
     {
         $form = $this->validate($this->rules());
-        $form['form']['status'] = RdpPengadaanRepo::VENDOR_ASSIGNED_STATUS;
+        $form['form']['rdp_karyawan_masuk_id'] = RdpPengadaanRepo::getCurrentPenempatanByEmployee(Auth::user()->data_employees?->id)?->id;
+        $form['form']['status'] = RdpPengadaanRepo::DEFAULT_STATUS;
 
         if (RdpPengadaanRepo::create($form['form'], $form['items'])) {
-            session()->flash('success', 'Data pengadaan berhasil ditambahkan.');
-            return redirect()->route('rdp.pengadaan.index');
+            session()->flash('success', 'Pengajuan pengadaan berhasil dikirim.');
+            return redirect()->route('rdp.pengajuan.pengadaan.index');
         }
 
         $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Terjadi masalah, hubungi administrator.']);
     }
 
-    public function selectedPenempatan()
-    {
-        return collect($this->dt['penempatans'])->firstWhere('id', (int) ($this->form['rdp_karyawan_masuk_id'] ?? 0));
-    }
-
     public $validationAttributes = [
-        'form.rdp_karyawan_masuk_id' => 'Rumah/Karyawan',
-        'form.rdp_master_vendor_id' => 'Vendor',
+        'form.rdp_karyawan_masuk_id' => 'Rumah aktif',
         'items.*.nama_item' => 'Nama item',
         'items.*.deskripsi_item' => 'Deskripsi item',
         'items.*.jumlah' => 'Jumlah',
@@ -82,6 +77,6 @@ class AdminCreate extends Component
 
     public function render()
     {
-        return view('rdp.pengadaan.admin_create');
+        return view('rdp.pengadaan.karyawan_create');
     }
 }

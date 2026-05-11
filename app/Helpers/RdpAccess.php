@@ -20,6 +20,19 @@ class RdpAccess
         return (bool) ($user?->is_karyawan || $user?->is_pengawas);
     }
 
+    public static function isRdpEligibleEmployee(?UserLogin $user = null): bool
+    {
+        $user ??= auth()->user();
+
+        if (!$user?->data_employees) {
+            return false;
+        }
+
+        $user->data_employees->loadMissing('master_organizations:id,is_rdp_eligible');
+
+        return (bool) $user->data_employees->master_organizations?->is_rdp_eligible;
+    }
+
     public static function isPimpinan(?UserLogin $user = null): bool
     {
         $user ??= auth()->user();
@@ -57,7 +70,7 @@ class RdpAccess
         foreach ($roles as $role) {
             if (match ($role) {
                 'admin' => self::isAdmin($user),
-                'employee' => self::isEmployee($user),
+                'employee' => self::isEmployee($user) && self::isRdpEligibleEmployee($user),
                 'pimpinan' => self::isPimpinan($user),
                 'vendor' => self::isVendor($user),
                 default => false,

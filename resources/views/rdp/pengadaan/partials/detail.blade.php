@@ -6,21 +6,55 @@
         \App\Repositories\RdpPengadaanRepo::RESULT_SPV_APPROVED_STATUS,
         \App\Repositories\RdpPengadaanRepo::FINISHED_STATUS,
     ], true);
+    $spkRoute = null;
+    if ($spkVisible) {
+        if (\App\Helpers\RdpAccess::isAdmin()) {
+            $spkRoute = route('rdp.pengadaan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isPimpinan()) {
+            $spkRoute = route('rdp.persetujuan.pengadaan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isVendor()) {
+            $spkRoute = route('rdp.vendor.pengadaan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isEmployee()) {
+            $spkRoute = route('rdp.pengajuan.pengadaan.spk', $item->id);
+        }
+    }
+    $employee = $item->rdp_karyawan_masuks?->data_employees;
+    $rumah = $item->rdp_karyawan_masuks?->rdp_master_rumahs;
 @endphp
 
 <div class="row">
     <div class="col-md-6">
         <div class="border rounded p-3 mb-3">
+            <h6>Karyawan</h6>
+            <div><strong>Nama:</strong> {{ $employee?->name ?: '-' }}</div>
+            <div><strong>NOPek:</strong> {{ $employee?->number ?: '-' }}</div>
+            <div><strong>Jabatan:</strong> {{ $employee?->master_positions?->name ?: '-' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="border rounded p-3 mb-3">
+            <h6>Unit Rumah</h6>
+            <div><strong>Cluster:</strong> {{ $rumah?->rdp_master_clusters?->nama_cluster ?: '-' }}</div>
+            <div><strong>Block:</strong> {{ $rumah?->block ?: '-' }}</div>
+            <div><strong>Tipe:</strong> {{ $rumah?->tipe ?: '-' }}</div>
+            <div><strong>Nomor:</strong> {{ $rumah?->nomor ?: '-' }}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="border rounded p-3 mb-3">
             <h6>Proses</h6>
             <div><strong>Status:</strong> <span class="badge badge-soft-primary text-wrap" style="white-space:normal; line-height:1.25;">{{ $item->status }}</span></div>
             <div><strong>Vendor:</strong> {{ $item->rdp_master_vendors?->nama ?: '-' }}</div>
+            @if ($showCatatanRevisi ?? true)
+                <div><strong>Catatan Revisi:</strong> {{ $item->catatan_revisi ?: '-' }}</div>
+            @endif
         </div>
     </div>
     <div class="col-md-6">
         <div class="border rounded p-3 mb-3">
             <h6>Dokumen</h6>
             <div><strong>Proposal:</strong> {!! $proposalUrl ? '<a href="' . $proposalUrl . '" target="_blank">Lihat proposal</a>' : '-' !!}</div>
-            <div><strong>SPK:</strong> {!! $spkVisible ? '<a href="' . route('rdp.pengadaan.spk', $item->id) . '" target="_blank">Lihat SPK</a>' : '-' !!}</div>
+            <div><strong>SPK:</strong> {!! $spkRoute ? '<a href="' . $spkRoute . '" target="_blank">Lihat SPK</a>' : '-' !!}</div>
         </div>
     </div>
 </div>

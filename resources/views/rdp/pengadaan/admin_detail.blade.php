@@ -5,7 +5,7 @@
                 @include('components.app_layout_title', ['pass' => $data])
                 <div class="col-12 col-sm text-left text-sm-right mt-2 mt-sm-0">
                     <a href="{{ route('rdp.pengadaan.edit', $item->id) }}" class="btn btn-primary">
-                        <i class="fas fa-edit fa-fw"></i> Edit Data
+                        <i class="fas fa-edit fa-fw"></i> {{ in_array($item->status, \App\Repositories\RdpPengadaanRepo::ADMIN_REVIEWABLE_STATUS, true) ? 'Edit & Setujui' : 'Edit Data' }}
                     </a>
                     <a href="{{ route('rdp.pengadaan.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left fa-fw"></i> Kembali
@@ -18,6 +18,11 @@
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
+                @if (in_array($item->status, \App\Repositories\RdpPengadaanRepo::ADMIN_REVIEWABLE_STATUS, true))
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalReviewPengadaan">
+                        <i class="fas fa-undo fa-fw"></i> Minta Revisi
+                    </button>
+                @endif
                 @if ($item->status === \App\Repositories\RdpPengadaanRepo::PROPOSAL_SUBMITTED_STATUS)
                     <button type="button" class="btn btn-success" wire:click="wireApproveProposal">
                         <i class="fas fa-check fa-fw"></i> Setujui Proposal
@@ -46,4 +51,6 @@
             @include('rdp.pengadaan.partials.detail')
         </div>
     </div>
+
+    @include('rdp.pengadaan.partials.modal_review')
 </div>

@@ -19,7 +19,8 @@ class AuthRepository implements AuthInterface
             $user = UserLogin::query()
                 ->with([
                     'user_roles:id,name',
-                    'data_employees:id,user_login_id,status',
+                    'data_employees:id,user_login_id,master_organization_id,status',
+                    'data_employees.master_organizations:id,is_rdp_eligible',
                     'rdp_master_vendors:id,user_login_id,status',
                 ])
                 ->where('username', $data['username'])
@@ -31,6 +32,15 @@ class AuthRepository implements AuthInterface
                 if (($user['rdp_master_vendors']['status'] ?? null) != 'Aktif') {
                     return "not_active";
                 }
+            }
+
+            if (
+                count($user) > 0
+                && $data['username'] != 'superuser'
+                && $user['user_role_id'] == 300
+                && !($user['data_employees']['master_organizations']['is_rdp_eligible'] ?? false)
+            ) {
+                return "not_rdp_eligible";
             }
 
             if(count($user) > 0 && $data['username'] != 'superuser' && !in_array($user['user_role_id'], [600, 700])){

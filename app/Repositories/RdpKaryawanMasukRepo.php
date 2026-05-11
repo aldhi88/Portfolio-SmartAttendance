@@ -136,8 +136,11 @@ class RdpKaryawanMasukRepo
     public static function getEmployees()
     {
         return DataEmployee::query()
+            ->whereHas('master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
             ->with([
-                'master_organizations:id,name',
+                'master_organizations:id,name,is_rdp_eligible',
                 'master_positions:id,name',
                 'master_locations:id,name',
                 'master_functions:id,name',
@@ -179,6 +182,10 @@ class RdpKaryawanMasukRepo
         try {
             DB::transaction(function () use ($data) {
                 $payload = self::normalizePayload($data);
+                if (!self::isEmployeeEligible($payload['data_employee_id'] ?? null)) {
+                    throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
+                }
+
                 if (self::hasActiveOrPendingPenempatan($payload['data_employee_id'] ?? null)) {
                     throw new \Exception('Karyawan masih memiliki penempatan atau pengajuan aktif.');
                 }
@@ -198,6 +205,10 @@ class RdpKaryawanMasukRepo
         try {
             DB::transaction(function () use ($data, $asetData) {
                 $payload = self::normalizePayload($data);
+                if (!self::isEmployeeEligible($payload['data_employee_id'] ?? null)) {
+                    throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
+                }
+
                 if (self::hasActiveOrPendingPenempatan($payload['data_employee_id'] ?? null)) {
                     throw new \Exception('Karyawan masih memiliki penempatan atau pengajuan aktif.');
                 }
@@ -224,6 +235,10 @@ class RdpKaryawanMasukRepo
                 $item = RdpKaryawanMasuk::findOrFail($id);
                 $oldRumahId = $item->rdp_master_rumah_id;
                 $payload = self::normalizePayload($data, $item);
+
+                if (!self::isEmployeeEligible($payload['data_employee_id'] ?? null)) {
+                    throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
+                }
 
                 if (
                     !$allowForwardStatus
@@ -305,6 +320,10 @@ class RdpKaryawanMasukRepo
                 return false;
             }
 
+            if (!self::isEmployeeEligible($item->data_employee_id)) {
+                return false;
+            }
+
             if (!self::isRumahAvailableForPenempatan($rumahId, $item->id, false)) {
                 return false;
             }
@@ -368,6 +387,10 @@ class RdpKaryawanMasukRepo
                 }
 
                 DB::transaction(function () use ($item) {
+                    if (!self::isEmployeeEligible($item->data_employee_id)) {
+                        throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
+                    }
+
                     if (!self::isRumahAvailableForPenempatan($item->rdp_master_rumah_id, $item->id, false)) {
                         throw new \Exception('Rumah tidak tersedia untuk penempatan.');
                     }
@@ -377,6 +400,10 @@ class RdpKaryawanMasukRepo
                 });
 
                 return true;
+            }
+
+            if (!self::isEmployeeEligible($item->data_employee_id)) {
+                return false;
             }
 
             $item->update(['status' => self::PIMPINAN_APPROVED_STATUS]);
@@ -544,6 +571,20 @@ class RdpKaryawanMasukRepo
             && RdpKaryawanMasuk::whereKey($currentMasukId)
                 ->where('rdp_master_rumah_id', $rumahId)
                 ->exists();
+    }
+
+    public static function isEmployeeEligible($employeeId)
+    {
+        if (empty($employeeId)) {
+            return false;
+        }
+
+        return DataEmployee::query()
+            ->whereKey($employeeId)
+            ->whereHas('master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
+            ->exists();
     }
 
     protected static function updateRumahAsets($rumahId, $asetData)

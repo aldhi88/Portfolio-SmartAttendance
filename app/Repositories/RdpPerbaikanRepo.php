@@ -163,10 +163,14 @@ class RdpPerbaikanRepo
     {
         return RdpKaryawanMasuk::query()
             ->with([
+                'data_employees.master_organizations:id,name,is_rdp_eligible',
                 'data_employees.master_positions:id,name',
                 'rdp_master_rumahs.rdp_master_clusters:id,nama_cluster',
             ])
             ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
             ->whereHas('rdp_master_rumahs', function ($query) {
                 $query->where('status', 'Terisi');
             })
@@ -182,11 +186,15 @@ class RdpPerbaikanRepo
 
         return RdpKaryawanMasuk::query()
             ->with([
+                'data_employees.master_organizations:id,name,is_rdp_eligible',
                 'data_employees.master_positions:id,name',
                 'rdp_master_rumahs.rdp_master_clusters:id,nama_cluster',
             ])
             ->where('data_employee_id', $employeeId)
             ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
             ->whereHas('rdp_master_rumahs', function ($query) {
                 $query->where('status', 'Terisi');
             })
@@ -540,6 +548,9 @@ class RdpPerbaikanRepo
         return RdpKaryawanMasuk::query()
             ->whereKey($penempatanId)
             ->where('status', RdpKaryawanMasukRepo::FINISHED_STATUS)
+            ->whereHas('data_employees.master_organizations', function ($query) {
+                $query->where('is_rdp_eligible', true);
+            })
             ->whereHas('rdp_master_rumahs', function ($query) {
                 $query->where('status', RdpRumahStatusRepo::TERISI);
             })
