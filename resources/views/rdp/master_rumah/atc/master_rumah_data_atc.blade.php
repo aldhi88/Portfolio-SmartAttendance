@@ -21,6 +21,11 @@
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
+                    const usedCount = Number(data.rdp_karyawan_masuks_count || 0) + Number(data.rdp_karyawan_keluars_count || 0);
+                    if (usedCount > 0) {
+                        return `<input class="data-check" type="checkbox" value="${data.id}" disabled title="Unit rumah sudah dipakai proses RDP">`;
+                    }
+
                     return '<input class="data-check" type="checkbox" value="'+data.id+'">';
                 }
             },
@@ -28,10 +33,22 @@
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function(data, type, row) {
                     const label = [data.block, data.tipe, data.nomor].filter(Boolean).join(' ');
+                    const usedCount = Number(data.rdp_karyawan_masuks_count || 0) + Number(data.rdp_karyawan_keluars_count || 0);
                     const dtJson = {
                         msg: `Apakah anda yakin menghapus unit rumah ${label}?`,
+                        info: usedCount > 0 ? `Unit rumah ini sudah dipakai oleh ${usedCount} proses RDP dan tidak bisa dihapus.` : '',
                         id: data.id
                     };
+                    const deleteMenu = usedCount > 0
+                        ? `<a class="dropdown-item text-muted" href="javascript:void(0);">
+                                <i class="fas fa-ban fa-fw"></i> Tidak Bisa Dihapus
+                            </a>`
+                        : `<a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
+                                data-toggle="modal" data-target="#modalConfirmDelete"
+                                data-dispatch="wireDelete()"
+                                href="javascript:void(0);">
+                                <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
+                                </a>`;
 
                     return `
                         <div class="btn-group">
@@ -45,12 +62,7 @@
                                 <a href="{{ url('rdp/master/rumah/edit') }}/${data.id}" class="dropdown-item">
                                     <i class="fas fa-edit fa-fw"></i> Edit Data
                                 </a>
-                                <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
-                                data-toggle="modal" data-target="#modalConfirmDelete"
-                                data-dispatch="wireDelete()"
-                                href="javascript:void(0);">
-                                <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
-                                </a>
+                                ${deleteMenu}
                             </div>
                         </div>
                     `;
@@ -93,7 +105,7 @@
     $(document).on('change', '.check-data-all', function () {
         let isChecked = $(this).is(':checked');
         table.rows({ page: 'current' }).nodes().each(function (row) {
-            $(row).find('.data-check').prop('checked', isChecked);
+            $(row).find('.data-check:not(:disabled)').prop('checked', isChecked);
         });
         $('#btnDeleteSelected').prop('disabled', !isChecked);
     });

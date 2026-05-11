@@ -19,4 +19,9 @@ class RdpMasterVendor extends Model
     {
         return $this->hasMany(RdpPerbaikan::class, 'rdp_master_vendor_id', 'id');
     }
+
+    public function rdp_pengadaans(): HasMany
+    {
+        return $this->hasMany(RdpPengadaan::class, 'rdp_master_vendor_id', 'id');
+    }
 }

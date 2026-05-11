@@ -28,7 +28,7 @@ class AdminData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error', 'message' => 'Izin penempatan sudah dipakai data perbaikan atau tidak bisa dihapus.']);
     }
 
     public function wireApprovePendataanAset()

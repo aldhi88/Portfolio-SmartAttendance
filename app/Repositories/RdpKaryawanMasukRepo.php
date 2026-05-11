@@ -77,7 +77,8 @@ class RdpKaryawanMasukRepo
             ->with([
                 'data_employees.master_positions',
                 'rdp_master_rumahs.rdp_master_clusters',
-            ]);
+            ])
+            ->withCount('rdp_perbaikans');
 
         if (array_key_exists('data_employee_id', $data)) {
             if (empty($data['data_employee_id'])) {
@@ -197,8 +198,10 @@ class RdpKaryawanMasukRepo
         try {
             DB::transaction(function () use ($id, $data) {
                 $item = RdpKaryawanMasuk::findOrFail($id);
+                $oldRumahId = $item->rdp_master_rumah_id;
                 $payload = self::normalizePayload($data, $item);
                 $item->update($payload);
+                RdpRumahStatusRepo::syncMany([$oldRumahId, $item->fresh()->rdp_master_rumah_id]);
             });
 
             return true;
@@ -211,7 +214,17 @@ class RdpKaryawanMasukRepo
     public static function delete($id)
     {
         try {
-            RdpKaryawanMasuk::findOrFail($id)->delete();
+            if (RdpKaryawanMasuk::whereKey($id)->whereHas('rdp_perbaikans')->exists()) {
+                return false;
+            }
+
+            DB::transaction(function () use ($id) {
+                $item = RdpKaryawanMasuk::findOrFail($id);
+                $rumahId = $item->rdp_master_rumah_id;
+                $item->delete();
+                RdpRumahStatusRepo::sync($rumahId);
+            });
+
             return true;
         } catch (\Exception $e) {
             Log::error("Delete rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
@@ -307,7 +320,7 @@ class RdpKaryawanMasukRepo
 
                 DB::transaction(function () use ($item) {
                     $item->update(['status' => self::FINISHED_STATUS]);
-                    $item->rdp_master_rumahs?->update(['status' => 'Terisi']);
+                    RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
                 });
 
                 return true;

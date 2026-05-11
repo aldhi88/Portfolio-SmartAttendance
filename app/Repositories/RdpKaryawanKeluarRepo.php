@@ -239,8 +239,10 @@ class RdpKaryawanKeluarRepo
         try {
             DB::transaction(function () use ($id, $data) {
                 $item = RdpKaryawanKeluar::findOrFail($id);
+                $oldRumahId = $item->rdp_master_rumah_id;
                 $payload = self::normalizePayload($data, $item);
                 $item->update($payload);
+                RdpRumahStatusRepo::syncMany([$oldRumahId, $item->fresh()->rdp_master_rumah_id]);
             });
 
             return true;
@@ -253,7 +255,13 @@ class RdpKaryawanKeluarRepo
     public static function delete($id)
     {
         try {
-            RdpKaryawanKeluar::findOrFail($id)->delete();
+            DB::transaction(function () use ($id) {
+                $item = RdpKaryawanKeluar::findOrFail($id);
+                $rumahId = $item->rdp_master_rumah_id;
+                $item->delete();
+                RdpRumahStatusRepo::sync($rumahId);
+            });
+
             return true;
         } catch (\Exception $e) {
             Log::error("Delete rdp_karyawan_keluars failed", ['error' => $e->getMessage()]);
@@ -349,7 +357,7 @@ class RdpKaryawanKeluarRepo
 
                 DB::transaction(function () use ($item) {
                     $item->update(['status' => self::FINISHED_STATUS]);
-                    $item->rdp_master_rumahs?->update(['status' => 'Kosong']);
+                    RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
                 });
 
                 return true;

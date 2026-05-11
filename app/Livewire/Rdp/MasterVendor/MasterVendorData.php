@@ -63,7 +63,7 @@ class MasterVendorData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Vendor sudah dipakai proses RDP dan tidak bisa dihapus.']);
     }
     // end edit section
 
@@ -97,7 +97,7 @@ class MasterVendorData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Salah satu vendor sudah dipakai proses RDP dan tidak bisa dihapus.']);
     }
     // end create section
 

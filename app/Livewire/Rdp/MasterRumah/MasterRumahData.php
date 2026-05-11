@@ -26,7 +26,7 @@ class MasterRumahData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Unit rumah sudah dipakai proses RDP dan tidak bisa dihapus.']);
     }
 
     public $deleteMultipleId;
@@ -45,7 +45,7 @@ class MasterRumahData extends Component
             return;
         }
 
-        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Terjadi masalah, hubungi administrator.']);
+        $this->dispatch('alert', data: ['type' => 'error',  'message' => 'Salah satu unit rumah sudah dipakai proses RDP dan tidak bisa dihapus.']);
     }
 
     public function render()

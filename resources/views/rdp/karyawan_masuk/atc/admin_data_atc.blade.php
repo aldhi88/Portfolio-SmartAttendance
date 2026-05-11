@@ -65,6 +65,7 @@
                     const canCancel = data.status !== finishedStatus;
                     const canPendataanAset = data.status === pendataanAsetStatus;
                     const canApprovePendataanAset = data.status === pengajuanPendataanAsetStatus;
+                    const perbaikanCount = Number(data.rdp_perbaikans_count || 0);
                     const revisionBerkasJson = {
                         msg: `Minta revisi berkas pengajuan ${nama}`,
                         id: data.id
@@ -75,12 +76,23 @@
                     };
                     const dtJson = {
                         msg: `Apakah anda yakin menghapus izin penempatan ${nama}?`,
+                        info: perbaikanCount > 0 ? `Izin penempatan ini sudah dipakai oleh ${perbaikanCount} data perbaikan dan tidak bisa dihapus.` : '',
                         id: data.id
                     };
                     const approvePendataanJson = {
                         msg: `Apakah anda yakin menyetujui pendataan aset ${nama}?`,
                         id: data.id
                     };
+                    const deleteMenu = perbaikanCount > 0
+                        ? `<a class="dropdown-item text-muted" href="javascript:void(0);">
+                                <i class="fas fa-ban fa-fw"></i> Tidak Bisa Dihapus
+                            </a>`
+                        : `<a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
+                                    data-toggle="modal" data-target="#modalConfirmDelete"
+                                    data-dispatch="wireDelete()"
+                                    href="javascript:void(0);">
+                                    <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
+                                </a>`;
                     return `
                         <div class="btn-group">
                             <a href="javascript:void(0)" class="dropdown-toggle card-drop" data-toggle="dropdown">
@@ -115,12 +127,7 @@
                                     href="javascript:void(0);">
                                     <i class="fas fa-check fa-fw"></i> Setujui Pendataan Aset
                                 </a>` : ''}
-                                <a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
-                                    data-toggle="modal" data-target="#modalConfirmDelete"
-                                    data-dispatch="wireDelete()"
-                                    href="javascript:void(0);">
-                                    <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
-                                </a>
+                                ${deleteMenu}
                             </div>
                         </div>
                     `;

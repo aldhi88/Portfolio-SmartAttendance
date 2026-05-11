@@ -45,7 +45,11 @@ class RdpMasterRumahRepo
     {
         return RdpMasterRumah::query()
             ->with('rdp_master_clusters')
-            ->withCount('rdp_master_rumah_asets');
+            ->withCount([
+                'rdp_master_rumah_asets',
+                'rdp_karyawan_masuks',
+                'rdp_karyawan_keluars',
+            ]);
     }
 
     public static function create($data)
@@ -86,7 +90,11 @@ class RdpMasterRumahRepo
     public static function delete($id)
     {
         try {
-            RdpMasterRumah::find($id)->delete();
+            if (self::isUsed($id)) {
+                return false;
+            }
+
+            RdpMasterRumah::findOrFail($id)->delete();
             return true;
         } catch (\Exception $e) {
             Log::error("Delete rdp_master_rumahs failed", ['error' => $e->getMessage()]);
@@ -97,12 +105,31 @@ class RdpMasterRumahRepo
     public static function deleteMultiple($ids)
     {
         try {
+            if (RdpMasterRumah::whereIn('id', $ids)
+                ->where(function ($query) {
+                    $query->whereHas('rdp_karyawan_masuks')
+                        ->orWhereHas('rdp_karyawan_keluars');
+                })
+                ->exists()) {
+                return false;
+            }
+
             RdpMasterRumah::whereIn('id', $ids)->delete();
             return true;
         } catch (\Exception $e) {
             Log::error("Delete multiple rdp_master_rumahs failed", ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    protected static function isUsed($id)
+    {
+        return RdpMasterRumah::whereKey($id)
+            ->where(function ($query) {
+                $query->whereHas('rdp_karyawan_masuks')
+                    ->orWhereHas('rdp_karyawan_keluars');
+            })
+            ->exists();
     }
 
     protected static function replicateClusterAset($rumahId, $clusterId)

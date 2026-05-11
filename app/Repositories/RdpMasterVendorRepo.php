@@ -21,7 +21,8 @@ class RdpMasterVendorRepo
     public static function getDT($data)
     {
         return RdpMasterVendor::query()
-            ->with(['user_logins']);
+            ->with(['user_logins'])
+            ->withCount(['rdp_perbaikans', 'rdp_pengadaans']);
     }
 
     public static function create($data)
@@ -86,6 +87,10 @@ class RdpMasterVendorRepo
     public static function delete($id)
     {
         try {
+            if (self::isUsed($id)) {
+                return false;
+            }
+
             DB::transaction(function () use ($id) {
                 $vendor = RdpMasterVendor::findOrFail($id);
                 $userLoginId = $vendor->user_login_id;
@@ -104,6 +109,15 @@ class RdpMasterVendorRepo
     public static function deleteMultiple($ids)
     {
         try {
+            if (RdpMasterVendor::whereIn('id', $ids)
+                ->where(function ($query) {
+                    $query->whereHas('rdp_perbaikans')
+                        ->orWhereHas('rdp_pengadaans');
+                })
+                ->exists()) {
+                return false;
+            }
+
             DB::transaction(function () use ($ids) {
                 $userLoginIds = RdpMasterVendor::whereIn('id', $ids)
                     ->pluck('user_login_id')
@@ -118,5 +132,15 @@ class RdpMasterVendorRepo
             Log::error("Delete multiple rdp_master_vendors failed", ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    protected static function isUsed($id)
+    {
+        return RdpMasterVendor::whereKey($id)
+            ->where(function ($query) {
+                $query->whereHas('rdp_perbaikans')
+                    ->orWhereHas('rdp_pengadaans');
+            })
+            ->exists();
     }
 }
