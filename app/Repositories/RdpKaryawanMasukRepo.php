@@ -20,6 +20,8 @@ class RdpKaryawanMasukRepo
     public const PIMPINAN_APPROVED_STATUS = 'Berkas Disetujui Pimpinan, menuggu pendataan aset';
     public const ASSET_SUBMITTED_STATUS = 'Pengajuan Pendataan Aset';
     public const ASSET_SPV_APPROVED_STATUS = 'Pendataan Disetujui SPV, menuggu Pimpinan';
+    public const HC_REGION_PENDING_STATUS = 'Disetujui Pimpinan, menunggu Manager HC Region';
+    public const HC_REGION_REJECTED_STATUS = 'Ditolak Manager HC Region';
     public const FINISHED_STATUS = 'Penempatan Selesai';
     public const CANCEL_STATUS = 'Penempatan Dibatalkan';
     public const ASSET_STATUS_LIST = ['Ada', 'Tidak Ada'];
@@ -36,6 +38,8 @@ class RdpKaryawanMasukRepo
         'Berkas Disetujui Pimpinan, menuggu pendataan aset',
         'Pengajuan Pendataan Aset',
         'Pendataan Disetujui SPV, menuggu Pimpinan',
+        'Disetujui Pimpinan, menunggu Manager HC Region',
+        'Ditolak Manager HC Region',
         'Penempatan Selesai',
         'Penempatan Dibatalkan',
     ];
@@ -47,7 +51,9 @@ class RdpKaryawanMasukRepo
         self::PIMPINAN_APPROVED_STATUS,
         self::ASSET_SUBMITTED_STATUS,
         self::ASSET_SPV_APPROVED_STATUS,
+        self::HC_REGION_PENDING_STATUS,
         self::FINISHED_STATUS,
+        self::HC_REGION_REJECTED_STATUS,
         self::CANCEL_STATUS,
     ];
     public const PIMPINAN_VISIBLE_STATUS = self::STATUS_LIST;
@@ -68,6 +74,9 @@ class RdpKaryawanMasukRepo
     public const PIMPINAN_ACTIONABLE_STATUS = [
         self::SPV_APPROVED_STATUS,
         self::ASSET_SPV_APPROVED_STATUS,
+    ];
+    public const HC_REGION_ACTIONABLE_STATUS = [
+        self::HC_REGION_PENDING_STATUS,
     ];
     public const FILE_DIR = 'rdp/izin-penempatan';
 
@@ -128,6 +137,10 @@ class RdpKaryawanMasukRepo
 
         if ($role === 'pimpinan') {
             return $query->whereIn('status', self::PIMPINAN_ACTIONABLE_STATUS)->count();
+        }
+
+        if ($role === 'hc-region') {
+            return $query->whereIn('status', self::HC_REGION_ACTIONABLE_STATUS)->count();
         }
 
         return 0;
@@ -386,19 +399,7 @@ class RdpKaryawanMasukRepo
                     return false;
                 }
 
-                DB::transaction(function () use ($item) {
-                    if (!self::isEmployeeEligible($item->data_employee_id)) {
-                        throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
-                    }
-
-                    if (!self::isRumahAvailableForPenempatan($item->rdp_master_rumah_id, $item->id, false)) {
-                        throw new \Exception('Rumah tidak tersedia untuk penempatan.');
-                    }
-
-                    $item->update(['status' => self::FINISHED_STATUS]);
-                    RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
-                });
-
+                $item->update(['status' => self::HC_REGION_PENDING_STATUS]);
                 return true;
             }
 
@@ -410,6 +411,50 @@ class RdpKaryawanMasukRepo
             return true;
         } catch (\Exception $e) {
             Log::error("Approve pimpinan rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function approveHcRegion($id)
+    {
+        try {
+            $item = RdpKaryawanMasuk::findOrFail($id);
+            if ($item->status !== self::HC_REGION_PENDING_STATUS) {
+                return false;
+            }
+
+            DB::transaction(function () use ($item) {
+                if (!self::isEmployeeEligible($item->data_employee_id)) {
+                    throw new \Exception('Karyawan tidak berhak fasilitas RDP.');
+                }
+
+                if (!self::isRumahAvailableForPenempatan($item->rdp_master_rumah_id, $item->id, false)) {
+                    throw new \Exception('Rumah tidak tersedia untuk penempatan.');
+                }
+
+                $item->update(['status' => self::FINISHED_STATUS]);
+                RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Approve HC Region rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function rejectHcRegion($id)
+    {
+        try {
+            $item = RdpKaryawanMasuk::findOrFail($id);
+            if ($item->status !== self::HC_REGION_PENDING_STATUS) {
+                return false;
+            }
+
+            $item->update(['status' => self::HC_REGION_REJECTED_STATUS]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Reject HC Region rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
             return false;
         }
     }
@@ -510,7 +555,9 @@ class RdpKaryawanMasukRepo
 
     public static function isBackwardOrSameStatus($fromStatus, $toStatus)
     {
-        if ($fromStatus === self::CANCEL_STATUS || $toStatus === self::CANCEL_STATUS) {
+        $terminalStatuses = [self::CANCEL_STATUS, self::HC_REGION_REJECTED_STATUS];
+
+        if (in_array($fromStatus, $terminalStatuses, true) || in_array($toStatus, $terminalStatuses, true)) {
             return $fromStatus === $toStatus;
         }
 
@@ -534,7 +581,7 @@ class RdpKaryawanMasukRepo
             ->with('rdp_master_rumahs')
             ->where('data_employee_id', $employeeId)
             ->when($excludeId, fn ($query) => $query->whereKeyNot($excludeId))
-            ->where('status', '!=', self::CANCEL_STATUS)
+            ->whereNotIn('status', [self::CANCEL_STATUS, self::HC_REGION_REJECTED_STATUS])
             ->get()
             ->contains(function ($item) {
                 if ($item->status !== self::FINISHED_STATUS) {

@@ -8,9 +8,7 @@
 
 @push('push-script')
 <script>
-    var pendataanAsetStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::PIMPINAN_APPROVED_STATUS);
-    var pengajuanPendataanAsetStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::ASSET_SUBMITTED_STATUS);
-    var adminReviewableStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::ADMIN_REVIEWABLE_STATUS);
+    var pendingHcRegionStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::HC_REGION_PENDING_STATUS);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS);
     var sipBaseUrl = @json(url('rdp/penempatan/izin-penempatan/sip'));
 
@@ -57,79 +55,45 @@
             { className: 'px-0', targets: [0] },
             { className: 'text-center', targets: ['_all'] },
         ],
-        ajax: '{{ route("rdp.penempatan.izin-penempatan.indexDT") }}',
+        ajax: '{{ route("rdp.hc-region.izin-penempatan.indexDT") }}',
         columns: [
             {
                 data: null, name: 'created_at', orderable: false, searchable: false,
                 render: function(data) {
                     const nama = data.data_employees?.name || '-';
-                    const canReviewBerkas = adminReviewableStatus.includes(data.status);
-                    const canCancel = data.status !== finishedStatus;
-                    const canPendataanAset = data.status === pendataanAsetStatus;
-                    const canApprovePendataanAset = data.status === pengajuanPendataanAsetStatus;
-                    const perbaikanCount = Number(data.rdp_perbaikans_count || 0);
-                    const revisionBerkasJson = {
-                        msg: `Minta revisi berkas pengajuan ${nama}`,
+                    const canProcess = data.status === pendingHcRegionStatus;
+                    const approveJson = {
+                        msg: `Apakah anda yakin menyetujui izin penempatan ${nama}?`,
                         id: data.id
                     };
-                    const cancelJson = {
-                        msg: `Apakah anda yakin menolak/membatalkan pengajuan ${nama}?`,
+                    const rejectJson = {
+                        msg: `Apakah anda yakin menolak izin penempatan ${nama}?`,
                         id: data.id
                     };
-                    const dtJson = {
-                        msg: `Apakah anda yakin menghapus izin penempatan ${nama}?`,
-                        info: perbaikanCount > 0 ? `Izin penempatan ini sudah dipakai oleh ${perbaikanCount} data perbaikan dan tidak bisa dihapus.` : '',
-                        id: data.id
-                    };
-                    const approvePendataanJson = {
-                        msg: `Apakah anda yakin menyetujui pendataan aset ${nama}?`,
-                        id: data.id
-                    };
-                    const deleteMenu = perbaikanCount > 0
-                        ? `<a class="dropdown-item text-muted" href="javascript:void(0);">
-                                <i class="fas fa-ban fa-fw"></i> Tidak Bisa Dihapus
-                            </a>`
-                        : `<a data-json='${JSON.stringify(dtJson)}' class="dropdown-item text-danger delete"
-                                    data-toggle="modal" data-target="#modalConfirmDelete"
-                                    data-dispatch="wireDelete()"
-                                    href="javascript:void(0);">
-                                    <i class="fas fa-trash-alt fa-fw"></i> Hapus Data
-                                </a>`;
+
                     return `
                         <div class="btn-group">
                             <a href="javascript:void(0)" class="dropdown-toggle card-drop" data-toggle="dropdown">
                                 <i class="mdi mdi-dots-vertical"></i>
                             </a>
                             <div class="dropdown-menu">
-                                <a href="{{ url('rdp/penempatan/izin-penempatan/detail') }}/${data.id}" class="dropdown-item">
+                                <a href="{{ url('rdp/hc-region/izin-penempatan/detail') }}/${data.id}" class="dropdown-item">
                                     <i class="fas fa-eye fa-fw"></i> Detail Data
                                 </a>
-                                <a href="{{ url('rdp/penempatan/izin-penempatan/edit') }}/${data.id}" class="dropdown-item">
-                                    <i class="fas fa-edit fa-fw"></i> ${canReviewBerkas ? 'Edit & Setujui' : 'Edit Data'}
-                                </a>
-                                ${canReviewBerkas ? `<a data-json='${JSON.stringify(revisionBerkasJson)}' class="dropdown-item text-warning review-berkas"
-                                    data-toggle="modal" data-target="#modalReviewBerkas"
-                                    href="javascript:void(0);">
-                                    <i class="fas fa-undo fa-fw"></i> Minta Revisi Berkas
-                                </a>` : ''}
-                                ${canCancel ? `<a data-json='${JSON.stringify(cancelJson)}' class="dropdown-item text-danger delete"
+                                ${canProcess ? `<a data-json='${JSON.stringify(approveJson)}' class="dropdown-item text-success delete"
                                     data-toggle="modal" data-target="#modalConfirmDelete"
-                                    data-dispatch="wireCancelPenempatan()"
-                                    data-submit-label="Tolak"
-                                    href="javascript:void(0);">
-                                    <i class="fas fa-ban fa-fw"></i> Tolak/Batalkan
-                                </a>` : ''}
-                                ${canPendataanAset ? `<a href="{{ url('rdp/penempatan/izin-penempatan/pendataan-aset') }}/${data.id}" class="dropdown-item">
-                                    <i class="fas fa-clipboard-check fa-fw"></i> Pendataan Aset
-                                </a>` : ''}
-                                ${canApprovePendataanAset ? `<a data-json='${JSON.stringify(approvePendataanJson)}' class="dropdown-item text-success delete"
-                                    data-toggle="modal" data-target="#modalConfirmDelete"
-                                    data-dispatch="wireApprovePendataanAset()"
+                                    data-dispatch="wireApprove()"
                                     data-submit-label="Setujui"
                                     href="javascript:void(0);">
-                                    <i class="fas fa-check fa-fw"></i> Setujui Pendataan Aset
+                                    <i class="fas fa-check fa-fw"></i> Setujui
                                 </a>` : ''}
-                                ${deleteMenu}
+                                ${canProcess ? `<a data-json='${JSON.stringify(rejectJson)}' class="dropdown-item text-danger delete"
+                                    data-toggle="modal" data-target="#modalConfirmDelete"
+                                    data-dispatch="wireReject()"
+                                    data-submit-label="Tolak"
+                                    href="javascript:void(0);">
+                                    <i class="fas fa-ban fa-fw"></i> Tolak
+                                </a>` : ''}
                             </div>
                         </div>
                     `;
@@ -208,12 +172,5 @@
             initSearchCol(table,'#header-filter','search-col-dt');
         }
     });
-
-    $('#modalReviewBerkas').on('show.bs.modal', function(e) {
-        const data = $(e.relatedTarget).data('json');
-        $(this).find('.msg').text(data.msg);
-        Livewire.dispatch('setDeleteId', {id: data.id});
-    });
-
 </script>
 @endpush

@@ -12,6 +12,7 @@
                         $rdpPenempatanAdminBadge = 0;
                         $rdpPenempatanKaryawanBadge = 0;
                         $rdpPenempatanPimpinanBadge = 0;
+                        $rdpPenempatanHcRegionBadge = 0;
                         $rdpKeluarAdminBadge = 0;
                         $rdpKeluarKaryawanBadge = 0;
                         $rdpKeluarPimpinanBadge = 0;
@@ -46,6 +47,10 @@
                                 $rdpPengadaanPimpinanBadge = \App\Repositories\RdpPengadaanRepo::countActionable('pimpinan');
                             }
 
+                            if (Auth::user()->is_manager_hc_region) {
+                                $rdpPenempatanHcRegionBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('hc-region');
+                            }
+
                             if (Auth::user()->is_vendor_rdp) {
                                 $rdpPerbaikanVendorBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
                                 $rdpPengadaanVendorBadge = \App\Repositories\RdpPengadaanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
@@ -54,6 +59,7 @@
                             $rdpPenempatanAdminBadge = 0;
                             $rdpPenempatanKaryawanBadge = 0;
                             $rdpPenempatanPimpinanBadge = 0;
+                            $rdpPenempatanHcRegionBadge = 0;
                             $rdpKeluarAdminBadge = 0;
                             $rdpKeluarKaryawanBadge = 0;
                             $rdpKeluarPimpinanBadge = 0;
@@ -70,7 +76,7 @@
 
                     {{-- ATTD --}}
 
-                    @if (!Auth::user()->is_vendor_rdp)
+                    @if (!Auth::user()->is_vendor_rdp && !Auth::user()->is_manager_hc_region)
                         <li class="menu-title">Smart Absensi</li>
                     @endif
 
@@ -177,7 +183,7 @@
                     {{-- RDP --}}
                     <li class="menu-title">RUMAH DINAS PERTAMINA</li>
                     @if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser)
-                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah rdp-master-vendor">
+                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah rdp-master-vendor rdp-master-manager-hc-region">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Data Master</span>
@@ -187,6 +193,7 @@
                                 <li class="child rdp-master-cluster"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
                                 <li class="child rdp-master-rumah"><a href="{{ route('rdp.master.rumah.index') }}">Data Unit Rumah</a></li>
                                 <li class="child rdp-master-vendor"><a href="{{ route('rdp.master.vendor.index') }}">Data Vendor RDP</a></li>
+                                <li class="child rdp-master-manager-hc-region"><a href="{{ route('rdp.master.manager-hc-region.index') }}">Data Manager HC Region</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -381,6 +388,19 @@
                                 <li class="child"><a href="{{ route('rdp.laporan.aset-realisasi.index') }}">Aset RDP Realisasi</a></li>
                                 <li class="child"><a href="{{ route('rdp.laporan.penempatan.index') }}">Penempatan RDP</a></li>
                             </ul>
+                        </li>
+                    @endif
+
+                    {{-- Login Manager HC Region --}}
+                    @if (Auth::user()->is_manager_hc_region)
+                        <li>
+                            <a href="{{ route('rdp.hc-region.izin-penempatan.index') }}" class="waves-effect">
+                                <i class="ri-file-edit-line"></i>
+                                @if ($rdpPenempatanHcRegionBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPenempatanHcRegionBadge }}</span>
+                                @endif
+                                <span>Data Pengajuan SIP</span>
+                            </a>
                         </li>
                     @endif
 

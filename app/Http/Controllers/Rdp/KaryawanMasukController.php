@@ -101,6 +101,7 @@ class KaryawanMasukController extends Controller
         abort_if(!(
             RdpAccess::isAdmin()
             || RdpAccess::isPimpinan()
+            || RdpAccess::isManagerHcRegion()
             || (RdpAccess::isEmployee() && (int) $item->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
@@ -203,6 +204,57 @@ class KaryawanMasukController extends Controller
     {
         return DataTables::of(RdpKaryawanMasukRepo::getDT([
             'status_in' => RdpKaryawanMasukRepo::PIMPINAN_VISIBLE_STATUS,
+        ]))
+            ->filterColumn('data_employees.name', function ($query, $keyword) {
+                $query->whereHas('data_employees', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('data_employees.number', function ($query, $keyword) {
+                $query->whereHas('data_employees', function ($q) use ($keyword) {
+                    $q->where('number', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('data_employees.master_positions.name', function ($query, $keyword) {
+                $query->whereHas('data_employees.master_positions', function ($q) use ($keyword) {
+                    $q->where('name', 'like', "%$keyword%");
+                });
+            })
+            ->filterColumn('rdp_master_rumahs.block', function ($query, $keyword) {
+                $query->whereHas('rdp_master_rumahs', function ($q) use ($keyword) {
+                    $q->where('block', 'like', "%$keyword%")
+                        ->orWhere('tipe', 'like', "%$keyword%")
+                        ->orWhere('nomor', 'like', "%$keyword%");
+                });
+            })
+            ->toJson();
+    }
+
+    public function hcRegionIndex()
+    {
+        $data['tab_title'] = "Approval HC Region Izin Penempatan RDP | RDP";
+        $data['page_title'] = "Approval HC Region Izin Penempatan RDP";
+        $data['page_desc'] = "Approval final Manager HC Region untuk izin penempatan rumah dinas.";
+        $data['lw'] = "rdp.karyawan-masuk.hc-region-data";
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function hcRegionDetail($id)
+    {
+        $data['tab_title'] = "Detail Approval HC Region Izin Penempatan RDP | RDP";
+        $data['page_title'] = "Detail Approval HC Region Izin Penempatan RDP";
+        $data['page_desc'] = "Detail approval final Manager HC Region untuk izin penempatan rumah dinas.";
+        $data['lw'] = "rdp.karyawan-masuk.hc-region-detail";
+        $data['id'] = $id;
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function hcRegionIndexDT()
+    {
+        return DataTables::of(RdpKaryawanMasukRepo::getDT([
+            'status_in' => RdpKaryawanMasukRepo::HC_REGION_ACTIONABLE_STATUS,
         ]))
             ->filterColumn('data_employees.name', function ($query, $keyword) {
                 $query->whereHas('data_employees', function ($q) use ($keyword) {

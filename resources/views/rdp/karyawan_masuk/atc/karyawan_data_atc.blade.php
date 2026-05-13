@@ -25,6 +25,8 @@
             'Berkas Disetujui Pimpinan, menuggu pendataan aset': 'badge-soft-info',
             'Pengajuan Pendataan Aset': 'badge-soft-warning',
             'Pendataan Disetujui SPV, menuggu Pimpinan': 'badge-soft-primary',
+            'Disetujui Pimpinan, menunggu Manager HC Region': 'badge-soft-warning',
+            'Ditolak Manager HC Region': 'badge-soft-danger',
             'Penempatan Selesai': 'badge-soft-success',
             'Penempatan Dibatalkan': 'badge-soft-dark',
         };

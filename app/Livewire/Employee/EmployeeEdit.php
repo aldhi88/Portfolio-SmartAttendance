@@ -421,7 +421,7 @@ class EmployeeEdit extends Component
         $this->dtEdit['schedule'] = $this->masterScheduleRepo->getAll()->toArray();
         $this->dtEdit['roles'] = $this->userRoleRepo
             ->getAll()
-            ->filter(fn($role) => $role->name !== 'Super User')
+            ->filter(fn($role) => !in_array($role->name, ['Super User', 'Manager HC Region']))
             ->values() // reset index agar array rapi
             ->toArray();
         $this->genDataEdit();

@@ -20,6 +20,7 @@ class UserLogin extends Authenticatable
         'is_karyawan',
         'is_pengawas_rdp',
         'is_manajer',
+        'is_manager_hc_region',
         'is_vendor',
         'is_vendorrdp',
 
@@ -65,6 +66,10 @@ class UserLogin extends Authenticatable
     public function getIsManajerAttribute()
     {
         return in_array($this->user_role_id, [500]);
+    }
+    public function getIsManagerHcRegionAttribute()
+    {
+        return in_array($this->user_role_id, [800]);
     }
     public function getIsVendorAttribute()
     {

@@ -16,6 +16,7 @@ use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\MasterScheduleController;
 use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\Rdp\MasterClusterController;
+use App\Http\Controllers\Rdp\ManagerHcRegionController;
 use App\Http\Controllers\Rdp\MasterRumahController;
 use App\Http\Controllers\Rdp\MasterVendorController;
 use App\Http\Controllers\Rdp\KaryawanKeluarController;
@@ -113,6 +114,16 @@ Route::middleware('auth:web')->group(function () {
                     Route::prefix('vendor')->group(function () {
                         Route::name('vendor.')->group(function () {
                             Route::controller(MasterVendorController::class)->group(function () {
+                                Route::get('index', 'index')->name('index');
+                                Route::get('indexDT', 'indexDT')->name('indexDT');
+
+                            });
+                        });
+                    });
+
+                    Route::prefix('manager-hc-region')->group(function () {
+                        Route::name('manager-hc-region.')->group(function () {
+                            Route::controller(ManagerHcRegionController::class)->group(function () {
                                 Route::get('index', 'index')->name('index');
                                 Route::get('indexDT', 'indexDT')->name('indexDT');
 
@@ -314,6 +325,20 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
                                 Route::get('spk/{id}', 'spkPdf')->name('spk');
                                 Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('hc-region')->middleware('rdp.role:hc-region')->group(function () {
+                Route::name('hc-region.')->group(function () {
+                    Route::prefix('izin-penempatan')->group(function () {
+                        Route::name('izin-penempatan.')->group(function () {
+                            Route::controller(KaryawanMasukController::class)->group(function () {
+                                Route::get('index', 'hcRegionIndex')->name('index');
+                                Route::get('detail/{id}', 'hcRegionDetail')->name('detail');
+                                Route::get('indexDT', 'hcRegionIndexDT')->name('indexDT');
                             });
                         });
                     });
