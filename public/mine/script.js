@@ -25,6 +25,11 @@ $(document).ready(function () {
     // Aktifkan child menu (kalau ada)
     $(childSelector).addClass('mm-active');
     $(childSelector + ' > a').addClass('active');
+    $(childSelector).parents('li.parent').each(function () {
+        $(this).addClass('mm-active');
+        $(this).children('a').addClass('mm-active');
+        $(this).children('ul.sub-menu').addClass('mm-collapse mm-show');
+    });
 });
 
 function initSearchCol(table, headerId, inputClass) {

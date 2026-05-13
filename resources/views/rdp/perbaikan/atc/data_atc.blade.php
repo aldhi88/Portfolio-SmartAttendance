@@ -17,6 +17,7 @@
     var adminReviewableStatus = @json(\App\Repositories\RdpPerbaikanRepo::ADMIN_REVIEWABLE_STATUS);
     var proposalSubmittedStatus = @json(\App\Repositories\RdpPerbaikanRepo::PROPOSAL_SUBMITTED_STATUS);
     var proposalSpvApprovedStatus = @json(\App\Repositories\RdpPerbaikanRepo::PROPOSAL_SPV_APPROVED_STATUS);
+    var proposalAsetRegionPendingStatus = @json(\App\Repositories\RdpPerbaikanRepo::PROPOSAL_ASET_REGION_PENDING_STATUS);
     var spkReadyStatus = @json(\App\Repositories\RdpPerbaikanRepo::SPK_READY_STATUS);
     var workRunningStatus = @json(\App\Repositories\RdpPerbaikanRepo::WORK_RUNNING_STATUS);
     var vendorFinishedStatus = @json(\App\Repositories\RdpPerbaikanRepo::VENDOR_FINISHED_STATUS);
@@ -37,6 +38,8 @@
             'Proposal Vendor Diajukan, menunggu persetujuan Admin/SPV': 'badge-soft-warning',
             'Proposal Disetujui SPV, menunggu Pimpinan': 'badge-soft-primary',
             'Proposal Ditolak Pimpinan': 'badge-soft-danger',
+            'Proposal Disetujui Pimpinan, menunggu Manager Aset Region': 'badge-soft-warning',
+            'Proposal Ditolak Manager Aset Region': 'badge-soft-danger',
             'Proposal Disetujui Pimpinan, Penerbitan SPK': 'badge-soft-info',
             'SPK Terbit, Pekerjaan Perbaikan Berjalan': 'badge-soft-info',
             'Perbaikan Selesai oleh Vendor, menunggu verifikasi Admin/SPV': 'badge-soft-warning',
@@ -142,6 +145,18 @@
             }
             if (data.status === proposalSpvApprovedStatus) {
                 actions += `
+                    <a data-json='${JSON.stringify({msg: `Tolak proposal perbaikan ${nama}?`, id: data.id})}' class="dropdown-item text-danger delete" data-toggle="modal" data-target="#modalConfirmDelete" data-dispatch="wireReject()" data-submit-label="Tolak" href="javascript:void(0);">
+                        <i class="fas fa-times fa-fw"></i> Tolak
+                    </a>`;
+            }
+        }
+
+        if (rolePerbaikan === 'aset-region') {
+            if (data.status === proposalAsetRegionPendingStatus) {
+                actions += `
+                    <a data-json='${JSON.stringify({msg: `Setujui proposal perbaikan ${nama}?`, id: data.id})}' class="dropdown-item text-success delete" data-toggle="modal" data-target="#modalConfirmDelete" data-dispatch="wireApprove()" data-submit-label="Setujui" href="javascript:void(0);">
+                        <i class="fas fa-check fa-fw"></i> Setujui
+                    </a>
                     <a data-json='${JSON.stringify({msg: `Tolak proposal perbaikan ${nama}?`, id: data.id})}' class="dropdown-item text-danger delete" data-toggle="modal" data-target="#modalConfirmDelete" data-dispatch="wireReject()" data-submit-label="Tolak" href="javascript:void(0);">
                         <i class="fas fa-times fa-fw"></i> Tolak
                     </a>`;

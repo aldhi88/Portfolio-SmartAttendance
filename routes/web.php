@@ -16,7 +16,7 @@ use App\Http\Controllers\MasterPositionController;
 use App\Http\Controllers\MasterScheduleController;
 use App\Http\Controllers\Rdp\MasterAsetController;
 use App\Http\Controllers\Rdp\MasterClusterController;
-use App\Http\Controllers\Rdp\ManagerHcRegionController;
+use App\Http\Controllers\Rdp\ManagerAccountController;
 use App\Http\Controllers\Rdp\MasterRumahController;
 use App\Http\Controllers\Rdp\MasterVendorController;
 use App\Http\Controllers\Rdp\KaryawanKeluarController;
@@ -36,6 +36,12 @@ Route::get('/mobile', function () {
 
 Route::get('/', function () {
     if (Auth::check()) {
+        if (Auth::user()->is_manager_hc_region) {
+            return redirect()->route('rdp.hc-region.izin-penempatan.index');
+        }
+        if (Auth::user()->is_manager_aset_region) {
+            return redirect()->route('rdp.aset-region.perbaikan.index');
+        }
         if (Auth::user()->is_vendor) {
             return redirect()->route('lembur-vendor.indexLembur');
         }
@@ -121,9 +127,9 @@ Route::middleware('auth:web')->group(function () {
                         });
                     });
 
-                    Route::prefix('manager-hc-region')->group(function () {
-                        Route::name('manager-hc-region.')->group(function () {
-                            Route::controller(ManagerHcRegionController::class)->group(function () {
+                    Route::prefix('akun-manager')->group(function () {
+                        Route::name('akun-manager.')->group(function () {
+                            Route::controller(ManagerAccountController::class)->group(function () {
                                 Route::get('index', 'index')->name('index');
                                 Route::get('indexDT', 'indexDT')->name('indexDT');
 
@@ -197,9 +203,9 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
-            Route::prefix('laporan')->middleware('rdp.role:admin,pimpinan')->group(function () {
+            Route::prefix('laporan')->group(function () {
                 Route::name('laporan.')->group(function () {
-                    Route::prefix('aset-standar')->group(function () {
+                    Route::prefix('aset-standar')->middleware('rdp.role:admin,pimpinan')->group(function () {
                         Route::name('aset-standar.')->group(function () {
                             Route::controller(RdpReportController::class)->group(function () {
                                 Route::get('index', 'asetStandarIndex')->name('index');
@@ -208,7 +214,7 @@ Route::middleware('auth:web')->group(function () {
                         });
                     });
 
-                    Route::prefix('aset-realisasi')->group(function () {
+                    Route::prefix('aset-realisasi')->middleware('rdp.role:admin,pimpinan')->group(function () {
                         Route::name('aset-realisasi.')->group(function () {
                             Route::controller(RdpReportController::class)->group(function () {
                                 Route::get('index', 'asetRealisasiIndex')->name('index');
@@ -218,11 +224,38 @@ Route::middleware('auth:web')->group(function () {
                         });
                     });
 
-                    Route::prefix('penempatan')->group(function () {
+                    Route::prefix('penempatan')->middleware('rdp.role:admin,pimpinan,hc-region')->group(function () {
                         Route::name('penempatan.')->group(function () {
                             Route::controller(RdpReportController::class)->group(function () {
-                                Route::get('index', 'penempatanIndex')->name('index');
-                                Route::get('pdf', 'penempatanPdf')->name('pdf');
+                                Route::get('{variant}', 'penempatanIndex')->name('index');
+                                Route::get('{variant}/pdf', 'penempatanPdf')->name('pdf');
+                            });
+                        });
+                    });
+
+                    Route::prefix('perbaikan')->middleware('rdp.role:admin,pimpinan,aset-region')->group(function () {
+                        Route::name('perbaikan.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('{variant}', 'perbaikanIndex')->name('index');
+                                Route::get('{variant}/pdf', 'perbaikanPdf')->name('pdf');
+                            });
+                        });
+                    });
+
+                    Route::prefix('pengadaan')->middleware('rdp.role:admin,pimpinan')->group(function () {
+                        Route::name('pengadaan.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('{variant}', 'pengadaanIndex')->name('index');
+                                Route::get('{variant}/pdf', 'pengadaanPdf')->name('pdf');
+                            });
+                        });
+                    });
+
+                    Route::prefix('aset')->middleware('rdp.role:admin,pimpinan,aset-region')->group(function () {
+                        Route::name('aset.')->group(function () {
+                            Route::controller(RdpReportController::class)->group(function () {
+                                Route::get('{variant}', 'asetIndex')->name('index');
+                                Route::get('{variant}/pdf', 'asetPdf')->name('pdf');
                             });
                         });
                     });
@@ -339,6 +372,20 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('index', 'hcRegionIndex')->name('index');
                                 Route::get('detail/{id}', 'hcRegionDetail')->name('detail');
                                 Route::get('indexDT', 'hcRegionIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
+                });
+            });
+
+            Route::prefix('aset-region')->middleware('rdp.role:aset-region')->group(function () {
+                Route::name('aset-region.')->group(function () {
+                    Route::prefix('perbaikan')->group(function () {
+                        Route::name('perbaikan.')->group(function () {
+                            Route::controller(PerbaikanController::class)->group(function () {
+                                Route::get('index', 'asetRegionIndex')->name('index');
+                                Route::get('detail/{id}', 'asetRegionDetail')->name('detail');
+                                Route::get('indexDT', 'asetRegionIndexDT')->name('indexDT');
                             });
                         });
                     });

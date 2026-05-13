@@ -78,6 +78,11 @@ class RdpKaryawanMasukRepo
     public const HC_REGION_ACTIONABLE_STATUS = [
         self::HC_REGION_PENDING_STATUS,
     ];
+    public const HC_REGION_VISIBLE_STATUS = [
+        self::HC_REGION_PENDING_STATUS,
+        self::HC_REGION_REJECTED_STATUS,
+        self::FINISHED_STATUS,
+    ];
     public const FILE_DIR = 'rdp/izin-penempatan';
 
     public static function getByKey($id)
@@ -111,6 +116,17 @@ class RdpKaryawanMasukRepo
 
         if (!empty($data['status_in'])) {
             $query->whereIn('status', $data['status_in']);
+        }
+
+        if (!empty($data['queue_statuses'])) {
+            $queueStatuses = collect($data['queue_statuses'])
+                ->map(fn ($status) => DB::getPdo()->quote($status))
+                ->implode(',');
+
+            $query
+                ->orderByRaw("CASE WHEN status IN ($queueStatuses) THEN 0 ELSE 1 END")
+                ->orderBy('created_at')
+                ->orderBy('id');
         }
 
         return $query;

@@ -3,13 +3,17 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title mt-0">Form Edit Data</h5>
+                    <h5 class="modal-title mt-0">Form Edit Akun Manager</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form wire:submit.prevent="wireUpdate">
                     <div class="modal-body">
+                        <div class="form-group">
+                            <label>Role Manager</label>
+                            <input type="text" wire:model="update.role_name" class="form-control" disabled>
+                        </div>
                         <div class="form-group">
                             <label>Nama Manager</label>
                             <input type="text" wire:model="update.nickname" class="modalOnFocus form-control @error('update.nickname') is-invalid @enderror">

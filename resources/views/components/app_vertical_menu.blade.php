@@ -19,11 +19,36 @@
                         $rdpPerbaikanAdminBadge = 0;
                         $rdpPerbaikanKaryawanBadge = 0;
                         $rdpPerbaikanPimpinanBadge = 0;
+                        $rdpPerbaikanAsetRegionBadge = 0;
                         $rdpPerbaikanVendorBadge = 0;
                         $rdpPengadaanAdminBadge = 0;
                         $rdpPengadaanKaryawanBadge = 0;
                         $rdpPengadaanPimpinanBadge = 0;
                         $rdpPengadaanVendorBadge = 0;
+                        $rdpPenempatanReportVariants = [
+                            'penempatan-aktif' => 'Penempatan Aktif',
+                            'monitoring-sip' => 'Monitoring SIP',
+                            'rekap-status-sip' => 'Rekap Status',
+                            'okupansi-cluster' => 'Okupansi Cluster',
+                        ];
+                        $rdpPerbaikanReportVariants = [
+                            'monitoring-perbaikan' => 'Monitoring',
+                            'rekap-status-perbaikan' => 'Rekap Status',
+                            'rekap-vendor-perbaikan' => 'Beban Vendor',
+                            'rekap-item-perbaikan' => 'Rekap Item',
+                        ];
+                        $rdpPengadaanReportVariants = [
+                            'monitoring-pengadaan' => 'Monitoring',
+                            'rekap-status-pengadaan' => 'Rekap Status',
+                            'rekap-vendor-pengadaan' => 'Beban Vendor',
+                            'rekap-item-pengadaan' => 'Rekap Item',
+                        ];
+                        $rdpAsetReportVariants = [
+                            'inventaris-unit' => 'Inventaris Unit',
+                            'rekap-cluster' => 'Rekap Cluster',
+                            'deviasi-standar' => 'Deviasi Standar',
+                            'perubahan-penempatan' => 'Perubahan Penempatan',
+                        ];
 
                         try {
                             if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser) {
@@ -51,6 +76,10 @@
                                 $rdpPenempatanHcRegionBadge = \App\Repositories\RdpKaryawanMasukRepo::countActionable('hc-region');
                             }
 
+                            if (Auth::user()->is_manager_aset_region) {
+                                $rdpPerbaikanAsetRegionBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('aset-region');
+                            }
+
                             if (Auth::user()->is_vendor_rdp) {
                                 $rdpPerbaikanVendorBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
                                 $rdpPengadaanVendorBadge = \App\Repositories\RdpPengadaanRepo::countActionable('vendor', Auth::user()->rdp_master_vendors?->id);
@@ -66,6 +95,7 @@
                             $rdpPerbaikanAdminBadge = 0;
                             $rdpPerbaikanKaryawanBadge = 0;
                             $rdpPerbaikanPimpinanBadge = 0;
+                            $rdpPerbaikanAsetRegionBadge = 0;
                             $rdpPerbaikanVendorBadge = 0;
                             $rdpPengadaanAdminBadge = 0;
                             $rdpPengadaanKaryawanBadge = 0;
@@ -76,7 +106,7 @@
 
                     {{-- ATTD --}}
 
-                    @if (!Auth::user()->is_vendor_rdp && !Auth::user()->is_manager_hc_region)
+                    @if (!Auth::user()->is_vendor_rdp && !Auth::user()->is_manager_hc_region && !Auth::user()->is_manager_aset_region)
                         <li class="menu-title">Smart Absensi</li>
                     @endif
 
@@ -183,7 +213,7 @@
                     {{-- RDP --}}
                     <li class="menu-title">RUMAH DINAS PERTAMINA</li>
                     @if (Auth::user()->is_pengawas_rdp || Auth::user()->is_superuser)
-                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah rdp-master-vendor rdp-master-manager-hc-region">
+                        <li class="parent rdp-master-aset rdp-master-cluster rdp-master-rumah rdp-master-vendor rdp-master-akun-manager">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Data Master</span>
@@ -193,7 +223,7 @@
                                 <li class="child rdp-master-cluster"><a href="{{ route('rdp.master.cluster.index') }}">Data Cluster</a></li>
                                 <li class="child rdp-master-rumah"><a href="{{ route('rdp.master.rumah.index') }}">Data Unit Rumah</a></li>
                                 <li class="child rdp-master-vendor"><a href="{{ route('rdp.master.vendor.index') }}">Data Vendor RDP</a></li>
-                                <li class="child rdp-master-manager-hc-region"><a href="{{ route('rdp.master.manager-hc-region.index') }}">Data Manager HC Region</a></li>
+                                <li class="child rdp-master-akun-manager"><a href="{{ route('rdp.master.akun-manager.index') }}">Akun Manager</a></li>
                             </ul>
                         </li>
                         <li class="parent">
@@ -276,15 +306,48 @@
                                 <li class="child"><a href="{{ route('rdp.keluar-rdp.izin-keluar.create') }}">Izin Keluar Baru</a></li>
                             </ul>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-laporan-penempatan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-file-list-3-line"></i>
-                                <span>Laporan</span>
+                                <span>Laporan Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="{{ route('rdp.laporan.aset-standar.index') }}">Aset Standar RDP</a></li>
-                                <li class="child"><a href="{{ route('rdp.laporan.aset-realisasi.index') }}">Aset RDP Realisasi</a></li>
-                                <li class="child"><a href="{{ route('rdp.laporan.penempatan.index') }}">Penempatan RDP</a></li>
+                                @foreach ($rdpPenempatanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-penempatan-{{ $variant }}"><a href="{{ route('rdp.laporan.penempatan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-perbaikan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Perbaikan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPerbaikanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-perbaikan-{{ $variant }}"><a href="{{ route('rdp.laporan.perbaikan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-pengadaan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Pengadaan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPengadaanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-pengadaan-{{ $variant }}"><a href="{{ route('rdp.laporan.pengadaan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-aset">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Aset</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpAsetReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-aset-{{ $variant }}"><a href="{{ route('rdp.laporan.aset.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
                             </ul>
                         </li>
                     @endif
@@ -378,15 +441,48 @@
                                 <span>Data Izin Keluar</span>
                             </a>
                         </li>
-                        <li class="parent">
+                        <li class="parent rdp-laporan-penempatan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-file-list-3-line"></i>
-                                <span>Laporan</span>
+                                <span>Laporan Penempatan</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li class="child"><a href="{{ route('rdp.laporan.aset-standar.index') }}">Aset Standar RDP</a></li>
-                                <li class="child"><a href="{{ route('rdp.laporan.aset-realisasi.index') }}">Aset RDP Realisasi</a></li>
-                                <li class="child"><a href="{{ route('rdp.laporan.penempatan.index') }}">Penempatan RDP</a></li>
+                                @foreach ($rdpPenempatanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-penempatan-{{ $variant }}"><a href="{{ route('rdp.laporan.penempatan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-perbaikan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Perbaikan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPerbaikanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-perbaikan-{{ $variant }}"><a href="{{ route('rdp.laporan.perbaikan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-pengadaan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Pengadaan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPengadaanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-pengadaan-{{ $variant }}"><a href="{{ route('rdp.laporan.pengadaan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-aset">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Aset</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpAsetReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-aset-{{ $variant }}"><a href="{{ route('rdp.laporan.aset.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
                             </ul>
                         </li>
                     @endif
@@ -401,6 +497,52 @@
                                 @endif
                                 <span>Data Pengajuan SIP</span>
                             </a>
+                        </li>
+                        <li class="parent rdp-laporan-penempatan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Penempatan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPenempatanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-penempatan-{{ $variant }}"><a href="{{ route('rdp.laporan.penempatan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
+
+                    {{-- Login Manager Aset Region --}}
+                    @if (Auth::user()->is_manager_aset_region)
+                        <li>
+                            <a href="{{ route('rdp.aset-region.perbaikan.index') }}" class="waves-effect">
+                                <i class="ri-home-gear-line"></i>
+                                @if ($rdpPerbaikanAsetRegionBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanAsetRegionBadge }}</span>
+                                @endif
+                                <span>Data Perbaikan</span>
+                            </a>
+                        </li>
+                        <li class="parent rdp-laporan-perbaikan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Perbaikan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpPerbaikanReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-perbaikan-{{ $variant }}"><a href="{{ route('rdp.laporan.perbaikan.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="parent rdp-laporan-aset">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Laporan Aset</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                @foreach ($rdpAsetReportVariants as $variant => $label)
+                                    <li class="child rdp-laporan-aset-{{ $variant }}"><a href="{{ route('rdp.laporan.aset.index', ['variant' => $variant]) }}">{{ $label }}</a></li>
+                                @endforeach
+                            </ul>
                         </li>
                     @endif
 

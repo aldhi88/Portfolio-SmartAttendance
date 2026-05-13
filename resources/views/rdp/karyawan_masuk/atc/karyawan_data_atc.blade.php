@@ -10,6 +10,7 @@
 <script>
     var editableStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::EDITABLE_STATUS);
     var pendataanAsetStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::PIMPINAN_APPROVED_STATUS);
+    var karyawanQueueStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::KARYAWAN_ACTIONABLE_STATUS);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS);
     var sipBaseUrl = @json(url('rdp/penempatan/izin-penempatan/sip'));
     function renderPenempatanStatusBadge(status, type) {
@@ -47,11 +48,22 @@
         }).format(new Date(`${value}T00:00:00`)) : '-';
     }
 
+    function renderAntrian(data, type, meta, queueStatuses) {
+        const isWaiting = queueStatuses.includes(data.status);
+        if (type !== 'display') {
+            return isWaiting ? 0 : 1;
+        }
+
+        return isWaiting
+            ? `<span class="badge badge-soft-warning px-2 py-1">#${meta.row + meta.settings._iDisplayStart + 1}</span>`
+            : `<span class="badge badge-soft-secondary px-2 py-1">Sudah diproses</span>`;
+    }
+
     var dtTable = $('#myTable').DataTable({
         processing: true,serverSide: true,pageLength: 25,dom: 'lrtip',
-        order: [[1, 'desc']],
+        order: [],
         columnDefs: [
-            { className: 'text-left', targets: [2,5,6,7,8] },
+            { className: 'text-left', targets: [3,6,7,8,9] },
             { className: 'px-0', targets: [0] },
             { className: 'text-center', targets: ['_all'] },
         ],
@@ -97,6 +109,12 @@
                 data: null, name: 'DT_RowIndex', orderable: false, searchable: false,
                 render: function (data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+            {
+                data: null, name: 'antrian', orderable: false, searchable: false,
+                render: function(data, type, row, meta) {
+                    return renderAntrian(data, type, meta, karyawanQueueStatus);
                 }
             },
             { data: 'nomor_sk_mutasi', name: 'nomor_sk_mutasi', orderable: true, searchable:true },

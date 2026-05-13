@@ -66,7 +66,9 @@ class KaryawanMasukController extends Controller
 
     public function adminIndexDT()
     {
-        return DataTables::of(RdpKaryawanMasukRepo::getDT())
+        return DataTables::of(RdpKaryawanMasukRepo::getDT([
+            'queue_statuses' => RdpKaryawanMasukRepo::ADMIN_ACTIONABLE_STATUS,
+        ]))
             ->filterColumn('data_employees.name', function ($query, $keyword) {
                 $query->whereHas('data_employees', function ($q) use ($keyword) {
                     $q->where('name', 'like', "%$keyword%");
@@ -168,6 +170,7 @@ class KaryawanMasukController extends Controller
     {
         return DataTables::of(RdpKaryawanMasukRepo::getDT([
             'data_employee_id' => Auth::user()->data_employees?->id,
+            'queue_statuses' => RdpKaryawanMasukRepo::KARYAWAN_ACTIONABLE_STATUS,
         ]))
             ->filterColumn('rdp_master_rumahs.block', function ($query, $keyword) {
                 $query->whereHas('rdp_master_rumahs', function ($q) use ($keyword) {
@@ -204,6 +207,7 @@ class KaryawanMasukController extends Controller
     {
         return DataTables::of(RdpKaryawanMasukRepo::getDT([
             'status_in' => RdpKaryawanMasukRepo::PIMPINAN_VISIBLE_STATUS,
+            'queue_statuses' => RdpKaryawanMasukRepo::PIMPINAN_ACTIONABLE_STATUS,
         ]))
             ->filterColumn('data_employees.name', function ($query, $keyword) {
                 $query->whereHas('data_employees', function ($q) use ($keyword) {
@@ -254,7 +258,8 @@ class KaryawanMasukController extends Controller
     public function hcRegionIndexDT()
     {
         return DataTables::of(RdpKaryawanMasukRepo::getDT([
-            'status_in' => RdpKaryawanMasukRepo::HC_REGION_ACTIONABLE_STATUS,
+            'status_in' => RdpKaryawanMasukRepo::HC_REGION_VISIBLE_STATUS,
+            'queue_statuses' => RdpKaryawanMasukRepo::HC_REGION_ACTIONABLE_STATUS,
         ]))
             ->filterColumn('data_employees.name', function ($query, $keyword) {
                 $query->whereHas('data_employees', function ($q) use ($keyword) {

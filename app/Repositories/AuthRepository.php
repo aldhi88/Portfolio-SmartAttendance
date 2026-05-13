@@ -43,7 +43,7 @@ class AuthRepository implements AuthInterface
                 return "not_rdp_eligible";
             }
 
-            if(count($user) > 0 && $data['username'] != 'superuser' && !in_array($user['user_role_id'], [600, 700, 800])){
+            if(count($user) > 0 && $data['username'] != 'superuser' && !in_array($user['user_role_id'], [600, 700, 800, 900])){
                 if(($user['data_employees']['status'] ?? null) != 'Aktif'){
                     return "not_active";
                 }

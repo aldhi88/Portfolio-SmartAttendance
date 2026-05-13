@@ -26,6 +26,7 @@
                                 <tr>
                                     <th class="text-center"></th>
                                     <th class="text-center">No</th>
+                                    <th class="text-center">Antrian</th>
                                     <th class="text-center">Nomor SK Mutasi</th>
                                     <th class="text-center">Tanggal SK Mutasi</th>
                                     <th class="text-center">Tanggal Mulai</th>
@@ -38,6 +39,7 @@
                             </thead>
                             <thead id="header-filter">
                                 <tr>
+                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>

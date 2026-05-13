@@ -27,6 +27,7 @@
                                 <tr>
                                     <th class="text-center"></th>
                                     <th class="text-center">No</th>
+                                    <th class="text-center">Antrian</th>
                                     <th class="text-center">Nama Karyawan</th>
                                     <th class="text-center">NOPek</th>
                                     <th class="text-center">Jabatan</th>
@@ -40,6 +41,7 @@
                             </thead>
                             <thead id="header-filter">
                                 <tr>
+                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th><input type="text" class="form-control form-control-sm search-col-dt"></th>

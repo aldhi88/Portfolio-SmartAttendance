@@ -18,6 +18,8 @@ class RdpPerbaikanRepo
     public const PROPOSAL_SUBMITTED_STATUS = 'Proposal Vendor Diajukan, menunggu persetujuan Admin/SPV';
     public const PROPOSAL_SPV_APPROVED_STATUS = 'Proposal Disetujui SPV, menunggu Pimpinan';
     public const PROPOSAL_PIMPINAN_REJECTED_STATUS = 'Proposal Ditolak Pimpinan';
+    public const PROPOSAL_ASET_REGION_PENDING_STATUS = 'Proposal Disetujui Pimpinan, menunggu Manager Aset Region';
+    public const PROPOSAL_ASET_REGION_REJECTED_STATUS = 'Proposal Ditolak Manager Aset Region';
     public const SPK_READY_STATUS = 'Proposal Disetujui Pimpinan, Penerbitan SPK';
     public const WORK_RUNNING_STATUS = 'SPK Terbit, Pekerjaan Perbaikan Berjalan';
     public const VENDOR_FINISHED_STATUS = 'Perbaikan Selesai oleh Vendor, menunggu verifikasi Admin/SPV';
@@ -33,6 +35,8 @@ class RdpPerbaikanRepo
         self::PROPOSAL_SUBMITTED_STATUS,
         self::PROPOSAL_SPV_APPROVED_STATUS,
         self::PROPOSAL_PIMPINAN_REJECTED_STATUS,
+        self::PROPOSAL_ASET_REGION_PENDING_STATUS,
+        self::PROPOSAL_ASET_REGION_REJECTED_STATUS,
         self::SPK_READY_STATUS,
         self::WORK_RUNNING_STATUS,
         self::VENDOR_FINISHED_STATUS,
@@ -73,6 +77,19 @@ class RdpPerbaikanRepo
     public const VENDOR_ACTIONABLE_STATUS = [
         self::VENDOR_ASSIGNED_STATUS,
         self::WORK_RUNNING_STATUS,
+    ];
+
+    public const ASET_REGION_ACTIONABLE_STATUS = [
+        self::PROPOSAL_ASET_REGION_PENDING_STATUS,
+    ];
+    public const ASET_REGION_VISIBLE_STATUS = [
+        self::PROPOSAL_ASET_REGION_PENDING_STATUS,
+        self::PROPOSAL_ASET_REGION_REJECTED_STATUS,
+        self::SPK_READY_STATUS,
+        self::WORK_RUNNING_STATUS,
+        self::VENDOR_FINISHED_STATUS,
+        self::RESULT_SPV_APPROVED_STATUS,
+        self::FINISHED_STATUS,
     ];
 
     public const PIMPINAN_VISIBLE_STATUS = self::STATUS_LIST;
@@ -154,6 +171,10 @@ class RdpPerbaikanRepo
                 ->where('rdp_master_vendor_id', $id)
                 ->whereIn('status', self::VENDOR_ACTIONABLE_STATUS)
                 ->count();
+        }
+
+        if ($role === 'aset-region') {
+            return $query->whereIn('status', self::ASET_REGION_ACTIONABLE_STATUS)->count();
         }
 
         return 0;
@@ -376,7 +397,7 @@ class RdpPerbaikanRepo
             $item = RdpPerbaikan::findOrFail($id);
 
             if ($item->status === self::PROPOSAL_SPV_APPROVED_STATUS) {
-                $item->update(['status' => self::SPK_READY_STATUS]);
+                $item->update(['status' => self::PROPOSAL_ASET_REGION_PENDING_STATUS]);
                 return true;
             }
 
@@ -397,6 +418,20 @@ class RdpPerbaikanRepo
         return self::transition($id, [self::PROPOSAL_SPV_APPROVED_STATUS], [
             'status' => self::PROPOSAL_PIMPINAN_REJECTED_STATUS,
         ], 'Reject pimpinan rdp_perbaikans failed');
+    }
+
+    public static function approveAsetRegion($id)
+    {
+        return self::transition($id, [self::PROPOSAL_ASET_REGION_PENDING_STATUS], [
+            'status' => self::SPK_READY_STATUS,
+        ], 'Approve Manager Aset Region rdp_perbaikans failed');
+    }
+
+    public static function rejectAsetRegion($id)
+    {
+        return self::transition($id, [self::PROPOSAL_ASET_REGION_PENDING_STATUS], [
+            'status' => self::PROPOSAL_ASET_REGION_REJECTED_STATUS,
+        ], 'Reject Manager Aset Region rdp_perbaikans failed');
     }
 
     public static function publishSpk($id)

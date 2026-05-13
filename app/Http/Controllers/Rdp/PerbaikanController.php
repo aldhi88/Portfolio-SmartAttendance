@@ -163,6 +163,34 @@ class PerbaikanController extends Controller
         ]))->toJson();
     }
 
+    public function asetRegionIndex()
+    {
+        $data['tab_title'] = "Approval Manager Aset Region Perbaikan RDP | RDP";
+        $data['page_title'] = "Approval Manager Aset Region Perbaikan RDP";
+        $data['page_desc'] = "Approval Manager Aset Region sebelum penerbitan SPK perbaikan.";
+        $data['lw'] = "rdp.perbaikan.aset-region-data";
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function asetRegionDetail($id)
+    {
+        $data['tab_title'] = "Detail Approval Manager Aset Region Perbaikan RDP | RDP";
+        $data['page_title'] = "Detail Approval Manager Aset Region Perbaikan RDP";
+        $data['page_desc'] = "Detail approval Manager Aset Region sebelum penerbitan SPK perbaikan.";
+        $data['lw'] = "rdp.perbaikan.aset-region-detail";
+        $data['id'] = $id;
+
+        return view('rdp.index', compact('data'));
+    }
+
+    public function asetRegionIndexDT()
+    {
+        return $this->datatable(RdpPerbaikanRepo::getDT([
+            'status_in' => RdpPerbaikanRepo::ASET_REGION_VISIBLE_STATUS,
+        ]))->toJson();
+    }
+
     public function spkPdf($id)
     {
         $item = RdpPerbaikanRepo::getByKey($id);
@@ -178,6 +206,7 @@ class PerbaikanController extends Controller
         abort_if(!(
             RdpAccess::isAdmin()
             || RdpAccess::isPimpinan()
+            || RdpAccess::isManagerAsetRegion()
             || (RdpAccess::isVendor() && (int) $item->rdp_master_vendor_id === (int) RdpAccess::vendorId())
             || (RdpAccess::isEmployee() && (int) $item->rdp_karyawan_masuks?->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);

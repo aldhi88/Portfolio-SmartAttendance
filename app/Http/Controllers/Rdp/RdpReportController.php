@@ -90,39 +90,80 @@ class RdpReportController extends Controller
         return $pdf->stream('laporan-aset-realisasi-rdp-semua-unit.pdf');
     }
 
-    public function penempatanIndex(Request $request)
+    public function penempatanIndex(Request $request, $variant)
     {
-        $filters = $this->penempatanFilters($request);
+        $filters = $this->moduleReportFilters($request, 'penempatan', false, $variant);
         $data = $this->pageData(
-            'Laporan Penempatan RDP | RDP',
-            'Laporan Penempatan RDP',
-            'Detail karyawan dan unit RDP yang ditempati.'
+            'Laporan Penempatan SIP | RDP',
+            RdpReportRepo::moduleTitle('penempatan'),
+            RdpReportRepo::moduleDescription('penempatan')
         );
 
-        return view('rdp.report.penempatan', [
-            'data' => $data,
-            'filters' => $filters,
-            'clusters' => RdpReportRepo::getClusters(),
-            'statusRumahList' => RdpReportRepo::STATUS_RUMAH_LIST,
-            'items' => RdpReportRepo::getPenempatan($filters),
-        ]);
+        return $this->moduleReportView('penempatan', $data, $filters);
     }
 
-    public function penempatanPdf(Request $request)
+    public function penempatanPdf(Request $request, $variant)
     {
-        $filters = $this->penempatanFilters($request, true);
-        $cluster = !empty($filters['cluster_id'])
-            ? RdpReportRepo::getClusters()->firstWhere('id', (int) $filters['cluster_id'])
-            : null;
+        $filters = $this->moduleReportFilters($request, 'penempatan', true, $variant);
 
-        $pdf = Pdf::loadView('rdp.report.pdf.penempatan', [
-            'filters' => $filters,
-            'cluster' => $cluster,
-            'items' => RdpReportRepo::getPenempatan($filters),
-            'printedAt' => now(),
-        ])->setPaper('A4', 'landscape');
+        return $this->moduleReportPdf('penempatan', $filters, 'laporan-penempatan-sip.pdf');
+    }
 
-        return $pdf->stream('laporan-penempatan-rdp.pdf');
+    public function perbaikanIndex(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'perbaikan', false, $variant);
+        $data = $this->pageData(
+            'Laporan Perbaikan | RDP',
+            RdpReportRepo::moduleTitle('perbaikan'),
+            RdpReportRepo::moduleDescription('perbaikan')
+        );
+
+        return $this->moduleReportView('perbaikan', $data, $filters);
+    }
+
+    public function perbaikanPdf(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'perbaikan', true, $variant);
+
+        return $this->moduleReportPdf('perbaikan', $filters, 'laporan-perbaikan-rdp.pdf');
+    }
+
+    public function pengadaanIndex(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'pengadaan', false, $variant);
+        $data = $this->pageData(
+            'Laporan Pengadaan | RDP',
+            RdpReportRepo::moduleTitle('pengadaan'),
+            RdpReportRepo::moduleDescription('pengadaan')
+        );
+
+        return $this->moduleReportView('pengadaan', $data, $filters);
+    }
+
+    public function pengadaanPdf(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'pengadaan', true, $variant);
+
+        return $this->moduleReportPdf('pengadaan', $filters, 'laporan-pengadaan-rdp.pdf');
+    }
+
+    public function asetIndex(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'aset', false, $variant);
+        $data = $this->pageData(
+            'Laporan Aset | RDP',
+            RdpReportRepo::moduleTitle('aset'),
+            RdpReportRepo::moduleDescription('aset')
+        );
+
+        return $this->moduleReportView('aset', $data, $filters);
+    }
+
+    public function asetPdf(Request $request, $variant)
+    {
+        $filters = $this->moduleReportFilters($request, 'aset', true, $variant);
+
+        return $this->moduleReportPdf('aset', $filters, 'laporan-aset-rdp.pdf');
     }
 
     protected function pageData($tabTitle, $pageTitle, $pageDesc)
@@ -154,6 +195,93 @@ class RdpReportController extends Controller
             'cluster_id' => ['nullable', 'integer', 'exists:rdp_master_clusters,id'],
             'status_rumah' => ['nullable', Rule::in(RdpReportRepo::STATUS_RUMAH_LIST)],
         ], $abortOnInvalid);
+    }
+
+    protected function moduleReportView($module, array $data, array $filters)
+    {
+        $report = RdpReportRepo::buildModuleReport($module, $filters);
+        $data['tab_title'] = $report['variant_label'] . ' | RDP';
+        $data['page_title'] = $report['variant_label'];
+        $data['page_desc'] = $report['description'];
+
+        return view('rdp.report.module', [
+            'data' => $data,
+            'module' => $module,
+            'filters' => $filters,
+            'variants' => RdpReportRepo::variants($module),
+            'statuses' => RdpReportRepo::statuses($module),
+            'clusters' => RdpReportRepo::getClusters(),
+            'rumahs' => RdpReportRepo::getRumahs(),
+            'vendors' => RdpReportRepo::getVendors(),
+            'asets' => RdpReportRepo::getAsets(),
+            'statusRumahList' => RdpReportRepo::STATUS_RUMAH_LIST,
+            'statusAsetList' => RdpReportRepo::ASET_STATUS_LIST,
+            'report' => $report,
+        ]);
+    }
+
+    protected function moduleReportPdf($module, array $filters, $filename)
+    {
+        $pdf = Pdf::loadView('rdp.report.pdf.module', [
+            'module' => $module,
+            'filters' => $filters,
+            'report' => RdpReportRepo::buildModuleReport($module, $filters),
+            'printedAt' => now(),
+        ])->setPaper('A4', 'landscape');
+
+        return $pdf->stream($filename);
+    }
+
+    protected function moduleReportFilters(Request $request, $module, $abortOnInvalid = false, $variant = null)
+    {
+        $rules = [
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
+            'cluster_id' => ['nullable', 'integer', 'exists:rdp_master_clusters,id'],
+        ];
+
+        if (!empty(RdpReportRepo::statuses($module))) {
+            $rules['status'] = ['nullable', Rule::in(RdpReportRepo::statuses($module))];
+        }
+
+        if ($module === 'penempatan') {
+            $rules['status_rumah'] = ['nullable', Rule::in(RdpReportRepo::STATUS_RUMAH_LIST)];
+        }
+
+        if (in_array($module, ['perbaikan', 'pengadaan'])) {
+            $rules['vendor_id'] = ['nullable', 'integer', 'exists:rdp_master_vendors,id'];
+        }
+
+        if ($module === 'aset') {
+            $rules['status_rumah'] = ['nullable', Rule::in(RdpReportRepo::STATUS_RUMAH_LIST)];
+            $rules['rumah_id'] = ['nullable', 'integer', 'exists:rdp_master_rumahs,id'];
+            $rules['aset_id'] = ['nullable', 'integer', 'exists:rdp_master_asets,id'];
+            $rules['status_aset'] = ['nullable', Rule::in(RdpReportRepo::ASET_STATUS_LIST)];
+        }
+
+        $filters = array_merge(
+            collect(array_keys($rules))->mapWithKeys(fn ($key) => [$key => null])->all(),
+            $this->validateFilters($request, $rules, $abortOnInvalid)
+        );
+        $filters['date_from'] = $filters['date_from'] ?: now()->startOfMonth()->toDateString();
+        $filters['date_to'] = $filters['date_to'] ?: now()->endOfMonth()->toDateString();
+        $filters['status'] = $filters['status'] ?? null;
+        $filters['variant'] = $this->normalizeVariant($module, $variant, $abortOnInvalid);
+
+        return $filters;
+    }
+
+    protected function normalizeVariant($module, $variant, $abortOnInvalid = false)
+    {
+        $variants = RdpReportRepo::variants($module);
+        $variant = $variant ?: array_key_first($variants);
+
+        if (!array_key_exists($variant, $variants)) {
+            abort_if($abortOnInvalid, 404);
+            abort(404);
+        }
+
+        return $variant;
     }
 
     protected function validateFilters(Request $request, $rules, $abortOnInvalid = false)

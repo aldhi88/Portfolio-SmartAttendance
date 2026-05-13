@@ -105,7 +105,7 @@ class EmployeeData extends Component
         $this->dt['jadwal'] = $this->masterSchedulesRepo->getAll()->toArray();
         $this->dt['roles'] = $this->userRoleRepo
             ->getAll()
-            ->filter(fn($role) => $role->name !== 'Manager HC Region')
+            ->filter(fn($role) => !in_array($role->name, ['Manager HC Region', 'Manager Aset Region']))
             ->values()
             ->toArray();
         $this->getNewId();

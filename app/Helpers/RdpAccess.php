@@ -47,6 +47,13 @@ class RdpAccess
         return (bool) $user?->is_manager_hc_region;
     }
 
+    public static function isManagerAsetRegion(?UserLogin $user = null): bool
+    {
+        $user ??= auth()->user();
+
+        return (bool) $user?->is_manager_aset_region;
+    }
+
     public static function isVendor(?UserLogin $user = null): bool
     {
         $user ??= auth()->user();
@@ -80,6 +87,7 @@ class RdpAccess
                 'employee' => self::isEmployee($user) && self::isRdpEligibleEmployee($user),
                 'pimpinan' => self::isPimpinan($user),
                 'hc-region' => self::isManagerHcRegion($user),
+                'aset-region' => self::isManagerAsetRegion($user),
                 'vendor' => self::isVendor($user),
                 default => false,
             }) {
