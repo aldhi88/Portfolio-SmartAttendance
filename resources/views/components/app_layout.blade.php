@@ -21,7 +21,7 @@
 
     <!-- App Css-->
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('mine/style.css') }}" rel="stylesheet" type="text/css" />
+`    <link href="{{ asset('mine/style.css') }}?v={{ filemtime(public_path('mine/style.css')) }}" rel="stylesheet" type="text/css" />
     @stack('push-style')
 </head>
 
@@ -195,7 +195,7 @@
     <script src="{{ asset('assets/libs/toastr/build/toastr.min.js') }}"></script>
     @yield('script')
     <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('mine/script.js') }}"></script>
+    <script src="{{ asset('mine/script.js') }}?v={{ filemtime(public_path('mine/script.js')) }}"></script>
     @if (session()->has('success'))
         <script>
             toastr.success(@json(session('success')), '', {
