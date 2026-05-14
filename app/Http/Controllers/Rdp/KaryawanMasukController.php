@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rdp;
 use App\Http\Controllers\Controller;
 use App\Helpers\RdpAccess;
 use App\Repositories\RdpKaryawanMasukRepo;
+use App\Repositories\RdpManagerAccountRepo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -107,7 +108,9 @@ class KaryawanMasukController extends Controller
             || (RdpAccess::isEmployee() && (int) $item->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
-        $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('item'))
+        $managerHcRegion = RdpManagerAccountRepo::getPrintSignerByRole(RdpManagerAccountRepo::MANAGER_HC_REGION_ROLE);
+
+        $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('item', 'managerHcRegion'))
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('sip-' . $item->id . '.pdf');

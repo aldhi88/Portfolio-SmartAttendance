@@ -10,7 +10,7 @@
 <script>
     var pendingHcRegionStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::HC_REGION_ACTIONABLE_STATUS);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS);
-    var sipBaseUrl = @json(url('rdp/penempatan/izin-penempatan/sip'));
+    var sipBaseUrl = @json(url('rdp/hc-region/izin-penempatan/sip'));
 
     function renderPenempatanStatusBadge(status, type) {
         if (type !== 'display') {

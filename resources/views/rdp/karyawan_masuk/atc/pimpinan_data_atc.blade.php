@@ -13,7 +13,7 @@
         \App\Repositories\RdpKaryawanMasukRepo::ASSET_SPV_APPROVED_STATUS,
     ]);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS);
-    var sipBaseUrl = @json(url('rdp/penempatan/izin-penempatan/sip'));
+    var sipBaseUrl = @json(url('rdp/persetujuan/izin-penempatan/sip'));
 
     function renderPenempatanStatusBadge(status, type) {
         if (type !== 'display') {

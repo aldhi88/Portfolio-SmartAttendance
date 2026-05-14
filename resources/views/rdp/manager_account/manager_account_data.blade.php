@@ -17,9 +17,10 @@
                             <tr>
                                 <th class="text-center" style="max-width: 5px"></th>
                                 <th class="text-center" width="10">No</th>
-                                <th class="text-center">Role Manager</th>
+                                <th class="text-center">Jabatan Sebagai</th>
                                 <th class="text-center">Nama Manager</th>
                                 <th class="text-center">Username</th>
+                                <th class="text-center">Tanda Tangan</th>
                             </tr>
                             </thead>
 
@@ -36,6 +37,7 @@
                                     <th class="text-center">
                                         <input type="text" class="form-control form-control-sm text-center search-col-dt">
                                     </th>
+                                    <th class="text-center"></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

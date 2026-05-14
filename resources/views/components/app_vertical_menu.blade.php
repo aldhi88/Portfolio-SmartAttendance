@@ -25,6 +25,8 @@
                         $rdpPengadaanKaryawanBadge = 0;
                         $rdpPengadaanPimpinanBadge = 0;
                         $rdpPengadaanVendorBadge = 0;
+                        $rdpPermintaanAdminBadge = 0;
+                        $rdpPermintaanKaryawanBadge = 0;
                         $rdpPenempatanReportVariants = [
                             'penempatan-aktif' => 'Penempatan Aktif',
                             'monitoring-sip' => 'Monitoring SIP',
@@ -56,6 +58,7 @@
                                 $rdpKeluarAdminBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('admin');
                                 $rdpPerbaikanAdminBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('admin');
                                 $rdpPengadaanAdminBadge = \App\Repositories\RdpPengadaanRepo::countActionable('admin');
+                                $rdpPermintaanAdminBadge = \App\Repositories\RdpPermintaanRepo::countActionable('admin');
                             }
 
                             if (Auth::user()->is_pengawas || Auth::user()->is_karyawan) {
@@ -63,6 +66,7 @@
                                 $rdpKeluarKaryawanBadge = \App\Repositories\RdpKaryawanKeluarRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpPerbaikanKaryawanBadge = \App\Repositories\RdpPerbaikanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                                 $rdpPengadaanKaryawanBadge = \App\Repositories\RdpPengadaanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
+                                $rdpPermintaanKaryawanBadge = \App\Repositories\RdpPermintaanRepo::countActionable('karyawan', Auth::user()->data_employees?->id);
                             }
 
                             if (Auth::user()->is_manajer) {
@@ -101,6 +105,8 @@
                             $rdpPengadaanKaryawanBadge = 0;
                             $rdpPengadaanPimpinanBadge = 0;
                             $rdpPengadaanVendorBadge = 0;
+                            $rdpPermintaanAdminBadge = 0;
+                            $rdpPermintaanKaryawanBadge = 0;
                         }
                     @endphp
 
@@ -118,7 +124,7 @@
                             </a>
                         </li>
 
-                        <li class="parent">
+                        <li class="parent rdp-pengadaan">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-archive-line"></i>
                                 <span>Data Master</span>
@@ -286,6 +292,26 @@
                                 <li class="child"><a href="{{ route('rdp.pengadaan.create') }}">Pengadaan Baru</a></li>
                             </ul>
                         </li>
+                        <li class="parent rdp-permintaan">
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="ri-inbox-line"></i>
+                                @if ($rdpPermintaanAdminBadge > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPermintaanAdminBadge }}</span>
+                                @endif
+                                <span>Permintaan</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li class="child rdp-permintaan">
+                                    <a href="{{ route('rdp.permintaan.index') }}">
+                                        @if ($rdpPermintaanAdminBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPermintaanAdminBadge }}</span>
+                                        @endif
+                                        Data Permintaan
+                                    </a>
+                                </li>
+                                <li class="child rdp-permintaan-create"><a href="{{ route('rdp.permintaan.create') }}">Permintaan Baru</a></li>
+                            </ul>
+                        </li>
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-logout-box-r-line"></i>
@@ -367,8 +393,8 @@
                         <li class="parent">
                             <a href="javascript: void(0);" class="has-arrow waves-effect">
                                 <i class="ri-home-gear-line"></i>
-                                @if (($rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge) > 0)
-                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge }}</span>
+                                @if (($rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge + $rdpPermintaanKaryawanBadge) > 0)
+                                    <span class="badge badge-pill badge-success float-right">{{ $rdpPerbaikanKaryawanBadge + $rdpPengadaanKaryawanBadge + $rdpPermintaanKaryawanBadge }}</span>
                                 @endif
                                 <span>Rumah Saya</span>
                             </a>
@@ -389,6 +415,15 @@
                                         Data Pengadaan
                                     </a>
                                 </li>
+                                <li class="child rdp-pengajuan-permintaan">
+                                    <a href="{{ route('rdp.pengajuan.permintaan.index') }}">
+                                        @if ($rdpPermintaanKaryawanBadge > 0)
+                                            <span class="badge badge-pill badge-success float-right">{{ $rdpPermintaanKaryawanBadge }}</span>
+                                        @endif
+                                        Data Permintaan
+                                    </a>
+                                </li>
+                                <li class="child rdp-pengajuan-permintaan-create"><a href="{{ route('rdp.pengajuan.permintaan.create') }}">Ajukan Permintaan</a></li>
                             </ul>
                         </li>
                         <li>
@@ -489,6 +524,12 @@
 
                     {{-- Login Manager HC Region --}}
                     @if (Auth::user()->is_manager_hc_region)
+                        <li class="rdp-akun-manager">
+                            <a href="{{ route('rdp.akun-manager.profile') }}" class="waves-effect">
+                                <i class="ri-user-settings-line"></i>
+                                <span>Akun Manager</span>
+                            </a>
+                        </li>
                         <li>
                             <a href="{{ route('rdp.hc-region.izin-penempatan.index') }}" class="waves-effect">
                                 <i class="ri-file-edit-line"></i>
@@ -513,6 +554,12 @@
 
                     {{-- Login Manager Aset Region --}}
                     @if (Auth::user()->is_manager_aset_region)
+                        <li class="rdp-akun-manager">
+                            <a href="{{ route('rdp.akun-manager.profile') }}" class="waves-effect">
+                                <i class="ri-user-settings-line"></i>
+                                <span>Akun Manager</span>
+                            </a>
+                        </li>
                         <li>
                             <a href="{{ route('rdp.aset-region.perbaikan.index') }}" class="waves-effect">
                                 <i class="ri-home-gear-line"></i>

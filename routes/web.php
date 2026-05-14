@@ -23,6 +23,7 @@ use App\Http\Controllers\Rdp\KaryawanKeluarController;
 use App\Http\Controllers\Rdp\KaryawanMasukController;
 use App\Http\Controllers\Rdp\PerbaikanController;
 use App\Http\Controllers\Rdp\PengadaanController;
+use App\Http\Controllers\Rdp\PermintaanController;
 use App\Http\Controllers\Rdp\RdpReportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
@@ -203,9 +204,20 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
+            Route::prefix('permintaan')->middleware('rdp.role:admin')->group(function () {
+                Route::name('permintaan.')->group(function () {
+                    Route::controller(PermintaanController::class)->group(function () {
+                        Route::get('index', 'adminIndex')->name('index');
+                        Route::get('create', 'adminCreate')->name('create');
+                        Route::get('detail/{id}', 'adminDetail')->name('detail');
+                        Route::get('indexDT', 'adminIndexDT')->name('indexDT');
+                    });
+                });
+            });
+
             Route::prefix('laporan')->group(function () {
                 Route::name('laporan.')->group(function () {
-                    Route::prefix('aset-standar')->middleware('rdp.role:admin,pimpinan')->group(function () {
+                    Route::prefix('aset-standar')->middleware('rdp.role:admin,pimpinan,aset-region')->group(function () {
                         Route::name('aset-standar.')->group(function () {
                             Route::controller(RdpReportController::class)->group(function () {
                                 Route::get('index', 'asetStandarIndex')->name('index');
@@ -214,7 +226,7 @@ Route::middleware('auth:web')->group(function () {
                         });
                     });
 
-                    Route::prefix('aset-realisasi')->middleware('rdp.role:admin,pimpinan')->group(function () {
+                    Route::prefix('aset-realisasi')->middleware('rdp.role:admin,pimpinan,aset-region')->group(function () {
                         Route::name('aset-realisasi.')->group(function () {
                             Route::controller(RdpReportController::class)->group(function () {
                                 Route::get('index', 'asetRealisasiIndex')->name('index');
@@ -262,6 +274,14 @@ Route::middleware('auth:web')->group(function () {
                 });
             });
 
+            Route::prefix('akun-manager')->middleware('rdp.role:hc-region,aset-region')->group(function () {
+                Route::name('akun-manager.')->group(function () {
+                    Route::controller(ManagerAccountController::class)->group(function () {
+                        Route::get('profile', 'profile')->name('profile');
+                    });
+                });
+            });
+
             Route::prefix('pengajuan')->middleware('rdp.role:employee')->group(function () {
                 Route::name('pengajuan.')->group(function () {
                     Route::prefix('izin-penempatan')->group(function () {
@@ -272,6 +292,7 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('detail/{id}', 'karyawanDetail')->name('detail');
                                 Route::get('edit/{id}', 'karyawanEdit')->name('edit');
                                 Route::get('pendataan-aset/{id}', 'karyawanPendataanAset')->name('pendataan-aset');
+                                Route::get('sip/{id}', 'sipPdf')->name('sip');
                                 Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
                             });
                         });
@@ -285,6 +306,7 @@ Route::middleware('auth:web')->group(function () {
                                 Route::get('detail/{id}', 'karyawanDetail')->name('detail');
                                 Route::get('edit/{id}', 'karyawanEdit')->name('edit');
                                 Route::get('pendataan-aset/{id}', 'karyawanPendataanAset')->name('pendataan-aset');
+                                Route::get('sik/{id}', 'sikPdf')->name('sik');
                                 Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
                             });
                         });
@@ -315,6 +337,17 @@ Route::middleware('auth:web')->group(function () {
                             });
                         });
                     });
+
+                    Route::prefix('permintaan')->group(function () {
+                        Route::name('permintaan.')->group(function () {
+                            Route::controller(PermintaanController::class)->group(function () {
+                                Route::get('index', 'karyawanIndex')->name('index');
+                                Route::get('create', 'karyawanCreate')->name('create');
+                                Route::get('detail/{id}', 'karyawanDetail')->name('detail');
+                                Route::get('indexDT', 'karyawanIndexDT')->name('indexDT');
+                            });
+                        });
+                    });
                 });
             });
 
@@ -325,6 +358,7 @@ Route::middleware('auth:web')->group(function () {
                             Route::controller(KaryawanMasukController::class)->group(function () {
                                 Route::get('index', 'pimpinanIndex')->name('index');
                                 Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
+                                Route::get('sip/{id}', 'sipPdf')->name('sip');
                                 Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
                             });
                         });
@@ -335,6 +369,7 @@ Route::middleware('auth:web')->group(function () {
                             Route::controller(KaryawanKeluarController::class)->group(function () {
                                 Route::get('index', 'pimpinanIndex')->name('index');
                                 Route::get('detail/{id}', 'pimpinanDetail')->name('detail');
+                                Route::get('sik/{id}', 'sikPdf')->name('sik');
                                 Route::get('indexDT', 'pimpinanIndexDT')->name('indexDT');
                             });
                         });
@@ -371,6 +406,7 @@ Route::middleware('auth:web')->group(function () {
                             Route::controller(KaryawanMasukController::class)->group(function () {
                                 Route::get('index', 'hcRegionIndex')->name('index');
                                 Route::get('detail/{id}', 'hcRegionDetail')->name('detail');
+                                Route::get('sip/{id}', 'sipPdf')->name('sip');
                                 Route::get('indexDT', 'hcRegionIndexDT')->name('indexDT');
                             });
                         });
@@ -385,6 +421,7 @@ Route::middleware('auth:web')->group(function () {
                             Route::controller(PerbaikanController::class)->group(function () {
                                 Route::get('index', 'asetRegionIndex')->name('index');
                                 Route::get('detail/{id}', 'asetRegionDetail')->name('detail');
+                                Route::get('spk/{id}', 'spkPdf')->name('spk');
                                 Route::get('indexDT', 'asetRegionIndexDT')->name('indexDT');
                             });
                         });

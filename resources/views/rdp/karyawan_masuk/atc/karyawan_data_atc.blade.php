@@ -12,7 +12,7 @@
     var pendataanAsetStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::PIMPINAN_APPROVED_STATUS);
     var karyawanQueueStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::KARYAWAN_ACTIONABLE_STATUS);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS);
-    var sipBaseUrl = @json(url('rdp/penempatan/izin-penempatan/sip'));
+    var sipBaseUrl = @json(url('rdp/pengajuan/izin-penempatan/sip'));
     function renderPenempatanStatusBadge(status, type) {
         if (type !== 'display') {
             return status || '-';

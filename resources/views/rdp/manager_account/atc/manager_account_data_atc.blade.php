@@ -42,13 +42,26 @@
                 }
             },
             {
-                data: null, name: 'user_roles.name', orderable: true, searchable:true,
+                data: null, name: 'print_role_name', orderable: true, searchable:true,
                 render: function(data) {
-                    return data.user_roles?.name || '-';
+                    return data.print_role_name || data.user_roles?.name || '-';
                 }
             },
             { data: 'nickname', name: 'nickname', orderable: true, searchable:true },
             { data: 'username', name: 'username', orderable: true, searchable:true },
+            {
+                data: 'ttd', name: 'ttd', orderable: false, searchable: false,
+                render: function(data, type) {
+                    if (!data) {
+                        return '-';
+                    }
+                    if (type !== 'display') {
+                        return data;
+                    }
+                    const src = `{{ asset('storage/' . \App\Repositories\RdpManagerAccountRepo::FILE_DIR_TTD) }}/${data}`;
+                    return `<img src="${src}" alt="Tanda tangan manager" class="img-fluid" style="max-height:46px; max-width:120px;">`;
+                }
+            },
         ],
         initComplete: function(settings){
             table = settings.oInstance.api();

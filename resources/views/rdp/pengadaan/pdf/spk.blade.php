@@ -6,5 +6,20 @@
 </head>
 <body>
     <h1>SPK Pengadaan</h1>
+
+    <div style="margin-top: 40px; width: 260px; text-align: center;">
+        <div>{{ \App\Repositories\RdpManagerAccountRepo::getPrintRoleName($managerAsetRegion) ?? 'Manager Aset Region' }}</div>
+        @php
+            $ttdPath = $managerAsetRegion?->ttd
+                ? storage_path('app/public/' . \App\Repositories\RdpManagerAccountRepo::FILE_DIR_TTD . '/' . $managerAsetRegion->ttd)
+                : null;
+        @endphp
+        <div style="height: 80px; margin: 12px 0;">
+            @if ($ttdPath && file_exists($ttdPath))
+                <img src="{{ $ttdPath }}" alt="Tanda tangan" style="max-height: 80px; max-width: 180px;">
+            @endif
+        </div>
+        <strong>{{ $managerAsetRegion?->nickname ?? '-' }}</strong>
+    </div>
 </body>
 </html>

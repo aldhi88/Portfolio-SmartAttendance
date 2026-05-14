@@ -11,6 +11,18 @@
     $fileUrl = function ($file) {
         return $file ? asset('storage/' . \App\Repositories\RdpKaryawanMasukRepo::FILE_DIR . '/' . $file) : null;
     };
+    $sipRoute = null;
+    if ($item->status === \App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS) {
+        if (\App\Helpers\RdpAccess::isAdmin()) {
+            $sipRoute = route('rdp.penempatan.izin-penempatan.sip', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isPimpinan()) {
+            $sipRoute = route('rdp.persetujuan.izin-penempatan.sip', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isManagerHcRegion()) {
+            $sipRoute = route('rdp.hc-region.izin-penempatan.sip', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isEmployee()) {
+            $sipRoute = route('rdp.pengajuan.izin-penempatan.sip', $item->id);
+        }
+    }
 @endphp
 <div class="row">
     <div class="col-md-6">
@@ -93,8 +105,8 @@
             </td></tr>
             <tr><th>Catatan Revisi Berkas</th><td>{{ $item->catatan_revisi_berkas ?: '-' }}</td></tr>
             <tr><th>File SIP</th><td>
-                @if ($item->status === \App\Repositories\RdpKaryawanMasukRepo::FINISHED_STATUS)
-                    <a href="{{ route('rdp.penempatan.izin-penempatan.sip', $item->id) }}" target="_blank" class="btn btn-sm btn-primary">
+                @if ($sipRoute)
+                    <a href="{{ $sipRoute }}" target="_blank" class="btn btn-sm btn-primary">
                         Lihat File SIP
                     </a>
                 @else

@@ -13,7 +13,7 @@
         \App\Repositories\RdpKaryawanKeluarRepo::ASSET_SPV_APPROVED_STATUS,
     ]);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanKeluarRepo::FINISHED_STATUS);
-    var sikBaseUrl = @json(url('rdp/keluar-rdp/izin-keluar/sik'));
+    var sikBaseUrl = @json(url('rdp/persetujuan/izin-keluar/sik'));
 
     function renderKeluarRdpStatusBadge(status, type) {
         if (type !== 'display') {

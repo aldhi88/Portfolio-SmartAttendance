@@ -66,11 +66,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <!-- item-->
-                            <a class="dropdown-item" href="#"><i class="ri-user-line align-middle mr-1"></i>
-                                Profile</a>
-                            <a class="dropdown-item d-block" href="#"><span
-                                    class="badge badge-success float-right mt-1">11</span><i
-                                    class="ri-settings-2-line align-middle mr-1"></i> Settings</a>
+                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#modalEditSignature"><i class="ri-quill-pen-line align-middle mr-1"></i>
+                                Edit Tanda Tangan</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="{{ route('auth.logout') }}"><i
                                     class="ri-shut-down-line align-middle mr-1 text-danger"></i> Logout</a>
@@ -186,6 +183,8 @@
 
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
+
+    @livewire('user-signature-modal')
 
     <!-- JAVASCRIPT -->
     <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>

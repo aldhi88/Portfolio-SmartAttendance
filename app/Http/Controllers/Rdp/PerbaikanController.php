@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rdp;
 
 use App\Http\Controllers\Controller;
 use App\Helpers\RdpAccess;
+use App\Repositories\RdpManagerAccountRepo;
 use App\Repositories\RdpPerbaikanRepo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
@@ -211,7 +212,9 @@ class PerbaikanController extends Controller
             || (RdpAccess::isEmployee() && (int) $item->rdp_karyawan_masuks?->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
-        $pdf = Pdf::loadView('rdp.perbaikan.pdf.spk', compact('item'))
+        $managerAsetRegion = RdpManagerAccountRepo::getPrintSignerByRole(RdpManagerAccountRepo::MANAGER_ASET_REGION_ROLE);
+
+        $pdf = Pdf::loadView('rdp.perbaikan.pdf.spk', compact('item', 'managerAsetRegion'))
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('spk-perbaikan-' . $item->id . '.pdf');

@@ -11,6 +11,16 @@
     $fileUrl = function ($file) {
         return $file ? asset('storage/' . \App\Repositories\RdpKaryawanKeluarRepo::FILE_DIR . '/' . $file) : null;
     };
+    $sikRoute = null;
+    if ($item->status === \App\Repositories\RdpKaryawanKeluarRepo::FINISHED_STATUS) {
+        if (\App\Helpers\RdpAccess::isAdmin()) {
+            $sikRoute = route('rdp.keluar-rdp.izin-keluar.sik', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isPimpinan()) {
+            $sikRoute = route('rdp.persetujuan.izin-keluar.sik', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isEmployee()) {
+            $sikRoute = route('rdp.pengajuan.izin-keluar.sik', $item->id);
+        }
+    }
 @endphp
 <div class="row">
     <div class="col-md-6">
@@ -93,8 +103,8 @@
             </td></tr>
             <tr><th>Catatan Revisi Berkas</th><td>{{ $item->catatan_revisi_berkas ?: '-' }}</td></tr>
             <tr><th>File SIK</th><td>
-                @if ($item->status === \App\Repositories\RdpKaryawanKeluarRepo::FINISHED_STATUS)
-                    <a href="{{ route('rdp.keluar-rdp.izin-keluar.sik', $item->id) }}" target="_blank" class="btn btn-sm btn-primary">
+                @if ($sikRoute)
+                    <a href="{{ $sikRoute }}" target="_blank" class="btn btn-sm btn-primary">
                         Lihat File SIK
                     </a>
                 @else

@@ -10,6 +10,20 @@
         \App\Repositories\RdpPerbaikanRepo::RESULT_SPV_APPROVED_STATUS,
         \App\Repositories\RdpPerbaikanRepo::FINISHED_STATUS,
     ], true);
+    $spkRoute = null;
+    if ($spkVisible) {
+        if (\App\Helpers\RdpAccess::isAdmin()) {
+            $spkRoute = route('rdp.perbaikan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isPimpinan()) {
+            $spkRoute = route('rdp.persetujuan.perbaikan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isManagerAsetRegion()) {
+            $spkRoute = route('rdp.aset-region.perbaikan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isVendor()) {
+            $spkRoute = route('rdp.vendor.perbaikan.spk', $item->id);
+        } elseif (\App\Helpers\RdpAccess::isEmployee()) {
+            $spkRoute = route('rdp.pengajuan.perbaikan.spk', $item->id);
+        }
+    }
 @endphp
 
 <div class="row">
@@ -43,7 +57,7 @@
         <div class="border rounded p-3 mb-3">
             <h6>Dokumen</h6>
             <div><strong>Proposal:</strong> {!! $proposalUrl ? '<a href="' . $proposalUrl . '" target="_blank">Lihat proposal</a>' : '-' !!}</div>
-            <div><strong>SPK:</strong> {!! $spkVisible ? '<a href="' . route('rdp.perbaikan.spk', $item->id) . '" target="_blank">Lihat SPK</a>' : '-' !!}</div>
+            <div><strong>SPK:</strong> {!! $spkRoute ? '<a href="' . $spkRoute . '" target="_blank">Lihat SPK</a>' : '-' !!}</div>
         </div>
     </div>
 </div>

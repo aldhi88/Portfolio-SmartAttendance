@@ -11,7 +11,7 @@
     var editableStatus = @json(\App\Repositories\RdpKaryawanKeluarRepo::EDITABLE_STATUS);
     var pendataanAsetStatus = @json(\App\Repositories\RdpKaryawanKeluarRepo::PIMPINAN_APPROVED_STATUS);
     var finishedStatus = @json(\App\Repositories\RdpKaryawanKeluarRepo::FINISHED_STATUS);
-    var sikBaseUrl = @json(url('rdp/keluar-rdp/izin-keluar/sik'));
+    var sikBaseUrl = @json(url('rdp/pengajuan/izin-keluar/sik'));
     function renderKeluarRdpStatusBadge(status, type) {
         if (type !== 'display') {
             return status || '-';
