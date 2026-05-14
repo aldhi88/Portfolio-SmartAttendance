@@ -52,6 +52,30 @@
     z-index: 10;
 }
 
+.livewire-file-upload-progress {
+    margin-top: 8px;
+    padding: 9px 10px;
+    border: 1px solid #d7dde8;
+    border-radius: 4px;
+    background: #f8fafc;
+}
+
+.livewire-file-upload-progress .upload-status-text {
+    color: #46576b;
+    line-height: 1.35;
+}
+
+.livewire-file-upload-progress .upload-status-percent {
+    color: #64748b;
+    font-weight: 600;
+    margin-left: 12px;
+}
+
+.livewire-file-upload-progress .progress {
+    height: 7px;
+    background-color: #e9edf4;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

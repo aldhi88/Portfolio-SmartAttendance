@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $('.loading').fadeOut(500);
+    initLivewireFileUploadProgress();
 
     const path = window.location.pathname;        // ex: "/jadwal-kerja/create/tetap"
     const segments = path.split('/').filter(Boolean);
@@ -31,6 +32,109 @@ $(document).ready(function () {
         $(this).children('ul.sub-menu').addClass('mm-collapse mm-show');
     });
 });
+
+function initLivewireFileUploadProgress() {
+    const isRdpPage = window.location.pathname.split('/').filter(Boolean)[0] === 'rdp';
+
+    function hasLivewireModel(input) {
+        return Array.from(input.attributes).some((attr) => attr.name.indexOf('wire:model') === 0);
+    }
+
+    function shouldBind(input) {
+        return input
+            && input.type === 'file'
+            && hasLivewireModel(input)
+            && (isRdpPage || input.closest('#modalEditSignature'));
+    }
+
+    function getStatusElement(input) {
+        if (input.nextElementSibling && input.nextElementSibling.classList.contains('livewire-file-upload-progress')) {
+            return input.nextElementSibling;
+        }
+
+        const status = document.createElement('div');
+        status.className = 'livewire-file-upload-progress d-none';
+        status.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center small mb-1">
+                <span class="upload-status-text">Menunggu file dipilih.</span>
+                <span class="upload-status-percent">0%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            </div>
+        `;
+        input.insertAdjacentElement('afterend', status);
+
+        return status;
+    }
+
+    function setStatus(input, text, progress, state) {
+        const status = getStatusElement(input);
+        const percent = Math.max(0, Math.min(100, parseInt(progress || 0, 10)));
+        const bar = status.querySelector('.progress-bar');
+
+        status.classList.remove('d-none');
+        status.querySelector('.upload-status-text').textContent = text;
+        status.querySelector('.upload-status-percent').textContent = `${percent}%`;
+
+        bar.style.width = `${percent}%`;
+        bar.setAttribute('aria-valuenow', percent);
+        bar.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'progress-bar-animated');
+
+        if (state === 'success') {
+            bar.classList.add('bg-success');
+        } else if (state === 'error') {
+            bar.classList.add('bg-danger');
+        } else if (state === 'warning') {
+            bar.classList.add('bg-warning');
+        } else {
+            bar.classList.add('progress-bar-animated');
+        }
+    }
+
+    function bindInput(input) {
+        if (!shouldBind(input) || input.dataset.uploadProgressBound === '1') {
+            return;
+        }
+
+        input.dataset.uploadProgressBound = '1';
+
+        input.addEventListener('change', () => {
+            if (input.files && input.files.length > 0) {
+                setStatus(input, 'Menyiapkan upload file. Mohon tunggu sebelum submit.', 0, 'loading');
+            }
+        });
+
+        input.addEventListener('livewire-upload-start', () => {
+            setStatus(input, 'Mengunggah file. Mohon tunggu sampai selesai sebelum submit.', 0, 'loading');
+        });
+
+        input.addEventListener('livewire-upload-progress', (event) => {
+            setStatus(input, 'Mengunggah file. Mohon tunggu sampai selesai sebelum submit.', event.detail.progress, 'loading');
+        });
+
+        input.addEventListener('livewire-upload-finish', () => {
+            setStatus(input, 'Upload selesai. File siap dikirim.', 100, 'success');
+        });
+
+        input.addEventListener('livewire-upload-error', () => {
+            setStatus(input, 'Upload gagal. Periksa koneksi/ukuran file lalu pilih ulang.', 100, 'error');
+        });
+
+        input.addEventListener('livewire-upload-cancel', () => {
+            setStatus(input, 'Upload dibatalkan. Pilih file ulang bila diperlukan.', 0, 'warning');
+        });
+    }
+
+    function bindAll() {
+        document.querySelectorAll('input[type="file"]').forEach(bindInput);
+    }
+
+    bindAll();
+
+    const observer = new MutationObserver(() => bindAll());
+    observer.observe(document.body, { childList: true, subtree: true });
+}
 
 function initSearchCol(table, headerId, inputClass) {
     $(headerId).on('input change', '.' + inputClass, function () {
