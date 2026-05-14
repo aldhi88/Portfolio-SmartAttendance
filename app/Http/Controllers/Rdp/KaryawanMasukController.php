@@ -9,6 +9,7 @@ use App\Repositories\RdpManagerAccountRepo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class KaryawanMasukController extends Controller
 {
@@ -110,11 +111,70 @@ class KaryawanMasukController extends Controller
 
         $item = RdpKaryawanMasukRepo::ensureSipNumber($item);
         $managerHcRegion = RdpManagerAccountRepo::getPrintSignerByRole(RdpManagerAccountRepo::MANAGER_HC_REGION_ROLE);
+        $sip = $this->buildSipPdfData($item, $managerHcRegion);
 
-        $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('item', 'managerHcRegion'))
+        $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('sip'))
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('sip-' . $item->id . '.pdf');
+    }
+
+    private function buildSipPdfData($item, $managerHcRegion): array
+    {
+        $employee = $item->data_employees;
+        $employeeTtdPath = $employee?->ttd ? public_path('storage/employees/ttd/' . $employee->ttd) : null;
+        $managerTtdPath = $managerHcRegion?->ttd
+            ? storage_path('app/public/' . RdpManagerAccountRepo::FILE_DIR_TTD . '/' . $managerHcRegion->ttd)
+            : null;
+
+        return [
+            'tanggal' => $item->tanggal_sip_surat
+                ? Carbon::parse($item->tanggal_sip_surat)->translatedFormat('d F Y')
+                : '-',
+            'bulan_tahun' => $item->tanggal_sip_surat
+                ? Carbon::parse($item->tanggal_sip_surat)->translatedFormat('F Y')
+                : '-',
+            'nomor' => $item->nomor_sip_surat ?: '-',
+            'nama_karyawan' => $employee?->name ?: '-',
+            'nopek' => $employee?->number ?: '-',
+            'jabatan' => $employee?->master_positions?->name ?: '-',
+            'bagian_lokasi' => $employee?->master_locations?->name ?: '-',
+            'rumah' => $this->formatSipRumah($item->rdp_master_rumahs),
+            'tanggal_mulai' => $item->tanggal_mulai
+                ? Carbon::parse($item->tanggal_mulai)->translatedFormat('d F Y')
+                : '-',
+            'manager_role' => RdpManagerAccountRepo::getPrintRoleName($managerHcRegion) ?: '-',
+            'manager_name' => $managerHcRegion?->nickname ?: '-',
+            'employee_ttd_path' => $this->existingFilePath($employeeTtdPath),
+            'manager_ttd_path' => $this->existingFilePath($managerTtdPath),
+        ];
+    }
+
+    private function formatSipRumah($rumah): string
+    {
+        $parts = [];
+        $block = trim((string) ($rumah?->block ?: ''));
+        $type = trim((string) ($rumah?->tipe ?: ''));
+        $number = trim((string) ($rumah?->nomor ?: ''));
+
+        if ($block !== '') {
+            $parts[] = 'Block ' . $block;
+        }
+
+        if ($type !== '') {
+            $parts[] = 'Type ' . $type;
+        }
+
+        if ($number !== '') {
+            $parts[] = 'No ' . $number;
+        }
+
+        return implode(' ', $parts) ?: '-';
+    }
+
+    private function existingFilePath(?string $path): ?string
+    {
+        return $path && file_exists($path) ? $path : null;
     }
 
     public function karyawanIndex()
