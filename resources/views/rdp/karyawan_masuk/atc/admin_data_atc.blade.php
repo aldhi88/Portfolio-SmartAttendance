@@ -209,14 +209,18 @@
                 }
             },
             {
-                data: null, name: 'file_sip', orderable: false, searchable: false,
+                data: null, name: 'nomor_sip_surat', orderable: true, searchable: true,
                 render: function(data, type) {
+                    const nomorSip = data.nomor_sip_surat || '-';
                     if (type !== 'display') {
-                        return data.status === finishedStatus ? 'SIP' : '-';
+                        return data.status === finishedStatus ? nomorSip : '-';
                     }
 
                     return data.status === finishedStatus
-                        ? `<a href="${sipBaseUrl}/${data.id}" target="_blank" class="btn btn-sm btn-primary">Lihat SIP</a>`
+                        ? `<div class="text-nowrap">
+                                <div class="font-weight-semibold mb-1">${nomorSip}</div>
+                                <a href="${sipBaseUrl}/${data.id}" target="_blank" class="btn btn-sm btn-primary">Lihat SIP</a>
+                            </div>`
                         : '-';
                 }
             },

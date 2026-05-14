@@ -36,7 +36,7 @@
                                     <th class="text-center">Nomor</th>
                                     <th class="text-center">Tanggal Mulai</th>
                                     <th class="text-center">Status</th>
-                                    <th class="text-center">File SIP</th>
+                                    <th class="text-center">SIP</th>
                                 </tr>
                             </thead>
                             <thead id="header-filter">
@@ -80,7 +80,7 @@
                                             @endforeach
                                         </select>
                                     </th>
-                                    <th></th>
+                                    <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

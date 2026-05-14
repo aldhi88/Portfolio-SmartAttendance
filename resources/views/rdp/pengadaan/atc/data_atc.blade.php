@@ -178,13 +178,19 @@
             { data: 'rdp_pengadaan_items_count', name: 'rdp_pengadaan_items_count', searchable: false },
             { data: 'status', name: 'status', render: pengadaanStatusBadge },
             {
-                data: null, name: 'file_spk', orderable: false, searchable: false,
+                data: null, name: 'nomor_spk_surat', orderable: true, searchable: true,
                 render: function(data, type) {
                     const visible = [workRunningStatus, vendorFinishedStatus, resultSpvApprovedStatus, finishedStatus].includes(data.status);
+                    const nomorSpk = data.nomor_spk_surat || '-';
                     if (type !== 'display') {
-                        return visible ? 'SPK' : '-';
+                        return visible ? nomorSpk : '-';
                     }
-                    return visible ? `<a href="${spkBaseUrl}/${data.id}" target="_blank" class="btn btn-sm btn-primary">Lihat SPK</a>` : '-';
+                    return visible
+                        ? `<div class="text-nowrap">
+                                <div class="font-weight-semibold mb-1">${nomorSpk}</div>
+                                <a href="${spkBaseUrl}/${data.id}" target="_blank" class="btn btn-sm btn-primary">Lihat SPK</a>
+                            </div>`
+                        : '-';
                 }
             },
         ],

@@ -74,7 +74,7 @@
                                         @endforeach
                                     </select>
                                 </th>
-                                <th></th>
+                                <th><input type="text" class="form-control form-control-sm search-col-dt"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>

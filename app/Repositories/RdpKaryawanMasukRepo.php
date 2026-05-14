@@ -7,6 +7,7 @@ use App\Models\RdpKaryawanKeluar;
 use App\Models\RdpKaryawanMasuk;
 use App\Models\RdpMasterRumah;
 use App\Models\RdpMasterRumahAset;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -489,9 +490,28 @@ class RdpKaryawanMasukRepo
         $date = $date ?: now()->toDateString();
 
         return [
-            'nomor_sip_surat' => RdpSuratNumberRepo::nextSipNumber($date),
+            'nomor_sip_surat' => self::nextSipNumber($date),
             'tanggal_sip_surat' => $date,
         ];
+    }
+
+    protected static function nextSipNumber($date): string
+    {
+        $year = (int) Carbon::parse($date)->format('Y');
+        $sequence = self::maxSuratSequence($year) + 1;
+
+        return sprintf('%03d/PND4A0000/%d-S8', $sequence, $year);
+    }
+
+    protected static function maxSuratSequence(int $year): int
+    {
+        return RdpKaryawanMasuk::query()
+            ->whereYear('tanggal_sip_surat', $year)
+            ->whereNotNull('nomor_sip_surat')
+            ->lockForUpdate()
+            ->pluck('nomor_sip_surat')
+            ->map(fn ($nomor) => (int) substr((string) $nomor, 0, 3))
+            ->max() ?: 0;
     }
 
     protected static function documentDate(RdpKaryawanMasuk $item): string

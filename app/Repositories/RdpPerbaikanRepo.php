@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\RdpKaryawanMasuk;
 use App\Models\RdpMasterVendor;
 use App\Models\RdpPerbaikan;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -483,9 +484,28 @@ class RdpPerbaikanRepo
         $date = $date ?: now()->toDateString();
 
         return [
-            'nomor_spk_surat' => RdpSuratNumberRepo::nextSpkNumber($date),
+            'nomor_spk_surat' => self::nextSpkNumber($date),
             'tanggal_spk_surat' => $date,
         ];
+    }
+
+    protected static function nextSpkNumber($date): string
+    {
+        $year = (int) Carbon::parse($date)->format('Y');
+        $sequence = self::maxSuratSequence($year) + 1;
+
+        return sprintf('%03d/PND448000/%d-S5', $sequence, $year);
+    }
+
+    protected static function maxSuratSequence(int $year): int
+    {
+        return RdpPerbaikan::query()
+            ->whereYear('tanggal_spk_surat', $year)
+            ->whereNotNull('nomor_spk_surat')
+            ->lockForUpdate()
+            ->pluck('nomor_spk_surat')
+            ->map(fn ($nomor) => (int) substr((string) $nomor, 0, 3))
+            ->max() ?: 0;
     }
 
     protected static function documentDate(RdpPerbaikan $item): string
