@@ -54,6 +54,8 @@
         <div class="border rounded p-3 mb-3">
             <h6>Dokumen</h6>
             <div><strong>Proposal:</strong> {!! $proposalUrl ? '<a href="' . $proposalUrl . '" target="_blank">Lihat proposal</a>' : '-' !!}</div>
+            <div><strong>Nomor SPK:</strong> {{ $item->nomor_spk_surat ?: '-' }}</div>
+            <div><strong>Tanggal SPK:</strong> {{ $item->tanggal_spk_surat ?: '-' }}</div>
             <div><strong>SPK:</strong> {!! $spkRoute ? '<a href="' . $spkRoute . '" target="_blank">Lihat SPK</a>' : '-' !!}</div>
         </div>
     </div>

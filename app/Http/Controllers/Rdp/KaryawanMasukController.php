@@ -108,6 +108,7 @@ class KaryawanMasukController extends Controller
             || (RdpAccess::isEmployee() && (int) $item->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
+        $item = RdpKaryawanMasukRepo::ensureSipNumber($item);
         $managerHcRegion = RdpManagerAccountRepo::getPrintSignerByRole(RdpManagerAccountRepo::MANAGER_HC_REGION_ROLE);
 
         $pdf = Pdf::loadView('rdp.karyawan_masuk.pdf.sip', compact('item', 'managerHcRegion'))

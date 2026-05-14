@@ -448,7 +448,12 @@ class RdpKaryawanMasukRepo
                     throw new \Exception('Rumah tidak tersedia untuk penempatan.');
                 }
 
-                $item->update(['status' => self::FINISHED_STATUS]);
+                $payload = ['status' => self::FINISHED_STATUS];
+                if (empty($item->nomor_sip_surat)) {
+                    $payload = array_merge($payload, self::generateSipNumberPayload());
+                }
+
+                $item->update($payload);
                 RdpRumahStatusRepo::sync($item->rdp_master_rumah_id);
             });
 
@@ -457,6 +462,43 @@ class RdpKaryawanMasukRepo
             Log::error("Approve HC Region rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    public static function ensureSipNumber(RdpKaryawanMasuk $item): RdpKaryawanMasuk
+    {
+        try {
+            return DB::transaction(function () use ($item) {
+                $locked = RdpKaryawanMasuk::whereKey($item->id)->lockForUpdate()->firstOrFail();
+
+                if (!empty($locked->nomor_sip_surat)) {
+                    return $locked;
+                }
+
+                $locked->update(self::generateSipNumberPayload(self::documentDate($locked)));
+
+                return $locked->refresh();
+            });
+        } catch (\Exception $e) {
+            Log::error("Ensure nomor SIP rdp_karyawan_masuks failed", ['error' => $e->getMessage()]);
+            return $item;
+        }
+    }
+
+    protected static function generateSipNumberPayload($date = null): array
+    {
+        $date = $date ?: now()->toDateString();
+
+        return [
+            'nomor_sip_surat' => RdpSuratNumberRepo::nextSipNumber($date),
+            'tanggal_sip_surat' => $date,
+        ];
+    }
+
+    protected static function documentDate(RdpKaryawanMasuk $item): string
+    {
+        return $item->tanggal_sip_surat
+            ?: $item->created_at?->toDateString()
+            ?: now()->toDateString();
     }
 
     public static function rejectHcRegion($id)

@@ -6,6 +6,8 @@
 </head>
 <body>
     <h1>SPK</h1>
+    <div>No. {{ $item->nomor_spk_surat ?: '-' }}</div>
+    <div>Tanggal: {{ $item->tanggal_spk_surat ?: '-' }}</div>
 
     <div style="margin-top: 40px; width: 260px; text-align: center;">
         <div>{{ \App\Repositories\RdpManagerAccountRepo::getPrintRoleName($managerAsetRegion) ?? 'Manager Aset Region' }}</div>

@@ -183,6 +183,7 @@ class PengadaanController extends Controller
             || (RdpAccess::isEmployee() && (int) $item->rdp_karyawan_masuks?->data_employee_id === (int) RdpAccess::employeeId())
         ), 404);
 
+        $item = RdpPengadaanRepo::ensureSpkNumber($item);
         $managerAsetRegion = RdpManagerAccountRepo::getPrintSignerByRole(RdpManagerAccountRepo::MANAGER_ASET_REGION_ROLE);
 
         $pdf = Pdf::loadView('rdp.pengadaan.pdf.spk', compact('item', 'managerAsetRegion'))

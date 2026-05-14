@@ -104,6 +104,8 @@
                 @endif
             </td></tr>
             <tr><th>Catatan Revisi Berkas</th><td>{{ $item->catatan_revisi_berkas ?: '-' }}</td></tr>
+            <tr><th>Nomor SIP</th><td>{{ $item->nomor_sip_surat ?: '-' }}</td></tr>
+            <tr><th>Tanggal SIP</th><td>{{ $item->tanggal_sip_surat ?: '-' }}</td></tr>
             <tr><th>File SIP</th><td>
                 @if ($sipRoute)
                     <a href="{{ $sipRoute }}" target="_blank" class="btn btn-sm btn-primary">

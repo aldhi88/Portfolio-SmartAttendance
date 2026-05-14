@@ -436,9 +436,63 @@ class RdpPerbaikanRepo
 
     public static function publishSpk($id)
     {
-        return self::transition($id, [self::SPK_READY_STATUS], [
-            'status' => self::WORK_RUNNING_STATUS,
-        ], 'Publish SPK rdp_perbaikans failed');
+        try {
+            DB::transaction(function () use ($id) {
+                $item = RdpPerbaikan::whereKey($id)->lockForUpdate()->firstOrFail();
+                if ($item->status !== self::SPK_READY_STATUS) {
+                    throw new \Exception('Status tidak sesuai untuk penerbitan SPK.');
+                }
+
+                $payload = ['status' => self::WORK_RUNNING_STATUS];
+                if (empty($item->nomor_spk_surat)) {
+                    $payload = array_merge($payload, self::generateSpkNumberPayload());
+                }
+
+                $item->update($payload);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Publish SPK rdp_perbaikans failed', ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function ensureSpkNumber(RdpPerbaikan $item): RdpPerbaikan
+    {
+        try {
+            return DB::transaction(function () use ($item) {
+                $locked = RdpPerbaikan::whereKey($item->id)->lockForUpdate()->firstOrFail();
+
+                if (!empty($locked->nomor_spk_surat)) {
+                    return $locked;
+                }
+
+                $locked->update(self::generateSpkNumberPayload(self::documentDate($locked)));
+
+                return $locked->refresh();
+            });
+        } catch (\Exception $e) {
+            Log::error('Ensure nomor SPK rdp_perbaikans failed', ['error' => $e->getMessage()]);
+            return $item;
+        }
+    }
+
+    protected static function generateSpkNumberPayload($date = null): array
+    {
+        $date = $date ?: now()->toDateString();
+
+        return [
+            'nomor_spk_surat' => RdpSuratNumberRepo::nextSpkNumber($date),
+            'tanggal_spk_surat' => $date,
+        ];
+    }
+
+    protected static function documentDate(RdpPerbaikan $item): string
+    {
+        return $item->tanggal_spk_surat
+            ?: $item->created_at?->toDateString()
+            ?: now()->toDateString();
     }
 
     public static function submitLaporan($id, $items, $vendorId = null)
